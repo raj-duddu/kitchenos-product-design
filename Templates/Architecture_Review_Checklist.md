@@ -4,6 +4,24 @@
 **Reviewer:** [Architect name or role]
 **Date:** YYYY-MM-DD
 **Stage Gate:** Stage 5 of Product Development Lifecycle
+**Operating Principles:** [Which of the 10 Operating Principles does this feature touch? List by number and name.]
+
+---
+
+## Operating Principles Alignment
+
+Every architecture decision must be traceable to at least one Operating Principle. If a design choice conflicts with a principle, the conflict must be documented and escalated — not silently resolved.
+
+- [ ] Which Operating Principles govern this feature's architecture? ___
+- [ ] Does this feature's design align with all relevant principles?
+  - If no, document the conflict explicitly: ___
+  - Escalate to founders before proceeding.
+- [ ] Does this feature involve AI output? If yes, confirm:
+  - [ ] Principle 4 (AI Recommends. People Decide.) — no autonomous irreversible action
+  - [ ] Principle 7 (Truth Before Convenience) — uncertainty is visible, staleness is explicit, no false certainty
+- [ ] Does this feature collect or process user data? If yes, confirm:
+  - [ ] Principle 8 (We Are Stewards, Not Owners) — data collected only to serve the user
+  - [ ] GDR-002 (Privacy by Design) reviewed
 
 ---
 
@@ -11,26 +29,29 @@
 
 - [ ] Does this feature introduce new domain entities?
   - If yes, which: ___
-  - Action: Update `Knowledge/20_Domain_Model.md` before Stage 7.
+  - Action: Update `Products/KitchenOS/20_Domain_Model.md` before Stage 7.
 
 - [ ] Does this feature introduce new domain events?
   - If yes, which: ___
-  - Action: Add to Domain Events catalogue in `Knowledge/20_Domain_Model.md`.
+  - Action: Add to Domain Events catalogue in `Products/KitchenOS/20_Domain_Model.md`.
 
 - [ ] Does this feature introduce new business invariants?
   - If yes, which: ___
-  - Action: Add to Business Invariants in `Knowledge/20_Domain_Model.md`.
+  - Action: Add to Business Invariants in `Products/KitchenOS/20_Domain_Model.md`.
 
 - [ ] Does this feature change an existing aggregate or entity boundary?
   - If yes, explain: ___
   - Action: Architecture review required before Domain Model update.
+
+- [ ] Does this feature touch the four-layer identity model (Auth / Person / Domain / Intelligence)?
+  - If yes, confirm: dependency direction is domain → intelligence, never reversed.
 
 ---
 
 ## API Impact
 
 - [ ] Does this feature require new API endpoints?
-  - If yes, document in `Knowledge/80_API_Reference/` *(planned)*.
+  - If yes, document in `Products/KitchenOS/80_API_Reference/` *(planned)*.
 
 - [ ] Does this feature change existing API contracts?
   - If yes, assess backward compatibility and versioning.
@@ -54,12 +75,16 @@
 
 - [ ] Does this feature produce new signals for the AI?
   - If yes, what `learning_impact` value should events carry?
+  - Confirm: signals are only from interactions within user-granted permissions (Principle 6).
 
 - [ ] Does this feature change what AI recommends or how it ranks?
   - If yes, update AI Orchestrator logic accordingly.
 
 - [ ] Does this feature require new offline-safe recommendations?
   - If yes, assess `recommendation_expires_at` strategy.
+
+- [ ] Does this feature produce AI output with confidence levels?
+  - If yes, confirm uncertainty is surfaced to the user — never hidden (Principle 7).
 
 ---
 
@@ -73,6 +98,9 @@
 
 - [ ] Does this feature impact offline behaviour or the Sync Engine?
   - If yes, assess SQLite schema and conflict resolution.
+
+- [ ] Does this feature introduce a new external dependency (AI provider, third-party API)?
+  - If yes, confirm it is called through an abstraction interface — no direct provider reference in domain code.
 
 ---
 
@@ -91,6 +119,7 @@ If any above are Yes: **Security Review required before Stage 7.**
 
 - [ ] Is a new architecture decision being made that is significant and non-obvious?
   - If yes, write ADR using `Templates/ADR_Template.md`.
+  - The ADR must include an `operating_principles:` field citing which principles apply.
   - Add to Knowledge Map Decision Records Index.
 
 ---

@@ -22,7 +22,7 @@ KitchenOS documentation has two distinct dimensions that must not be confused:
 
 | Dimension | Purpose | Documents |
 |---|---|---|
-| **Knowledge** | What we know — static, enduring facts about product and technology | `Knowledge/` — Vision, Domain Model, Architecture, etc. |
+| **Knowledge** | What we know — static, enduring facts about product and technology | `Company/`, `Products/KitchenOS/`, `Knowledge/` — Vision, Domain Model, Architecture, Shared Patterns etc. |
 | **Process** | How work flows — dynamic, operational, from idea to production | `Process/` — this document |
 
 Knowledge documents describe *what exists*. This document describes *what happens next*.
@@ -33,7 +33,9 @@ Knowledge documents describe *what exists*. This document describes *what happen
 
 ```text
 Product Design/
-├── Knowledge/      What KitchenOS is, how it works, why decisions were made
+├── Company/        Why the company exists; Operating Principles and Governance that constrain all work
+├── Products/KitchenOS/  What KitchenOS is, how it works, why decisions were made
+├── Knowledge/      Shared concepts reusable across all products
 ├── Process/        How ideas become shipped features
 └── Templates/      Reusable formats and checklists
 ```
@@ -90,9 +92,10 @@ Stages 1–9 are active at MVP. Stages 10–12 become operational post-launch. A
 
 **Activities:**
 - Articulate the problem in one sentence.
-- Check alignment with Product Vision principles (`Knowledge/10_Product_Vision.md`, Sections 1–9).
+- Check alignment with Operating Principles (`Company/Operating_Principles.md`) — does this reveal a better possibility or reduce complexity for real users?
+- Check alignment with Product Vision principles (`Products/KitchenOS/10_Product_Vision.md`, Sections 1–9).
 - Check alignment with North Star Metric: does this increase Weekly Trusted Household Decisions Completed?
-- Check the Open Questions register (`Knowledge/10_Product_Vision.md`, Section 60) — is this already logged?
+- Check the Open Questions register (`Products/KitchenOS/10_Product_Vision.md`, Section 60) — is this already logged?
 - Quick competitor check.
 
 **Gate criteria — cannot proceed to Stage 2 until:**
@@ -114,7 +117,7 @@ Stages 1–9 are active at MVP. Stages 10–12 become operational post-launch. A
 **Activities:**
 - User research or interview synthesis (for human users).
 - Review existing household behaviour data if available.
-- Review any related PRDs already in `Knowledge/30_PRDs/`.
+- Review any related PRDs already in `Products/KitchenOS/30_PRDs/`.
 - Document findings in discovery notes.
 - Assess effort vs. value at a high level.
 
@@ -140,7 +143,7 @@ Stages 1–9 are active at MVP. Stages 10–12 become operational post-launch. A
 - Write BDD scenarios (Given / When / Then).
 - Identify any new domain entities or events — if found, flag for Domain Model review (Stage 5).
 - Review against Product Vision principles.
-- If this is a significant product scope or strategy decision, write a PDR using `Templates/PDR_Template.md`.
+- If this is a significant product scope or strategy decision, write a PDR using `Templates/PDR_Template.md`. PDR must cite Operating Principles.
 
 **Gate criteria — cannot proceed to Stage 4 until:**
 - [ ] PRD written and reviewed.
@@ -149,8 +152,8 @@ Stages 1–9 are active at MVP. Stages 10–12 become operational post-launch. A
 - [ ] PDR written if a significant product decision is being made.
 
 **Outputs:**
-- `Knowledge/30_PRDs/PRD-XXX_Feature_Name.md`
-- `Knowledge/60_Decision_Records/PDR-XXX_Decision.md` (if applicable)
+- `Products/KitchenOS/30_PRDs/PRD-XXX_Feature_Name.md`
+- `Products/KitchenOS/60_Decision_Records/PDRs/PDR-XXX_Decision.md` (if applicable)
 
 **Responsible:** Product Owner / Product Agent.
 
@@ -162,10 +165,10 @@ Stages 1–9 are active at MVP. Stages 10–12 become operational post-launch. A
 
 **Activities:**
 - Create wireframes and screen flows referenced in the PRD.
-- Validate every screen against the "Every Screen Answers a Question" principle (`Knowledge/10_Product_Vision.md`, Section 8.3).
-- Reference — do not modify — `Knowledge/70_UX_Design_System/` for existing components.
-- Identify any new reusable components needed — document them in `Knowledge/70_UX_Design_System/` if they qualify.
-- If a significant UX pattern decision is made, write a UXDR using `Templates/PDR_Template.md` (adapted for UX).
+- Validate every screen against the "Every Screen Answers a Question" principle (`Products/KitchenOS/10_Product_Vision.md`, Section 8.3).
+- Reference — do not modify — `Products/KitchenOS/70_UX_Design_System/` for existing components.
+- Identify any new reusable components needed — document them in `Products/KitchenOS/70_UX_Design_System/` if they qualify.
+- If a significant UX pattern decision is made, write a UXDR using `Templates/PDR_Template.md` (adapted for UX). UXDR must cite Operating Principles.
 
 **Gate criteria — cannot proceed to Stage 5 until:**
 - [ ] Wireframes or screen flows exist for all user stories in the PRD.
@@ -175,7 +178,7 @@ Stages 1–9 are active at MVP. Stages 10–12 become operational post-launch. A
 
 **Outputs:**
 - Wireframes / flows (attached to PRD or in Design System).
-- `Knowledge/60_Decision_Records/UXDR-XXX_Decision.md` (if applicable).
+- `Products/KitchenOS/60_Decision_Records/UXDRs/UXDR-XXX_Decision.md` (if applicable).
 
 **Responsible:** Designer / Design Agent.
 
@@ -191,10 +194,10 @@ Stage 5 has two parts that may overlap for simple features or run sequentially f
 
 **Activities:**
 - Review the PRD and UX for new domain entities, events, or services.
-- If new domain entities or events are needed: update `Knowledge/20_Domain_Model.md`.
-- If new services, infrastructure, or technology choices are needed: update `Knowledge/40_Technical_Architecture.md`.
-- Use `Templates/Architecture_Review_Checklist.md` to assess impact.
-- If a significant technology or infrastructure decision is made, write an ADR using `Templates/ADR_Template.md`.
+- If new domain entities or events are needed: update `Products/KitchenOS/20_Domain_Model.md`.
+- If new services, infrastructure, or technology choices are needed: update `Products/KitchenOS/40_Technical_Architecture.md`.
+- Use `Templates/Architecture_Review_Checklist.md` to assess impact — including Operating Principles alignment.
+- If a significant technology or infrastructure decision is made, write an ADR using `Templates/ADR_Template.md`. ADR must cite Operating Principles.
 - Security review: does this feature touch auth, encryption, consent, or PII? Flag for Security review.
 
 ### Part B — Technical Design (LLD)
@@ -203,7 +206,7 @@ Stage 5 has two parts that may overlap for simple features or run sequentially f
 
 **Activities:**
 - For **simple features**: add a brief Technical Design section to the PRD.
-- For **complex features** (new services, non-trivial data flows, significant domain model changes): write a full Solution Design using `Templates/SD_Template.md`.
+- For **complex features** (new services, non-trivial data flows, significant domain model changes): write a full Solution Design using `Templates/LLD_Template.md`.
 - Solution Design covers: module responsibilities, sequence diagrams, data model changes, API contract, offline behaviour, testing strategy.
 - Tech Lead review of Solution Design required before proceeding.
 
@@ -216,10 +219,10 @@ Stage 5 has two parts that may overlap for simple features or run sequentially f
 - [ ] Tech Lead has approved the Technical Design.
 
 **Outputs:**
-- Updated `Knowledge/20_Domain_Model.md` (if changed).
-- Updated `Knowledge/40_Technical_Architecture.md` (if changed).
-- `Knowledge/60_Decision_Records/ADR-XXX_Decision.md` (if applicable).
-- `Knowledge/45_Solution_Designs/SD-XXX_Feature.md` (for complex features).
+- Updated `Products/KitchenOS/20_Domain_Model.md` (if changed).
+- Updated `Products/KitchenOS/40_Technical_Architecture.md` (if changed).
+- `Products/KitchenOS/60_Decision_Records/ADRs/ADR-XXX_Decision.md` (if applicable).
+- `Products/KitchenOS/45_Solution_Designs/SD-XXX_Feature.md` (for complex features).
 
 **Responsible:** Architect / Tech Lead / Architect Agent.
 
@@ -253,7 +256,7 @@ Stage 5 has two parts that may overlap for simple features or run sequentially f
 **Question:** Are we building it correctly?
 
 **Activities:**
-- Follow `Knowledge/50_Engineering_Handbook.md` for all engineering practices.
+- Follow `Products/KitchenOS/50_Engineering_Handbook.md` for all engineering practices.
 - TDD: write failing tests before implementation.
 - BDD: validate acceptance criteria from PRD using BDD scenarios.
 - Code review required before merge.
@@ -407,7 +410,7 @@ P3 / P4 fixes only require the directly affected test type to re-run.
 **Question:** Is the feature running healthily in production?
 
 **Activities:**
-- Monitor logs, metrics, and alerts in `Knowledge/90_Operations/`.
+- Monitor logs, metrics, and alerts in `Products/KitchenOS/90_Platform_Operations/`.
 - Incident response if issues arise.
 - Runbook updated for any new operational procedures.
 
@@ -422,7 +425,7 @@ P3 / P4 fixes only require the directly affected test type to re-run.
 **Activities:**
 - Review feature analytics against acceptance criteria and North Star Metric.
 - Collect user feedback and support signals.
-- Update the Open Questions register (`Knowledge/10_Product_Vision.md`, Section 60) with findings.
+- Update the Open Questions register (`Products/KitchenOS/10_Product_Vision.md`, Section 60) with findings.
 
 **Responsible:** Product Owner / Analytics Agent.
 
@@ -448,14 +451,14 @@ Every stage produces or updates exactly one class of documents. Nothing gets los
 |---|---|
 | 1 — Idea | Epic (informal) |
 | 2 — Discovery | Discovery notes (in PRD background) |
-| 3 — Product Definition | `30_PRDs/PRD-XXX.md`, `60_Decision_Records/PDR-XXX.md` |
-| 4 — UX Design | Wireframes in PRD, `60_Decision_Records/UXDR-XXX.md` |
-| 5 — Architecture Review | `20_Domain_Model.md`, `40_Technical_Architecture.md`, `60_Decision_Records/ADR-XXX.md` |
+| 3 — Product Definition | `Products/KitchenOS/30_PRDs/PRD-XXX.md`, `Products/KitchenOS/60_Decision_Records/PDRs/PDR-XXX.md` |
+| 4 — UX Design | Wireframes in PRD, `Products/KitchenOS/60_Decision_Records/UXDRs/UXDR-XXX.md` |
+| 5 — Architecture Review | `Products/KitchenOS/20_Domain_Model.md`, `Products/KitchenOS/40_Technical_Architecture.md`, `Products/KitchenOS/60_Decision_Records/ADRs/ADR-XXX.md` |
 | 6 — Planning | Engineering tickets |
 | 7 — Development | Code + tests |
 | 8 — Testing | QA sign-off |
 | 9 — Release | Release notes, monitoring config |
-| 10 — Operate | `90_Operations/` runbooks |
+| 10 — Operate | `Products/KitchenOS/90_Platform_Operations/` runbooks |
 | 11 — Learn | Open Questions register, analytics |
 | 12 — Iterate | Updated PRD or new Epic |
 

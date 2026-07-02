@@ -1784,31 +1784,39 @@ This is a known and deliberate constraint of the offline-first architecture. It 
 
 ### 37.9 Architecture Principles
 
-These principles govern all technical decisions in KitchenOS. When a design choice is unclear, apply these principles before escalating to a discussion or an ADR.
+These principles govern all technical decisions in KitchenOS. They are derived from the company's Operating Principles (`Company/Operating_Principles.md`) and specialise them for the technical layer. When a design choice is unclear, apply these principles before escalating to a discussion or an ADR.
 
 **Offline-first.**
 The app must be useful without connectivity. Core flows — pantry browsing, shopping list editing, Cook Mode, meal plan viewing — must work offline. Features that cannot work offline must degrade gracefully with a visible indicator, not fail silently.
+*→ Operating Principle 3 (Inspire Confident Action): a product that fails silently when offline erodes user confidence.*
 
 **Event-driven.**
 Every meaningful household action produces a domain event written to the append-only `domain_events` table. No meaningful state change happens silently. There are no soft-deletes on domain data — corrections are additional events, not mutations.
+*→ Operating Principle 5 (Earn Trust Through Transparency): every state change is traceable, explainable, and reversible. Operating Principle 7 (Truth Before Convenience): corrections over mutations.*
 
 **AI recommends, humans decide.**
 The Household Decision Engine produces recommendations. It does not take action autonomously. The user approves, rejects, or ignores every suggestion. No automated action changes household state without user visibility and the ability to reverse it.
+*→ Operating Principle 4 (AI Recommends. People Decide.): direct architectural implementation of this principle.*
 
 **Safety before intelligence.**
 Allergy and dietary safety checks run before any AI output reaches a user. The Allergy Guard is never bypassed, including for expert recommendations. A safe incorrect suggestion is always preferable to an intelligent unsafe one.
+*→ Operating Principle 4 (AI Recommends. People Decide.) and Operating Principle 7 (Truth Before Convenience): an unsafe recommendation that appears certain is the most dangerous form of false certainty.*
 
 **Business rules live in the domain layer.**
 Pantry deduction logic, budget calculations, allergy filtering, recommendation scoring, and shopping generation live in domain services — not in controllers, UI components, database triggers, or AI prompts. Business rules must be testable in isolation.
+*→ Operating Principle 7 (Truth Before Convenience): rules in the wrong layer are invisible, untestable, and untrustworthy. Operating Principle 5 (Earn Trust Through Transparency): if business logic is buried in prompts, it cannot be audited.*
 
 **Infrastructure is replaceable.**
 The AI provider (OpenAI, Gemini), cloud provider (GCP), and database (PostgreSQL) are called through abstraction interfaces. No domain code references a specific provider directly. Swapping infrastructure should not require rewriting domain logic.
+*→ Operating Principle 6 (Learn Continuously): the AI model landscape changes; we must be able to adopt better models without architectural surgery. Operating Principle 9 (Simplicity Is a Feature): tight coupling to vendors is hidden complexity.*
 
 **Staleness is explicit.**
 The system never silently serves outdated state. Cached recommendations, stale pantry data, and unsynced changes must always be visibly signalled to the user. Implicit staleness is a trust failure.
+*→ Operating Principle 7 (Truth Before Convenience): direct implementation. Implicit staleness is the most common way systems fake certainty.*
 
 **Manage, don't self-host.**
 In MVP-0, authentication, push notifications, AI models, OCR, and job queue infrastructure are all managed services. Self-hosting commodity infrastructure is a distraction from building the product.
+*→ Operating Principle 9 (Simplicity Is a Feature): absorb infrastructure complexity so we can focus on product complexity.*
 
 ### 37.10 Architecture Building Blocks
 

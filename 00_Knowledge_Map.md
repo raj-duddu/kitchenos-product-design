@@ -275,6 +275,13 @@ Every artifact in this system belongs to one **dimension**, is produced at a spe
 └─────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────┐
+│  Company  (why we exist; what we never violate) │
+│                                                 │
+│  Operating Principles constrain all stages.     │
+│  GDRs constrain all AI, privacy, governance.    │
+└─────────────────────────────────────────────────┘
+         │ constrains ↓
+┌─────────────────────────────────────────────────┐
 │  Process  (how work flows)                      │
 │                                                 │
 │  Idea → Discovery → PRD → UX → Architecture    │
@@ -393,6 +400,8 @@ When creating new documentation, use this table to find the right home. **Never 
 | Why a product scope or strategy decision was made | PDR | `Products/KitchenOS/60_Decision_Records/PDR-XXX_Decision.md` |
 | Why a UX pattern or navigation choice was made | UXDR | `Products/KitchenOS/60_Decision_Records/UXDR-XXX_Decision.md` |
 | A new ubiquitous language term | Domain Model glossary | `Products/KitchenOS/20_Domain_Model.md` |
+| A company-wide non-negotiable principle (applies to all products) | Operating Principles | `Company/Operating_Principles.md` |
+| A company-wide governance policy (AI, privacy, cross-cutting) | GDR | `Company/Governance/GDRs/` |
 | A cross-cutting architectural principle | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.9 |
 | A reusable architectural building block | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
 | How a specific feature is designed at module/class level | Solution Design | `Products/KitchenOS/45_Solution_Designs/SD-XXX_Feature.md` |
