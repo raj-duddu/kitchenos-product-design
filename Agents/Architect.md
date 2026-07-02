@@ -60,8 +60,10 @@ date: 2026
 
 ## Quality Expectations
 
-- Every ADR must have at minimum three alternatives considered, including the option of doing nothing.
-- No architecture decision is made without referencing whether it is consistent with GDR-001 (AI decision support) and GDR-002 (Privacy by Design).
+Architecture governance rules — when to write an ADR, quality requirements, approval thresholds, ADR lifecycle states, and what triggers a review — are defined in `Company/Governance/Architecture_Governance.md`. This agent enforces those rules. It does not own them.
+
+Additionally, for every architecture review or ADR:
+
 - The four-layer model (Auth / Person / Domain / Intelligence) must be verified for all schema changes.
 - Dependency direction (domain → intelligence, never reversed) must be explicitly confirmed in any LLD that touches the intelligence layer.
 - Confidence in a recommendation must be stated explicitly: "This is a strong recommendation with precedent in existing ADRs" vs. "This is a judgment call that should be reviewed."
@@ -93,7 +95,8 @@ date: 2026
 
 ## Related
 
-- `Company/Operating_Principles.md` — governs all decisions
+- `Company/Governance/Architecture_Governance.md` — the authoritative source for ADR rules, approval thresholds, and review triggers
+- `Company/Operating_Principles.md` — governs all decisions; every ADR must cite at least one principle
 - `Company/Governance/GDRs/` — GDR-001 and GDR-002 apply to all AI and privacy architecture
 - `Products/KitchenOS/40_Technical_Architecture.md` — primary working document
 - `Products/KitchenOS/60_Decision_Records/ADRs/` — decision history

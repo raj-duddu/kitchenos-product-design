@@ -23,6 +23,7 @@ Product Design/
 │   ├── Operating_Principles.md  ← seven guiding principles; company constitution
 │   └── Governance/              ← GDRs, AI Governance, Risk Register
 │       ├── AI_Governance.md
+│       ├── Architecture_Governance.md
 │       ├── Risk_Register.md
 │       └── GDRs/                ← GDR-001, GDR-002, ...
 ├── Products/                    ← one subfolder per product
@@ -340,6 +341,7 @@ Every topic has exactly one authoritative home. Do not document the same concept
 | Company vision, mission, philosophy | Vision and Mission | `Company/Vision_and_Mission.md` |
 | Company operating principles | Operating Principles | `Company/Operating_Principles.md` |
 | AI governance and decision criticality | Governance | `Company/Governance/AI_Governance.md` |
+| Architecture governance (ADR rules, approval, lifecycle) | Governance | `Company/Governance/Architecture_Governance.md` |
 | Risk register | Governance | `Company/Governance/Risk_Register.md` |
 | Trusted decision support policy | GDR | `Company/Governance/GDRs/GDR-001_Trusted_Decision_Support.md` |
 | Privacy by design policy | GDR | `Company/Governance/GDRs/GDR-002_Privacy_By_Design.md` |
@@ -392,6 +394,7 @@ When creating new documentation, use this table to find the right home. **Never 
 | A coding standard or engineering practice | Engineering Handbook | `Products/KitchenOS/50_Engineering_Handbook.md` |
 | An authentication or encryption standard | Security | `Products/KitchenOS/100_Security/` |
 | AI decision criticality, autonomous action thresholds, model governance | Governance | `Company/Governance/AI_Governance.md` |
+| Architecture governance: when to write an ADR, approval rules, ADR lifecycle | Governance | `Company/Governance/Architecture_Governance.md` |
 | Product risk register, likelihood/impact/mitigation | Governance | `Company/Governance/Risk_Register.md` |
 | A production runbook or infrastructure config | Platform Operations | `Products/KitchenOS/90_Platform_Operations/` |
 | Customer support workflows, SLAs, Expert onboarding and verification | Customer & Expert Operations | `Products/KitchenOS/95_Customer_Expert_Operations/` |
@@ -489,6 +492,7 @@ Every major concept has one owning team and a single source of truth. When the c
 | Company vision, mission, philosophy | Company | `Company/Vision_and_Mission.md` | All layers |
 | Company operating principles | Company | `Company/Operating_Principles.md` | All layers |
 | AI governance policy | Governance | `Company/Governance/AI_Governance.md` | Products, Architecture, Engineering |
+| Architecture governance policy | Governance | `Company/Governance/Architecture_Governance.md` | Architecture, Engineering, Agents |
 | Risk register | Governance | `Company/Governance/Risk_Register.md` | All layers |
 | Household conflict resolution policy | PDR | `Products/KitchenOS/60_Decision_Records/PDR-009_Household_Conflict_Resolution.md` | Domain Model, AI Architecture |
 
@@ -589,50 +593,11 @@ These are the reusable architectural components that appear across multiple feat
 
 ## Architecture Governance
 
-Rules about when to create an ADR, who approves architecture changes, and what triggers a review. Governance must be lightweight and practical, not a bureaucratic bottleneck.
+Architecture governance rules — when to write an ADR, quality requirements, approval thresholds, ADR lifecycle states, and what triggers a review — are defined in one place:
 
-### When an ADR is Required
+> **`Company/Governance/Architecture_Governance.md`** is the single source of truth for all architecture governance.
 
-Write an ADR when any of the following is true:
-
-- A new external dependency or service is introduced (a new cloud service, AI provider, third-party SDK).
-- A technology is replaced (switching from one database, queue, or provider to another).
-- A module boundary changes (a module is split, merged, or a new bounded context is introduced).
-- A cross-cutting architectural pattern is established (a new pattern for error handling, auth, caching, or event processing that will be used across modules).
-- A decision that was previously informal becomes a standard (e.g., agreeing on a retry policy, connection pooling strategy, or API versioning scheme).
-
-### When an ADR is NOT Required
-
-- Implementation details within a module (how a function is structured, variable names, algorithm choice for an internal problem).
-- Library versions or minor tooling upgrades (unless they introduce a new architectural dependency).
-- UI component choices within the established design system.
-
-### Approval
-
-- ADRs must be reviewed by at least one other engineer before being marked Accepted.
-- Changes that affect two or more modules require a second reviewer.
-- The founding team reviews ADRs that introduce new cloud services or external cost implications.
-
-### ADR Lifecycle
-
-```text
-Proposed  -> under discussion, not yet in effect
-Accepted  -> decision made, in effect
-Superseded -> a later ADR replaces this one (link to successor)
-Deprecated -> no longer relevant (document why)
-```
-
-An ADR is never deleted. Superseded ADRs are kept for historical context.
-
-### What Triggers a Review of Existing Architecture
-
-The following events require reviewing affected ADRs and updating the Source of Truth table:
-
-- A module boundary changes.
-- A new building block is introduced.
-- A building block is extracted into a separate deployable service.
-- A managed service is replaced.
-- A principle is violated in practice and a deliberate exception is agreed.
+This section exists only as a pointer. Do not duplicate rules here.
 
 ---
 

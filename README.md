@@ -18,6 +18,7 @@ Product Design/
 │   ├── Operating_Principles.md  ← 10 guiding principles; company constitution
 │   └── Governance/
 │       ├── AI_Governance.md
+│       ├── Architecture_Governance.md
 │       ├── Risk_Register.md
 │       └── GDRs/                ← GDR-001, GDR-002, ...
 ├── Products/

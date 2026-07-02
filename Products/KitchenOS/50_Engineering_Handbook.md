@@ -362,3 +362,46 @@ BDD and TDD ensure the behaviours defined by the domain model remain correct as 
 
 ---
 
+## 42.6 AI-Native Documentation Principle
+
+> **Agents contain behavior, not policy. Policies belong to the knowledge system.**
+
+This is the foundational rule for how documentation is structured in an AI-native organisation.
+
+**What it means:**
+
+- Governance rules (when to write an ADR, who approves, what is required) live in governance documents under `Company/Governance/`. They do not live inside agent definitions.
+- Agent documents (`Agents/Architect.md`, `Agents/Product_Manager.md`, etc.) define *how the agent behaves* — its responsibilities, inputs, outputs, escalation rules, and which governance documents to consult.
+- An agent enforces policy. It does not own it.
+
+**Why this matters:**
+
+If governance rules were stored inside agent definitions, adding a second agent (Security Architect, Platform Architect, Senior Engineer) would require duplicating or cross-referencing the same rules. As the team — human or AI — grows, this creates fragmented, contradictory, and unmaintainable governance.
+
+With policy in the knowledge system:
+
+```text
+Company/Governance/Architecture_Governance.md
+        │
+        ├── referenced by → Agents/Architect.md
+        ├── referenced by → Agents/Engineering_Manager.md
+        ├── referenced by → future Security Architect Agent
+        ├── referenced by → human engineers
+        └── referenced by → Architecture_Review_Checklist.md
+```
+
+One document. One source of truth. Every actor references it.
+
+**The legal system analogy:**
+
+The law is not stored inside the police officer. The law exists independently. Police enforce it. Judges interpret it. Citizens follow it. This is how knowledge systems scale — and it applies equally to human teams and AI agent teams.
+
+**In practice:**
+
+When writing a new agent definition, ask: *"Am I defining behavior, or am I defining policy?"*
+
+- If behavior → write it in `Agents/[AgentName].md`.
+- If policy → write it in `Company/Governance/` and reference it from the agent.
+
+---
+
