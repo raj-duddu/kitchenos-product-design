@@ -5,6 +5,7 @@
 **Date:** YYYY-MM-DD
 **Deciders:** [Names or roles]
 **Stage Gate:** PDR → Stage 3 | UXDR → Stage 4 of Product Development Lifecycle
+**Operating Principles:** [Which of the 10 Operating Principles does this decision implement or trade off against? List by number and name. If it conflicts with a principle, document the conflict here.]
 
 ---
 
@@ -63,9 +64,10 @@ What does this decision explicitly exclude or defer?
 
 ## Related
 
-- `Knowledge/10_Product_Vision.md`, Section X
-- Related PRD: `Knowledge/30_PRDs/PRD-XXX.md`
+- `Products/KitchenOS/10_Product_Vision.md`, Section X
+- Related PRD: `Products/KitchenOS/30_PRDs/PRD-XXX.md`
 - Related PDR or UXDR: XXX-XXX
+- `Company/Operating_Principles.md` — which principles apply
 
 ---
 
@@ -80,6 +82,7 @@ status: accepted
 owner: product
 depends_on: []
 referenced_by: []
+operating_principles: []  # e.g. ["3. Inspire Confident Action", "8. We Are Stewards, Not Owners"]
 tags: []
 date: YYYY
 ---

@@ -321,6 +321,182 @@ This gives KitchenOS two advantages:
 - AI can learn from a sequence of actions, not only static pantry state.
 - Users can understand, trust, and reverse changes when something is wrong.
 
+### 8.10 Collect Only What Is Required to Improve the Experience
+
+> **Collect only the information required to improve the user's experience.**
+
+Not: collect everything because AI might use it later.
+
+Data minimisation is an engineering principle, not just a compliance posture. Every field in the data model should have a clear answer to: what recommendation or decision does this enable? If there is no clear answer, the field should not exist.
+
+Applied examples:
+
+- Store age range (25–35), not exact birth date. Nutrition estimation does not need a birthday.
+- Store role (Adult, Child), not name. Recommendations do not care who someone is called.
+- Allow optional local nicknames for display — but store nothing that identifies a person internally.
+- Allergies are stored because they affect safety. Height and weight are stored only if a nutrition goal requires them — and only on the member who set that goal.
+
+### 8.11 Four Layers: Identity, Person, Domain, Intelligence
+
+KitchenOS separates four distinct layers that are commonly conflated in simpler systems:
+
+```text
+Identity Layer     ← email, auth token, account recovery only
+        ↓
+Person Layer       ← stable domain facts: age group, allergies, goals, dietary restrictions
+        ↓
+Domain Layer       ← household, memberships, pantry, meals, shopping, receipts, budget
+        ↓
+Intelligence Layer ← AI-learned beliefs: cuisine affinity, habits, confidence scores
+```
+
+**Why this matters:**
+
+- **Identity ≠ Person.** A Person is a business entity. An Identity is an auth mechanism. The same person can sign in via Google or Apple — the Identity changes, the Person does not.
+- **Person ≠ Intelligence.** A Person's peanut allergy is a domain fact stated explicitly. A Person's 92% mushroom rejection rate is an AI-learned belief. They are fundamentally different kinds of knowledge. Domain facts are authoritative. Intelligence beliefs are probabilistic and replaceable.
+- **Breach isolation.** A breach of the intelligence layer exposes no domain facts. A breach of the domain layer exposes no auth data. The layers cannot be cross-joined to re-identify a person.
+
+The domain never depends on the intelligence layer. The intelligence layer depends on the domain. That dependency direction must never be reversed.
+
+### 8.13 AI Should Predict the Routine and Ask Only About the Exceptions
+
+> **AI should predict the routine and ask only about the exceptions.**
+
+This is the operational expression of "AI recommends, people decide." The Household Intelligence Model builds enough confidence over time that asking becomes rare — not because we removed confirmation, but because the AI already knows the answer with high confidence.
+
+**The three-layer cooking lifecycle:**
+
+```text
+MealRecommendation   ← AI output. Ephemeral. No commitment.
+                        "Chicken pasta for 4 tonight — 25 min, uses pantry."
+
+        ↓ user taps "Start Cooking"
+
+MealPlan             ← Committed intention. Confirmed participants and portions.
+                        "Cooking for everyone tonight? ✓ Yes  Edit"
+                        One tap if the AI is right. Editable if not.
+
+        ↓ cooking completes, user confirms
+
+MealSession          ← Reality. Actual portions, actual participants, leftovers.
+                        Pantry updated. Nutrition recorded. Household Timeline updated.
+```
+
+**Progressive disclosure rule:**
+- Show the recommendation immediately — no questions upfront.
+- Ask about participants only at "Start Cooking" — pre-filled from AI prediction.
+- Ask about portions and leftovers only at completion — pre-filled from actual cooking.
+- The AI fills in everything it can. The user corrects only what is wrong.
+
+**Confidence-based questioning:**
+
+| Confidence | Behaviour |
+|---|---|
+| ≥ 90% | Pre-fill silently. User can edit but is not prompted. |
+| 70–89% | Pre-fill with soft prompt: "Is everyone eating tonight?" |
+| < 70% | Ask explicitly before starting. |
+
+As household patterns establish, most weekday evenings reach ≥ 90% confidence within 4–6 weeks of use. The product becomes progressively less demanding over time.
+
+This principle directly supports the **meal planning in under 30 seconds** goal. The AI makes an informed assumption based on household patterns. The user only intervenes when tonight is different from the norm.
+
+### 8.14 Weekly Meal Planning: Strategy, Not Seven Recipes
+
+Most meal-planning apps generate seven recipes. KitchenOS generates a **weekly meal strategy** that adapts to the household as the week unfolds.
+
+**Goal: weekly meal planning in under 2 minutes.**
+
+```text
+Sunday evening
+
+KitchenOS proposes:
+
+  Monday Dinner    🍝 Chicken Pasta         For 4 · 25 min · uses pantry
+  Tuesday Dinner   🌮 Chicken Tacos         For 4 · 20 min
+  Wednesday Dinner 🍛 Lentil Curry          For 4 · 35 min
+  Thursday Dinner  🍲 Vegetable Soup        For 3 · 25 min (Adult 1 travels)
+  Friday           🍕 Family Pizza Night    Takeout suggested
+
+  [Accept Week]   [Edit]
+```
+
+One tap. Done. Every meal pre-filled with participants the AI already knows.
+
+**The week unfolds as a living plan, not a static document:**
+
+```text
+Tuesday morning — KitchenOS notices:
+  • Monday leftovers still available
+  • Bananas expiring in 2 days
+  • Calendar shows a late meeting Wednesday
+
+Proactive suggestion:
+  "Swap Wednesday's Lentil Curry with Thursday's Vegetable Soup?
+   Uses expiring ingredients and fits your Wednesday schedule better."
+  [Swap]  [Keep original]
+```
+
+**Each evening — lightweight execution:**
+
+```text
+6:10 PM notification:
+  "Tonight: Chicken Pasta"
+  Uses pantry · Ready in 25 min · For 4 people
+
+  [Start Cooking]  [Swap Meal]  [Skip Tonight]
+```
+
+**The closed loop:**
+
+```text
+Weekly Plan accepted
+        ↓
+Each evening: meal reminder shown
+        ↓
+User taps "Start Cooking" → MealSession created, participants confirmed
+        ↓
+Cooking completes, user confirms
+        ↓
+Pantry updated · Nutrition recorded · Leftovers tracked
+        ↓
+Learning Engine updates Household Intelligence Model
+        ↓
+Next week's plan is more accurate
+```
+
+**What makes this different:**
+- The plan is accepted once, not rebuilt nightly.
+- The AI assumes the household routine and asks only about exceptions.
+- Swaps are AI-suggested, not user-initiated.
+- The pantry and schedule inform every swap suggestion.
+- The loop closes: each completed meal improves the next week.
+
+### 8.12 Multiple Households, One Experience
+
+KitchenOS supports users who manage more than one household — a family home and a parents' home, a primary residence and a vacation property. This is handled without adding complexity to the primary experience.
+
+**The rule:**
+
+- **One household:** No switcher is ever shown. The app feels like "my kitchen."
+- **Two or more households:** A lightweight household switcher appears in the header — like switching workspaces in Slack.
+
+```text
+🏠 Home ▼
+
+  ✓ Home
+    Parents
+    Vacation Home
+```
+
+Switching household is an application-level action. It changes which household all subsequent actions are directed to. It does not modify any domain data. It does not require re-authentication.
+
+**Notifications for multi-household users** must include the household name to avoid confusion:
+
+> "Home: Your spinach expires tomorrow."
+> "Parents: Milk is running low."
+
+**Important distinction:** "Active Household" is a session concept, not a business concept. It exists while the user is using the app. It does not persist when the app is closed. The domain model — Household, HouseholdMembership, Pantry, Events — exists regardless of whether anyone is logged in. The application layer resolves the active household at login and holds it in session context. See `Knowledge/40_Technical_Architecture.md`, Section 23A.
+
 ---
 
 ## 9. Long-Term Vision
@@ -348,10 +524,54 @@ Later household operating system expansion areas:
 - Household inventory.
 - Appliance maintenance.
 - Family calendar integration.
+  - ability to get reminders about expiring items before vacation
+  - what kind of food choices to make on a road trip
+  - location based suggestions for nearby food options
 
 The architecture should support these future modules without redesigning the core system, but the product boundary should remain clear:
 
 > KitchenOS owns household food decisions first. Broader wellness and expert features should strengthen those food decisions, not replace the core product with a generic fitness, medical, or coaching platform.
+
+### 9A. The Amanaska Platform Architecture
+
+KitchenOS is the first product in a larger platform. The architectural decisions made here define the patterns all future Amanaska products will follow.
+
+The layered stack discovered through KitchenOS design is not KitchenOS-specific:
+
+```text
+Identity Layer       ← how you sign in (auth only)
+        ↓
+People Layer         ← who you are (Person, global facts)
+        ↓
+Relationship Layer   ← how you connect to groups (HouseholdMembership, teams, families)
+        ↓
+Domain Layer         ← what happens (events, activities, transactions, entities)
+        ↓
+Event Layer          ← immutable record of everything that occurred
+        ↓
+Intelligence Layer   ← what the system has learned (beliefs, patterns, confidence scores)
+        ↓
+Decision Layer       ← recommendations, guidance, safe suggestions
+        ↓
+Experience Layer     ← the product surface the person interacts with
+```
+
+This stack is product-agnostic. It could power:
+
+- **HealthOS** — Person + health events + health intelligence + care decisions
+- **FinanceOS** — Person + financial events + spending intelligence + budget decisions
+- **LearningOS** — Person + learning events + skill intelligence + curriculum decisions
+
+The key architectural principles that travel across all Amanaska products:
+
+- Identity is always isolated from domain and intelligence.
+- Person is always a domain concept, not an auth or AI concept.
+- Facts belong to the domain. Beliefs belong to the intelligence layer.
+- The domain never depends on the intelligence layer.
+- Pantry state (and equivalents in other products) is always derived from confirmed real-world activities, never from predictions.
+- Collective intelligence is always opt-in, never silent collection.
+
+KitchenOS establishes these principles in concrete form. Every future Amanaska product inherits them.
 
 ---
 
@@ -421,103 +641,258 @@ KitchenOS does not win by having more features. It wins by connecting the househ
 
 ---
 
-## 12. User Research and Personas
+## 12. Household Intelligence Profiles
 
-KitchenOS should be designed around household workflows, not isolated features.
+KitchenOS is not a static app with the same behaviour for everyone. The Household Decision Engine adapts to each household's context, goals, constraints, and habits. These profiles define not just who the users are, but **how KitchenOS must reason differently for each type of household**.
 
-Users do not wake up thinking:
+Each profile answers five questions:
 
-> I need to manage my pantry.
+1. **Primary Goal** — What are they trying to achieve?
+2. **Daily Friction** — What repeatedly gets in their way?
+3. **KitchenOS Must Understand** — What intelligence and context is required?
+4. **KitchenOS Behaviors** — What should the AI proactively do for this household?
+5. **Success Looks Like** — How does life measurably improve?
 
-They think:
+---
 
-- What should I cook tonight?
-- Do I need groceries?
-- Can I stay within budget?
-- What can I make with what I have?
-
-### 12.1 Persona 1: Busy Family
+### 12.1 Busy Family
 
 **Age range:** 35–50  
 **Household:** Parents with children  
-**Primary goal:** Spend less time managing groceries  
-**Priority:** Highest  
+**Priority:** Highest — largest household size, highest decision complexity, highest data richness
 
-Pain points:
+#### Primary Goal
 
-- Forgetting what is already at home.
-- Duplicate purchases.
-- Grocery budget pressure.
-- Kids changing plans.
-- Weekly meal planning stress.
+Spend less time managing food so more time is available for the family. Reduce the mental load of weekly meal planning, grocery trips, and budget tracking without sacrificing healthy meals.
 
-AI opportunities:
+#### Daily Friction
 
-- Predict shopping needs.
-- Generate weekly planning.
-- Forecast budget.
-- Alert on pantry issues.
+- Forgetting what is already at home leads to duplicate purchases.
+- Kids change their minds, making meal plans obsolete before the week starts.
+- Weekly meal planning takes 20–30 minutes and still produces suboptimal results.
+- Grocery budget is unpredictable across multiple store trips.
+- Multiple family members with different preferences, ages, and sometimes allergies must all be accommodated.
 
-### 12.2 Persona 2: Working Professional
+#### KitchenOS Must Understand
+
+- Full household member roster including children.
+- Per-member allergies, intolerances, and dietary preferences.
+- Weekly cooking schedule and who is home each night.
+- Current pantry state across all categories.
+- Historical shopping frequency and store preferences.
+- Budget envelope and spending pace.
+- Which meals the family actually completed versus abandoned.
+
+#### KitchenOS Behaviors
+
+KitchenOS should prioritize automation and approval over manual entry.
+
+> Your pantry is low on 6 staples. Based on this week's plan, you will likely need to shop by Thursday. Estimated cost: $52 at Costco.
+
+> Kids meal night is Tuesday. Here are three meals the whole family has eaten before — all allergy-safe, ready in under 30 minutes.
+
+> Priya has a peanut allergy. This recipe contains peanuts and has been removed from the suggestion list.
+
+> You planned 5 meals this week but only cooked 3. Two portions of chicken are expiring tomorrow. One 15-minute meal can use both.
+
+KitchenOS should generate a full weekly meal plan and shopping list that the family approves rather than builds from scratch.
+
+#### Success Looks Like
+
+- Weekly meal planning takes less than 5 minutes.
+- Duplicate grocery purchases drop by more than 50%.
+- Budget forecast accuracy is within 10% of actual spend.
+- No allergy-unsafe meal is ever suggested.
+- Family returns to the app every week as a household habit.
+
+---
+
+### 12.2 Working Professional
 
 **Age range:** 22–35  
-**Household:** Lives alone or with partner  
+**Household:** Lives alone or with a partner  
 
-Pain points:
+#### Primary Goal
 
-- Food expires unused.
-- Shopping is disliked.
-- Does not know what to cook.
-- Falls back to takeout.
+Eat home-cooked meals more often without spending time planning, shopping, or deciding what to cook. Reduce takeout frequency and food waste.
 
-Needs:
+#### Daily Friction
 
-- Fast recommendations.
-- Simple meal options.
-- Minimal effort.
-- Expiration alerts.
+- Food expires unused because consumption is irregular and unpredictable.
+- Shopping requires too many micro-decisions: what do I need, which store, is it worth going, what's on sale.
+- Not knowing what to cook is not a recipe problem — it is a recommendation problem that requires pantry, time, skill, and energy context.
+- Takeout is the path of least resistance when decision fatigue sets in after a long workday.
 
-### 12.3 Persona 3: Budget Household
+#### KitchenOS Must Understand
 
-**Primary goal:** Reduce grocery spending.
+- Pantry state and expiration patterns.
+- Consumption habits and how quickly items get used.
+- Available cooking time on different days.
+- Preferred cuisines and cooking skill level.
+- Grocery schedule and typical shopping day.
+- Takeout patterns, including frequency, cost, and trigger context.
+- Budget and weekly spend pace.
+- Nutrition goals if set.
 
-Needs:
+#### KitchenOS Behaviors
 
-- Price history.
-- Store comparison.
-- Coupons.
-- Budget tracking.
-- Spend analytics.
+KitchenOS should prioritize speed and proactive guidance over manual interaction.
 
-Example AI output:
+> You already have everything needed for a 15-minute dinner tonight.
 
-> Costco saves $14 this week.
+> Your spinach expires tomorrow. Two meals can use it — here is the faster one.
 
-### 12.4 Persona 4: Health-Focused Household
+> You worked late today. Here is a 12-minute dinner using what is already in your pantry.
 
-Needs:
+> Ordering takeout tonight would put you over your weekly food budget. You can cook this in about the same time.
 
-- Nutrition tracking.
-- Protein goals.
-- Calorie awareness.
-- Meal prep.
-- Health-aware shopping.
+> You have not shopped in 8 days. Pantry confidence is dropping. Here are 3 meals you can still make, and a short shopping list for tomorrow.
 
-Future opportunity:
+KitchenOS should eliminate shopping micro-decisions by generating a ready-to-go list based on what is running low and what meals are planned.
 
-- Nutrition Coach AI.
+#### Success Looks Like
 
-### 12.5 Persona 5: Cooking Enthusiast
+- Eats home-cooked meals at least four nights a week.
+- Takeout frequency drops by half.
+- Less than 10 minutes per week spent on meal planning.
+- Food waste drops noticeably within the first month.
+- Never opens the app unsure of what to cook tonight.
 
-Needs:
+---
 
-- Recipes.
-- Cook Mode.
-- Ingredient substitutions.
-- Voice assistant.
-- Meal planning.
+### 12.3 Budget Household
 
-This user spends the most time inside Cook Mode.
+#### Primary Goal
+
+Reduce grocery spending without sacrificing healthy, satisfying meals. Understand where money is going and prevent overspending before it happens.
+
+#### Daily Friction
+
+- Budget is set but never tracked in real time — overspending is only discovered after the fact.
+- No visibility into whether a shopping trip is better at one store vs another.
+- Impulse purchases at the store are not connected to pantry or meal reality.
+- Expensive items are repurchased unnecessarily when equivalent items are already at home.
+
+#### KitchenOS Must Understand
+
+- Household grocery budget and spend pace.
+- Price history per item and per store.
+- Shopping frequency and store preferences.
+- Which items are purchased habitually versus occasionally.
+- Pantry state — what is already available before generating a shopping list.
+- Spending anomalies and pattern changes.
+- Which meals deliver the best nutrition-to-cost ratio for this household.
+
+#### KitchenOS Behaviors
+
+KitchenOS should make the budget visible before it is exceeded, not after.
+
+> Buying produce at Aldi and pantry items at Costco would likely save you about $18 this week.
+
+> You have already spent $84 this week. Based on your plan, you are on track to finish $11 under budget.
+
+> Chicken thighs are $2.10 less per kilogram at Costco this week compared to your usual store.
+
+> You already have chickpeas, rice, and spinach. These 4 meals need no additional shopping and would cost you nothing this week.
+
+> Unusual spend detected: grocery spend is 40% higher than your last four weeks. Three bulk purchases at Costco account for most of it.
+
+#### Success Looks Like
+
+- Monthly grocery spend drops by 15–25% within the first two months.
+- Budget overruns become rare rather than routine.
+- Shopping trips become more targeted and less impulsive.
+- Household can see, in plain language, where food money goes each week.
+
+---
+
+### 12.4 Health-Focused Household
+
+#### Primary Goal
+
+Eat meals aligned with individual health and nutrition goals without turning every meal into a calorie-counting exercise. Make healthy eating the default, not a manual discipline.
+
+#### Daily Friction
+
+- Individual members have different goals — one wants muscle gain, another wants weight reduction — making shared meal planning difficult.
+- Nutrition-aware cooking requires checking labels, calculating macros, and researching substitutions, which is too much effort daily.
+- Healthy intentions break down under time pressure and decision fatigue.
+- Allergy and dietary constraints interact with nutrition goals in complex ways that are hard to reason about manually.
+
+#### KitchenOS Must Understand
+
+- Individual nutrition goals per household member.
+- Goal hierarchy: safety and medical constraints come before optimization.
+- Which meals and ingredients align or conflict with each member's goals.
+- Pantry state and which available ingredients support or undermine current goals.
+- Cooking skill and time availability — healthy eating must remain practical.
+- Progress signals: are goal-supporting meals actually being cooked?
+
+#### KitchenOS Behaviors
+
+KitchenOS should translate goals into concrete meal and shopping actions — not dashboards.
+
+> Suggested: Paneer quinoa bowl. High protein, uses spinach and yogurt already in pantry. Supports Raj's muscle gain goal. Safe for all household members.
+
+> Priya's weight reduction goal: this week's plan includes 4 high-satiety, lower-calorie dinners using ingredients already at home.
+
+> Greek yogurt is running low. It is a key protein source for Raj's goal. Add to shopping list?
+
+> Base meal tonight: chicken rice bowl. Raj: add extra chicken and yogurt side. Priya: reduce rice, add salad. Arjun: standard portion, mild sauce.
+
+KitchenOS should resolve goal conflicts through shared base meals with individual modifiers rather than generating separate plans per person.
+
+#### Success Looks Like
+
+- Goal-aligned meals become the household default without requiring daily effort.
+- No unsafe or goal-conflicting meal is ever suggested.
+- Individual members see their goals reflected in what is actually cooked, not just planned.
+- Household does not need a separate nutrition app to eat with intention.
+
+---
+
+### 12.5 Cooking Enthusiast
+
+#### Primary Goal
+
+Cook more ambitiously, discover new recipes, and use the full range of ingredients available at home. Make Cook Mode the richest part of the experience.
+
+#### Daily Friction
+
+- Finding recipes that match both skill level and exact pantry contents is time-consuming.
+- Ingredient substitutions require external research when one item is missing.
+- Ambitious meals require planning ahead — but the planning is scattered across recipe apps, notes, and memory.
+- No single system connects ingredient availability, recipe selection, meal planning, and cooking execution.
+
+#### KitchenOS Must Understand
+
+- Cooking skill level and preferred cuisines.
+- Pantry state at ingredient level — what is available, in what quantity, and when it expires.
+- Cooking history — which recipes have been completed, modified, or abandoned.
+- Ingredient substitution knowledge for common missing items.
+- Time available for cooking on different days.
+- Interest in new ingredients and cuisine exploration.
+
+#### KitchenOS Behaviors
+
+KitchenOS should act as a knowledgeable cooking companion, not just a step-by-step executor.
+
+> You have 94% of the ingredients for Chicken Tikka Masala. The only missing item is heavy cream — Greek yogurt works as a substitute.
+
+> You have not cooked Italian this month. Based on your pantry, here are 3 Italian recipes you can make tonight.
+
+> Your saffron has been in the pantry for 9 months and expires soon. Here are two recipes that would use it well.
+
+> Cook Mode is ready. Tonight: Palak Dal. Estimated time: 28 minutes. Steps adjusted for 4 servings.
+
+This household spends the most time inside Cook Mode. The product should reward depth — better suggestions, richer substitution guidance, and a growing recipe history that reflects what the household actually enjoys cooking.
+
+#### Success Looks Like
+
+- Cooks more varied, ambitious meals without external recipe research.
+- Uses pantry ingredients more fully and creatively.
+- Cook Mode becomes the primary cooking companion, replacing recipe apps.
+- Household builds a personal recipe history that gets better over time.
 
 ---
 
@@ -1665,6 +2040,35 @@ Users should feel:
 
 The first five minutes define retention.
 
+### 50.0 Household Auto-Creation
+
+A household is never something the user sets up manually. It is created automatically the moment a new account is confirmed.
+
+```text
+Sign up
+  → Identity created (identities table)
+  → Default household auto-created (households table)
+  → User added as first household member — Adult 1, role: admin
+  → Onboarding begins inside that household context
+```
+
+The user never sees a "create household" step. They just start using the app. A person living alone is a household of one. If they later invite a partner or family member, that person joins the existing household — no migration required.
+
+**If the user abandons onboarding early:**
+The household and default member record still exist. The system operates in a low-confidence state — generic suggestions, no allergy rules, no goals. The home screen guides them toward the next useful action rather than showing an empty state. Context accumulates as they use the product.
+
+**Household confidence state at sign-up:**
+
+| What exists | What is unknown |
+|---|---|
+| Household ID | Pantry contents |
+| Member ID (Adult 1) | Allergies and dietary restrictions |
+| Auth identity | Goals |
+| | Preferred stores |
+| | Budget |
+
+The Household Intelligence Model starts empty and builds from first use. Every receipt scan, meal cooked, or preference confirmed raises confidence. The product must be useful before confidence is high — not after.
+
 KitchenOS should not assume it has enough context on day one. Onboarding should offer three cold-start paths.
 
 ### 50.1 Receipt-First Path
@@ -1727,6 +2131,196 @@ System updates:
 - Suggestions.
 - Shopping list.
 - Household Timeline.
+
+---
+
+## 50A. Household Intelligence Model
+
+> The Household Intelligence Model is the AI's continuously evolving understanding of a household. It combines explicit profile information, observed behaviours, learned preferences, contextual signals, and confidence scores to produce personalised guidance.
+
+This is not a user profile. It is not a settings screen. It is how KitchenOS reasons about a household — and it starts forming on day one.
+
+### Three Layers That Must Not Be Confused
+
+**Layer 1 — Domain Model (Business Facts)**
+
+The Domain Model stores what *is*. Facts. Entities. Events.
+
+```text
+Milk
+  Quantity: 2 litres
+  Expiration: June 10
+  Added by: receipt_scan
+```
+
+No AI here. No inference. Just recorded truth.
+
+**Layer 2 — Household Intelligence Model (AI Beliefs)**
+
+The Intelligence Model stores what the AI *thinks* — beliefs derived from observed behaviour, weighted by confidence.
+
+```text
+Milk consumption
+  Estimated cycle: every 8 days
+  Confidence: 91%
+  Evidence: 14 purchase events, 6 cook completions using milk
+```
+
+This is completely different from the Domain Model. One is factual. One is inferred.
+
+**Layer 3 — User Profile (Account Identity)**
+
+The User Profile is small and static — name, email, timezone, notification settings, privacy settings. It belongs to Account Management, not to intelligence.
+
+These three layers must stay separate. The Domain Model should contain no AI-specific concepts. The Intelligence Model should contain no business domain logic.
+
+---
+
+### The Three Stages of Learning
+
+KitchenOS does not ask users to configure an intelligence model. It builds one progressively.
+
+**Stage 1 — Explicit Knowledge (Onboarding)**
+
+Ask only the minimum needed to provide value immediately. These are questions the AI cannot safely infer on its own.
+
+| What to ask | Why |
+|---|---|
+| Household size (adults, children) | Cannot be inferred reliably at the start |
+| Allergies and dietary restrictions | Safety-critical — never guess |
+| Primary goal (eat healthier, save money, reduce waste, save time, manage medical diet) | Personal intention — must be stated |
+| Cooking skill level (beginner, comfortable, experienced) | Calibrates recipe complexity from day one |
+| Preferred stores | Bootstraps shopping suggestions before behavior data exists |
+
+Do not ask during onboarding:
+- Favorite cuisine — learn it.
+- Preferred shopping day — learn it.
+- Typical cooking time — learn it, then confirm if needed.
+- Whether they like mushrooms — learn it, then ask if unsure.
+
+> **Rule: Ask only what the AI cannot reasonably learn on its own.**
+
+This keeps onboarding short, reduces abandonment, and reinforces from the first minute that KitchenOS is an intelligent assistant — not a questionnaire.
+
+**Stage 2 — Behavioural Learning**
+
+The AI observes without asking.
+
+```text
+Observed signals:
+  Always skips fish recipes
+  Buys bananas every week
+  Shops at Costco roughly monthly
+  Cooks on Sundays
+  Orders takeout on Fridays
+  Never finishes lettuce
+  Consistently rejects spicy meals
+```
+
+None of these were asked. All were learned. Behavioural signals are far more accurate than self-reported preferences, which go stale or are given carelessly during onboarding.
+
+**Stage 3 — Confidence-Based Intelligence**
+
+Instead of storing static preferences, KitchenOS stores probabilistic beliefs with evidence.
+
+```text
+Indian cuisine
+  Confidence: 94%
+  Evidence: 57 recipes accepted, 42 grocery purchases, 18 restaurant orders
+
+Typical weekday cooking time
+  Estimate: 18 minutes
+  Confidence: 89%
+  Evidence: 31 completed sessions
+
+Milk consumption cycle
+  Estimate: 8 days
+  Confidence: 91%
+  Evidence: 14 purchase events
+```
+
+This model evolves continuously. It is never finished.
+
+---
+
+### Household Intelligence Model Structure
+
+```text
+Household Intelligence Model
+│
+├── Static Facts (from onboarding)
+│   ├── Household size
+│   ├── Allergies and restrictions
+│   ├── Goals
+│   └── Initial preferences (stores, skill)
+│
+├── Learned Preferences (from behaviour)
+│   ├── Favourite cuisines
+│   ├── Cooking time patterns
+│   ├── Shopping habits
+│   ├── Pantry depletion rates
+│   └── Meal acceptance and rejection patterns
+│
+├── Current Context (live signals)
+│   ├── Pantry state
+│   ├── Budget and spend pace
+│   ├── Season and weather
+│   └── Calendar (if integrated)
+│
+└── Confidence Scores
+    (attached to every learned preference)
+```
+
+---
+
+### Transparency: KitchenOS Knows...
+
+Every learned preference must be explainable, editable, and resettable by the user. The AI is not a black box.
+
+Example transparency screen under Household settings:
+
+```text
+KitchenOS has learned...
+
+✓ You usually cook on Sundays.
+  [Confirm] [Edit] [Forget]
+
+✓ You prefer quick meals on weekdays — under 20 minutes.
+  [Confirm] [Edit] [Forget]
+
+✓ You shop at Costco roughly once a month.
+  [Confirm] [Edit] [Forget]
+
+✓ You rarely finish spinach before it expires.
+  [Confirm] [Edit] [Forget]
+
+✗ You avoid spicy food.
+  [Confirm] [Edit] [Forget]
+```
+
+When the AI is unsure, it asks — but only after observing enough signals to make the question useful.
+
+> After two months: "I have noticed you skip mushroom recipes. Should I recommend them less often?"
+
+This ties directly to the product principle: **Trust is earned through transparency.**
+
+---
+
+### Relationship to the Household Decision Engine
+
+The Household Intelligence Model is the reasoning layer that sits inside the Household Decision Engine.
+
+```text
+Household Decision Engine
+  │
+  ├── Domain Model  ←  business facts (pantry, events, receipts)
+  │
+  ├── Household Intelligence Model  ←  AI beliefs (patterns, preferences, confidence)
+  │
+  └── Recommendation Engine  ←  uses both to produce guidance
+```
+
+Full architectural specification: `Knowledge/40_Technical_Architecture.md`, Section 24A.
 
 ---
 
@@ -1819,6 +2413,150 @@ Events
 ```
 
 That is KitchenOS.
+
+---
+
+## 54A. Collective Intelligence and Strategic Moat
+
+KitchenOS improves as more households use it.
+
+This is not a tagline. It is an architectural property — and it is the most defensible long-term moat available to the platform.
+
+### The Two Intelligence Models
+
+KitchenOS operates with two distinct intelligence layers that work together.
+
+**Household Intelligence Model**
+
+Learns from one household:
+
+- My pantry habits.
+- My goals.
+- My cooking style.
+- My shopping patterns.
+- My budget behaviour.
+
+This is personal. It stays within the household context.
+
+**Collective Intelligence Model**
+
+Learns from all participating households:
+
+- Regional grocery prices and price trends.
+- Seasonal availability and cost patterns.
+- Recipe success rates by household type.
+- Pantry depletion rates by item category.
+- Food waste patterns.
+- Shopping behaviour patterns.
+- Recommendation acceptance and rejection rates.
+
+This is aggregated and anonymised. It never exposes individual households.
+
+**The Recommendation Engine combines both.**
+
+```text
+Household Intelligence Model
+        +
+Collective Intelligence Model
+        ↓
+Recommendation Engine
+        ↓
+Personalised guidance for this household
+```
+
+A recommendation is personalised to what this household prefers, and calibrated by what thousands of similar households have learned.
+
+---
+
+### Why This Is a Strategic Moat
+
+A price comparison feature can be copied in a sprint.
+
+A Collective Intelligence Model built from millions of household events over years cannot be copied. The data, the training signal, the learned patterns — they compound with every new household, every new receipt scan, every meal cooked.
+
+This is the same pattern that made Google Maps better than MapQuest, Waze better than static GPS, and Spotify recommendations better than radio. The product improves not just from engineering — but from use.
+
+KitchenOS gets a stronger competitive position every week it runs.
+
+---
+
+### Company-Level Architectural Pattern
+
+This intelligence architecture is not specific to food. It is a pattern Amanaska can apply to every future product.
+
+```text
+KitchenOS
+  Personal Food Intelligence  +  Collective Food Intelligence
+
+Amanaska Health (future)
+  Personal Health Intelligence  +  Collective Health Intelligence
+
+Amanaska Finance (future)
+  Personal Financial Intelligence  +  Collective Financial Intelligence
+
+Amanaska Learning (future)
+  Personal Learning Intelligence  +  Collective Learning Intelligence
+```
+
+The Household Intelligence Model and Collective Intelligence Model are a company-level architectural pattern, not a KitchenOS feature.
+
+---
+
+### Consent Principle
+
+> **Collective intelligence is built through informed participation, never silent collection.**
+
+This is a company principle, not an implementation detail.
+
+Implementation:
+
+- **Default:** All household data is private. Nothing contributes to the collective model without explicit opt-in.
+- **Opt-in framing:** "Help improve recommendations for everyone — including yours."
+- **What is shared:** Anonymised, non-identifiable observations only.
+- **What is never shared:** Names, emails, household identities, or any data that can be traced back to a specific household.
+- **Granularity:** Item-level observations are permitted — because the learning value requires them — but only when stripped of all identifying context.
+- **Transparency:** Users can see which categories of observations are being shared.
+- **Control:** Users can opt out at any time. Opting out stops future contributions and removes previously contributed observations from the learning pipeline.
+
+### What an Anonymised Observation Looks Like
+
+```text
+Price observation
+  Item:     Organic Whole Milk
+  Store:    Costco
+  Region:   Austin Metro
+  Price:    $3.99
+  Month:    July 2026
+```
+
+No household identifier. No name. No purchase date. No quantity. Just a useful signal.
+
+```text
+Recipe observation
+  Recipe:          Chicken Stir Fry
+  Accepted:        Yes
+  Cook time:       22 minutes
+  Household type:  2 adults
+  Region:          Texas
+```
+
+Again — useful for collective learning. Nothing that identifies a person.
+
+The distinction that matters is not item-level versus aggregate. It is **identifiable versus non-identifiable**.
+
+---
+
+### Price Intelligence Phases
+
+| Phase | Price data source |
+|---|---|
+| MVP-0 | Receipt-derived only. Personal price history per household. "You paid $3.49 for milk last time at Costco." |
+| MVP-1 | Collective price observations from opted-in households. "Milk at Costco is averaging $3.79 in your region this month." |
+| Post-MVP | Grocery API partnerships where available to supplement collective data with real-time shelf prices. |
+
+The Collective Intelligence Model is the primary long-term price strategy. Grocery API partnerships are supplementary, not foundational.
+
+Full architectural specification: `Knowledge/40_Technical_Architecture.md`, Section 36A.
 
 ---
 

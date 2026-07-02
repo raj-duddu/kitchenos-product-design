@@ -4,6 +4,7 @@
 **Date:** YYYY-MM-DD
 **Deciders:** [Names or roles]
 **Stage Gate:** Stage 5 of Product Development Lifecycle
+**Operating Principles:** [Which of the 10 Operating Principles does this decision implement or trade off against? List by number and name. If it conflicts with a principle, document the conflict here.]
 
 ---
 
@@ -64,8 +65,9 @@ Description and why it was rejected.
 ## Related
 
 - Links to relevant documents, PRDs, or other ADRs.
-- `Knowledge/40_Technical_Architecture.md`, Section X
+- `Products/KitchenOS/40_Technical_Architecture.md`, Section X
 - ADR-XXX: [Related decision]
+- `Company/Operating_Principles.md` — which principles apply
 
 ---
 
@@ -80,6 +82,7 @@ status: accepted
 owner: architecture
 depends_on: []
 referenced_by: []
+operating_principles: []  # e.g. ["0. Start with Real Problems", "7. Truth Before Convenience"]
 tags: []
 date: YYYY
 ---
