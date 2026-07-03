@@ -62,6 +62,17 @@ Description and why it was rejected.
 
 ---
 
+## History
+
+Every state change gets a row. The PR is the evidence; this table is the readable record (see `Company/Governance/Architecture_Governance.md`, Recording State Changes).
+
+| Date | Change | By | Evidence |
+|---|---|---|---|
+| YYYY-MM-DD | Proposed | [author — role and/or person] | PR #N |
+| YYYY-MM-DD | Accepted | [reviewer — never the author] | PR #N review |
+
+---
+
 ## Related
 
 - Links to relevant documents, PRDs, or other ADRs.

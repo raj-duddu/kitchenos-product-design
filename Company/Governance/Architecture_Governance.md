@@ -100,6 +100,15 @@ Deprecated → no longer relevant (document why)
 
 An ADR is never deleted. Superseded ADRs are kept for historical context. They are part of the audit trail.
 
+### Recording State Changes
+
+Every state change is recorded in two places, with a clear division of roles:
+
+- **The record itself is the authoritative account.** The `status:` frontmatter holds the current state. A **History** section (see the decision-record templates) logs every transition — date, change, who made it, and the evidence link. A decision record must be readable in isolation: knowing who accepted it and when must never require access to GitHub.
+- **The pull request is the ceremony and the evidence.** A state change ships as a PR that flips the frontmatter, updates the record header, and adds the History row. The required review on that PR (enforced by CODEOWNERS and branch protection) is what satisfies "no single person approves their own ADR" — the reviewer's approval on the PR *is* the acceptance act, and the History row records its outcome.
+
+If the History section and the PR trail ever disagree, the PR trail is the evidence and the History section is corrected to match it.
+
 ---
 
 ## ADR Quality Requirements
