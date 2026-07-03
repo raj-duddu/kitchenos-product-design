@@ -35,13 +35,13 @@ date: 2026
 ### 42.3 AI
 
 - OpenAI API or Gemini API for recipe generation and simple suggestions, called through an abstraction interface.
-- Cloud Vision API for receipt OCR.
+- Multimodal LLM for receipt Document Understanding, called through the same abstraction interface (ADR-012). Model selection per AI Governance Model Evaluation.
 - No full orchestration layer in MVP-0.
 
 ### 42.4 Storage
 
 - Cloud Storage for receipt images and attachments.
-- Cloud Tasks for async OCR job queue.
+- Cloud Tasks for the async Document Understanding job queue.
 - Secret Manager for all API keys and credentials.
 
 See Section 37.6 for the full cloud infrastructure architecture and service map.
@@ -290,7 +290,7 @@ And:    Lower-cost alternatives for the same meal type are preferred
 
 ```text
 Given:  Receipt from Whole Foods on Monday at 9:14am already imported
-When:   Same receipt is scanned again (same store, date, OCR hash match)
+When:   Same receipt is scanned again (same store, date, extraction hash match)
 Then:   Receipt is flagged as duplicate, not imported
 And:    Pantry is not updated again
 And:    Household Timeline: "Duplicate receipt detected and skipped"

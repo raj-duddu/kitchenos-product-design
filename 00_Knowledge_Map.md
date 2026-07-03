@@ -519,7 +519,7 @@ Follow this sequence when joining the KitchenOS team:
 
 ## Architecture Building Blocks
 
-The reusable architectural components — Household Decision Engine, Allergy Guard, Sync Engine, Household Timeline, AI Provider Abstraction, Receipt OCR Pipeline, Notification Engine, Domain Event Bus — are defined in one place:
+The reusable architectural components — Household Decision Engine, Allergy Guard, Sync Engine, Household Timeline, AI Provider Abstraction, Document Understanding, Notification Engine, Domain Event Bus — are defined in one place:
 
 > **`Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10** is the single source of truth for building blocks and their responsibilities.
 
@@ -639,3 +639,4 @@ Rules:
 4. ADRs explain *why*, not *how*. Implementation details belong in architecture.
 5. Documentation evolves with the product and is treated as part of the codebase.
 6. The glossary is the canonical language. Use it in code, commits, tickets, and conversations.
+7. **Two classes of artifact, two evolution rules.** *Records* (ADRs, PDRs, UXDRs, GDRs) are the event log of decisions: append-only — annotate forward, never edit backward (see `Company/Governance/Architecture_Governance.md`, Recording State Changes and Amendments). *Living documents* (Vision, Domain Model, Architecture, Handbook, this map) are projections of current truth: edited in place, updated when the records that justify them change. The same philosophy as our event-sourced product: events are immutable, state is derived.

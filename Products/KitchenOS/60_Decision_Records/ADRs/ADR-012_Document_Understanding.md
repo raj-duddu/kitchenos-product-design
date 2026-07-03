@@ -5,7 +5,7 @@ type: adr
 status: accepted
 owner: architecture
 depends_on: [ADR-010, GDR-002, GOV-001]
-referenced_by: []
+referenced_by: [DOC-010, DOC-020, DOC-040, DOC-050]
 operating_principles: ["1. Transform Complexity into Clarity", "4. AI Recommends. People Decide.", "5. Earn Trust Through Transparency", "6. Learn Continuously", "9. Simplicity Is a Feature"]
 tags: [receipts, ocr, document-understanding, llm, multimodal, ai-pipeline, pantry, privacy]
 date: 2026
@@ -120,6 +120,7 @@ As decided above.
 
 ## Related
 
+- ADR-001, ADR-002 — this record amends the Cloud Vision elements of their rationale (Flutter and GCP decisions unaffected)
 - ADR-010 — Pantry state derived exclusively from confirmed activities (the confirmation gate this capability feeds)
 - GDR-002 / `Company/Governance/GDRs/GDR-002_Privacy_By_Design.md` — external processing and data minimisation constraints
 - `Company/Governance/AI_Governance.md` — Model Evaluation (owns model selection), Confidence and Explanation Requirements, AI Quality Metrics

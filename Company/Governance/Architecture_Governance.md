@@ -13,6 +13,7 @@ enforced_required_sections: [Context, Decision, Alternatives Considered, Consequ
 enforced_decision_statuses: [proposed, accepted, superseded, deprecated]
 enforced_principles_field: operating_principles
 enforced_no_delete_dirs: [60_Decision_Records, GDRs]
+enforced_history_section: History
 ---
 
 # Architecture Governance
@@ -49,6 +50,7 @@ The `enforced_*` fields in this document's frontmatter are the parameters CI enf
 | `enforced_decision_statuses` | ADR Lifecycle — legal status values |
 | `enforced_principles_field` | Every decision record cites Operating Principles |
 | `enforced_no_delete_dirs` | ADR Lifecycle — records under these directories are never deleted, only Superseded or Deprecated |
+| `enforced_history_section` | Recording State Changes — every decision record carries a History log of its state transitions |
 
 ---
 
@@ -108,6 +110,21 @@ Every state change is recorded in two places, with a clear division of roles:
 - **The pull request is the ceremony and the evidence.** A state change ships as a PR that flips the frontmatter, updates the record header, and adds the History row. The required review on that PR (enforced by CODEOWNERS and branch protection) is what satisfies "no single person approves their own ADR" — the reviewer's approval on the PR *is* the acceptance act, and the History row records its outcome.
 
 If the History section and the PR trail ever disagree, the PR trail is the evidence and the History section is corrected to match it.
+
+CI enforces the presence of the History section (`enforced_history_section`): an error for records changed in a pull request, a warning for pre-existing records until they are backfilled.
+
+### Amendments (Partial Supersession)
+
+A later record sometimes overtakes part of an earlier record's *rationale or context* without touching its *decision*. That is an **amendment**, not a supersession:
+
+- A dated amendment note is added directly below the earlier record's header, in the standard form — every amendment reads identically for humans and parses identically for agents:
+
+  > **Amended YYYY-MM-DD by ADR-XXX** — scope: [what is overtaken]; decision: unchanged. [One-sentence summary.] See History.
+- A History row records the amendment.
+- The earlier record's `referenced_by` gains the later record, so impact analysis flows in both directions.
+- The original text is never edited — it remains what was true at decision time.
+
+If the *decision itself* is overtaken, that is supersession: the whole record moves to `superseded` with a link to its successor.
 
 ---
 

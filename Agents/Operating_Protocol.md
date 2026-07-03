@@ -59,6 +59,17 @@ These apply to every role, in addition to the role manual's specific escalation 
 
 ---
 
+## Working with Records and Living Documents
+
+Documentation Philosophy rule 7 (`00_Knowledge_Map.md`) divides every artifact into two classes. Every role treats them oppositely:
+
+- **Decision records** (types listed in `enforced_decision_types`, `Company/Governance/Architecture_Governance.md`): append and annotate only — History rows, amendment notes, `referenced_by` edges, lifecycle status changes via the PR ceremony. Never rewrite accepted content. A role asked to "fix" or "update" an accepted record's substance escalates: the correct instrument is an amendment or a superseding record.
+- **Living documents** (everything else governed): the duty runs the other way — keep them current. Edit, simplify, reorganize, remove obsolete content through the normal PR flow. When a record is accepted or amended, update every living document it affects in the acceptance follow-up; a living document that lags its records is a defect, not history.
+
+Which class a document belongs to is derived from its `type:` frontmatter — it is never declared separately.
+
+---
+
 ## Relationship to Other Documents
 
 | Document | Relationship |
