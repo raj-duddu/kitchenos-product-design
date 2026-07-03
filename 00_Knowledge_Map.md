@@ -462,6 +462,7 @@ Canonical vocabulary has two homes — link to them, do not copy definitions:
 |---|---|
 | KitchenOS domain terms (Household, Pantry, Domain Event, Allergy Guard, …) | `Products/KitchenOS/20_Domain_Model.md`, Ubiquitous Language |
 | Company-wide pattern and governance terms (DDD, Event Sourcing, Four-Layer Model, …) | `Knowledge/Glossary.md` |
+| Shared cross-product entities (Person, Identity, ConsentGrant) — schema and rules | `Knowledge/Canonical_Data_Model.md` |
 
 Use these exact terms in code, tickets, tests, and documentation. Do not invent synonyms.
 
