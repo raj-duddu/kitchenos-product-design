@@ -84,7 +84,7 @@ Product Design/
 > - `Platform/` — shared services (Identity, AI Platform, Billing, Notifications) extracted when a second product is built
 > - `Company/Vision.md`, `Company/Mission.md`, `Company/Brand.md` — add when content exists
 > - KitchenOS sub-folders (`Vision/`, `Architecture/`, `Engineering/`) — add when the product folder gets crowded
-> - `Process/` expansion — `Architecture_Process.md`, `PRD_Process.md`, `Release_Process.md`, etc. — add as processes are defined
+> - `Process/` expansion — if a lifecycle stage's detail outgrows `Process/Product_Development_Lifecycle.md`, split that stage into its own process document. Do not pre-create. (Architecture process needs no such document: rules live in `Company/Governance/Architecture_Governance.md`, the stage sequence in PDL Stage 5, review mechanics in `Templates/Architecture_Review_Checklist.md`, enforcement in `Process/Quality_Gates.md`.)
 
 ---
 
