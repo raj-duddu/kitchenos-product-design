@@ -84,7 +84,8 @@ Product Design/
 > - `Platform/` — shared services (Identity, AI Platform, Billing, Notifications) extracted when a second product is built
 > - `Company/Vision.md`, `Company/Mission.md`, `Company/Brand.md` — add when content exists
 > - KitchenOS sub-folders (`Vision/`, `Architecture/`, `Engineering/`) — add when the product folder gets crowded
-> - `Process/` expansion — if a lifecycle stage's detail outgrows `Process/Product_Development_Lifecycle.md`, split that stage into its own process document. Do not pre-create. (Architecture process needs no such document: rules live in `Company/Governance/Architecture_Governance.md`, the stage sequence in PDL Stage 5, review mechanics in `Templates/Architecture_Review_Checklist.md`, enforcement in `Process/Quality_Gates.md`.)
+> - `Process/` expansion — if a lifecycle stage's detail outgrows `Process/Product_Development_Lifecycle.md`, split that stage into its own process document. Do not pre-create.
+> - Typed frontmatter relationships (`enforces:`, `governs:`, `produces:` instead of flat `depends_on:`) — adopt only when a real query cannot be answered by the flat graph plus search. Designing the relationship taxonomy before the queries exist produces the wrong taxonomy. (Architecture process needs no such document: rules live in `Company/Governance/Architecture_Governance.md`, the stage sequence in PDL Stage 5, review mechanics in `Templates/Architecture_Review_Checklist.md`, enforcement in `Process/Quality_Gates.md`.)
 
 ---
 
@@ -632,6 +633,7 @@ The Knowledge Service API (queryable by AI agents over HTTP) is a post-product-v
 Rules:
 
 1. Every concept has one authoritative home. Link to it. Do not copy it.
+   **Local context is allowed. Normative content is not.** A document may summarise where it sits ("I own Stage 5") to stay readable in isolation — it must never restate rules, gate criteria, definitions, or thresholds owned elsewhere. Context helps the reader; authority stays singular. Where a local summary exists, declare which document wins on disagreement.
 2. Documents link upward to strategy and downward to implementation.
 3. Requirements are traceable to architecture and tests.
 4. ADRs explain *why*, not *how*. Implementation details belong in architecture.
