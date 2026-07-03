@@ -4,7 +4,7 @@ title: KitchenOS Domain Model
 type: domain-model
 status: active
 owner: architecture
-depends_on: []
+depends_on: [KNOW-002, ADR-004, ADR-010, ADR-011, PDR-007, PDR-008, PDR-009]
 referenced_by: [DOC-010, DOC-040, DOC-050, ADR-004]
 tags: [domain-model, ddd, bounded-contexts, aggregates, entities, domain-events, ubiquitous-language, event-sourcing, household, pantry, shopping, marketplace]
 date: 2026
@@ -34,7 +34,7 @@ These terms have precise meanings within KitchenOS. Use them exactly as defined.
 | **WeeklyMealPlan** | The household's committed meal strategy for a week. Contains a collection of MealPlans, one per meal slot. Accepted in a single user action ("Accept Week"). No pantry change on acceptance — only MealSessions produce pantry events. The weekly plan is a living document: it adapts as pantry, leftovers, and schedules change. |
 | **MealRecommendation** | An ephemeral AI output: a suggested meal with predicted participants, portions, and confidence score. Creates no commitment. No pantry change. Discarded if rejected or ignored. The Planning Layer. |
 | **MealPlan** | A committed intention: a single meal the household plans to cook. Always belongs to a WeeklyMealPlan or created standalone. Contains confirmed participants and planned portions. Creates no pantry change — that only happens when a MealSession completes. The Intention Layer. |
-| **MealSession** | Reality: a cooking and eating event that actually happened. Owned by confirmed participants and actual portions. The only object that produces pantry deduction events. The Execution Layer. |
+| **MealSession** | Reality: a cooking and eating event that actually happened. A first-class domain aggregate owning confirmed participants, actual portions, leftovers, and the pantry changes produced by confirmed cooking completion — the source of truth for all pantry deductions from food consumption. The Execution Layer. |
 | **Household Schedule Model** | An AI intelligence model (not a domain concept) representing the household's learned weekly routine: who eats on which nights, typical takeout nights, when guests visit, kids' activities, etc. Feeds the recommendation engine when generating weekly plans. Lives in the Intelligence Layer, not the Domain Model. |
 | **Budget** | A spending target for grocery and food purchases. Tracked per period (weekly or monthly). |
 | **Household Decision Engine** | The AI coordination layer that turns household context into safe, trusted food decisions. Never acts autonomously. Always produces recommendations for user approval. |
@@ -52,7 +52,6 @@ These terms have precise meanings within KitchenOS. Use them exactly as defined.
 | **Expert Recommendation** | A specific suggestion within an Expert Plan (a meal, recipe, substitution, or shopping item). Must pass Allergy Guard and requires user approval. |
 | **Consent Grant** | Explicit, scoped, time-bounded permission a Member gives an Expert to access specific household data. |
 | **Cook Mode** | A UI capability that facilitates a Meal Session. Guides users step-by-step through a recipe. Cook Mode does not directly update the Pantry — it drives a Meal Session to completion, and the completed Meal Session produces the pantry update events. |
-| **MealSession** | A first-class domain aggregate representing a real-world cooking and eating event. Owns participants, portions, leftovers, and the pantry changes that result from confirmed cooking completion. The source of truth for all pantry deductions from food consumption. |
 | **ShoppingTrip** | A real-world purchasing event, initiated by a Shopping List and completed by receipt scan or manual confirmation. The source of truth for all pantry additions from purchasing. |
 | **Household Activity Lifecycle** | An architectural pattern (not a domain entity) describing the shared lifecycle all household activities follow: Planned → Started → In Progress → Completed → Domain Events produced. Applies to MealSession, ShoppingTrip, PantryCorrection, and WasteEvent. |
 | **Document Understanding** | The async capability that converts a scanned household document (receipts in MVP-0) into a structured proposal with per-field confidence for user confirmation. On confirmation: domain event → pantry update → budget update. Defined by ADR-012. |
@@ -169,6 +168,8 @@ A committed intention for a single meal. The Intention Layer.
 - A MealPlan transitions to a MealSession when the user starts cooking. If cooking never happens, the MealPlan expires without affecting any state.
 - One MealPlan produces at most one MealSession.
 - A MealPlan within a WeeklyMealPlan can be swapped or cancelled independently without affecting other MealPlans in the week.
+- Every recipe attached to a MealPlan must pass Allergy Guard before being shown to the user.
+- Expert-suggested MealPlans require explicit user approval before entering a WeeklyMealPlan.
 
 ### MealSession
 Reality: a cooking and eating event that actually happened. The Execution Layer.
@@ -213,15 +214,6 @@ A real-world purchasing event. The Execution Layer for shopping — the exact pa
 >         ↓                              ↓
 > Pantry ADDED              ←→  Pantry DEDUCTED
 > ```
-
-### MealPlan
-A structured plan of meals for a Household over a period.
-
-**Entities within aggregate:** MealPlanItem
-
-**Invariants:**
-- All recipes in a MealPlan must pass Allergy Guard before being shown to the user.
-- Expert-suggested meal plans require explicit user approval before entering the MealPlan.
 
 ### Budget
 Grocery spend tracking for a Household over a period.
@@ -301,7 +293,7 @@ This principle governs every field in this data model. Before adding a column, t
 
 Key decisions reflected in the data model:
 
-- **Identity is isolated from intelligence.** The `identities` table (auth layer) is physically separate from the `household_members` table (intelligence layer). The recommendation engine operates on `member_id` — never on names or emails.
+- **Identity is isolated from intelligence.** The `identities` table (auth layer) is physically separate from the domain and intelligence schemas. The recommendation engine operates on `person_id` and `household_id` — never on names, emails, or `identity_id`.
 - **Names are not stored internally.** A `display_name` field is optional and exists only for UI presentation. It is never used in recommendations, safety checks, or AI reasoning.
 - **Age range, not exact age.** The system stores `age_group` (Adult, Child, Teen) and an optional `age_range` (e.g. 25–35) where needed for nutrition estimation. Exact birth dates are not required.
 - **Sensitive data is scoped.** Height, weight, and medical conditions are stored only on the member who provides them, only when an active goal requires them, and are never visible to other household members by default.
@@ -317,24 +309,9 @@ Tables are organised by bounded context. The `domain_events` table is cross-cutt
 ### Cross-Cutting: Events
 
 ```text
-domain_events
-  event_id          uuid, primary key
-  event_type        string             e.g. "ItemConsumed"
-  event_version     integer            starts at 1; increment on schema change to payload
-  domain            string             e.g. "pantry"
-  household_id      uuid, indexed
-  actor_type        string             "user" | "system" | "ai" | "expert"
-  actor_id          uuid
-  source_type       string             "cook_mode" | "receipt_scan" | "manual" | ...
-  entity_type       string             e.g. "pantry_item"
-  entity_id         uuid
-  occurred_at       timestamptz
-  payload           jsonb
-  correlation_id    uuid               groups events from one user action
-  causation_id      uuid               which event caused this event
-  reversal_of       uuid, nullable     links reversal/correction to original event
-  learning_impact   string             "learning" | "no_learning" | "waste_signal" | ...
-  privacy_level     string             "household" | "member_only" | "expert_scoped"
+domain_events        ← append-only, cross-cutting. Full field specification lives in
+                       one place: the Standard Event Envelope section below.
+                       household_id is indexed; event_id is the primary key.
 ```
 
 ### Person and Household Context
@@ -522,7 +499,7 @@ meal_sessions
   id                    uuid
   household_id          uuid → households.id
   recipe_id             uuid → recipes.id, nullable
-  initiated_by          uuid → household_members.id
+  initiated_by          uuid → persons.id
   status                string    "planned" | "started" | "in_progress" | "completed" | "abandoned"
   planned_portions      integer
   actual_portions       integer, nullable
@@ -634,7 +611,7 @@ providers
 provider_members
   id            uuid
   provider_id   uuid → providers.id
-  user_id       uuid → users.id
+  person_id     uuid → persons.id      experts are Persons too (ADR-011); no users table exists
   role          string    "owner" | "expert" | "admin"
   status        string    "active" | "inactive"
 
@@ -817,7 +794,7 @@ event_version       integer         starts at 1; increment on breaking payload s
 domain              string          bounded context name, e.g. "pantry"
 household_id        uuid            always present
 actor_type          string          "user" | "system" | "ai" | "expert"
-actor_id            uuid            user_id, system process id, or expert_profile_id
+actor_id            uuid            person_id, system process id, or expert_profile_id
 source_type         string          "cook_mode" | "receipt_scan" | "manual" | "ai_recommendation" | "expert_plan"
 entity_type         string          the aggregate type affected, e.g. "pantry_item"
 entity_id           uuid            the affected entity
@@ -832,7 +809,7 @@ privacy_level       string          "household" | "member_only" | "expert_scoped
 
 **Key envelope fields:**
 
-- `correlation_id` — one receipt scan produces multiple events (`ReceiptScanned`, `PantryItemsAdded`, `BudgetSpendRecorded`). All share the same `correlation_id`.
+- `correlation_id` — one receipt scan produces multiple events (`ReceiptScanned`, `PantryItemsAddedFromReceipt`, `BudgetSpendRecorded`). All share the same `correlation_id`.
 - `causation_id` — shows which event caused another. `PantryItemsAddedFromReceipt` is caused by `ReceiptItemsConfirmed`.
 - `reversal_of` — links a reversal or correction event to the event it reverses. Never overwrite the original.
 - `learning_impact` — tells the AI whether this event should influence future recommendations. Waste and corrections carry different signals than consumption.
@@ -927,7 +904,7 @@ Household Intelligence Model
 | Sub-Model | Primary event sources |
 |---|---|
 | Preference Model | `MealSessionCompleted`, `MealRecommendationRejected`, `MealPlanSwapped` |
-| Consumption Model | `PantryItemConsumed`, `PantryItemThrownAway`, `PantryItemExpired`, `MealSessionLeftoverRecorded` |
+| Consumption Model | `PantryItemConsumed`, `PantryItemThrownAway`, `PantryItemExpired`, `LeftoversCreated` |
 | Shopping Model | `ShoppingTripConfirmed`, `ReceiptItemsConfirmed`, `ShoppingItemRemoved` |
 | Schedule Model | `MealSessionCompleted` (who participated), `MealPlanCancelled`, `WeeklyMealPlanAccepted` |
 | Cooking Confidence | `CookModeSessionAbandoned`, `MealSessionCompleted` (recipe complexity) |
