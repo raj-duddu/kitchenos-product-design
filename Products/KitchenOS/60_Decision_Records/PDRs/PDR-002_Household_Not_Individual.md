@@ -78,9 +78,9 @@ KitchenOS must decide whether the individual or the household is the primary uni
 
 ## Related
 
-- `20_Domain_Model.md` — Household aggregate root, Member entity, household_safety_rules
-- `10_Product_Vision.md`, Section 56 (Allergies and Household Profiles)
-- `10_Product_Vision.md`, Section 14 (Household Lifecycle)
-- `40_Technical_Architecture.md`, Section 32 (all events carry household_id)
+- `Products/KitchenOS/20_Domain_Model.md` — Household aggregate root, Member entity, household_safety_rules
+- `Products/KitchenOS/10_Product_Vision.md`, Section 56 (Allergies and Household Profiles)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 14 (Household Lifecycle)
+- `Products/KitchenOS/40_Technical_Architecture.md`, Section 32 (all events carry household_id)
 - PDR-001: Food decisions before fitness
 - PDR-003: Home screen answers a question

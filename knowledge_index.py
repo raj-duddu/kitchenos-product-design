@@ -14,10 +14,11 @@ Usage:
     python knowledge_index.py --deps ADR-005     What does ADR-005 depend on?
     python knowledge_index.py --graph            Full dependency graph
     python knowledge_index.py --tag ddd          Documents tagged 'ddd'
-    python knowledge_index.py --check            Validate all cross-references exist
+    python knowledge_index.py --check            Validate frontmatter refs + inline paths, links, and doc IDs
     python knowledge_index.py --dir /path        Scan a different root directory
 """
 
+import re
 import sys
 import argparse
 from pathlib import Path
@@ -293,7 +294,85 @@ def cmd_tag(tag: str, documents: dict) -> None:
     print()
 
 
-def cmd_check(documents: dict) -> None:
+# --- Inline reference validation -------------------------------------------
+#
+# Frontmatter IDs are not the only way documents reference each other.
+# Prose contains backtick paths (`Company/Operating_Principles.md`),
+# markdown links, and document-ID mentions (ADR-009). Stale inline paths
+# are invisible to the frontmatter check but actively mislead readers —
+# especially AI agents that follow paths literally.
+
+INLINE_SKIP_DIRS = {"0000_Archive", "Archive", ".git", "__pycache__",
+                    "node_modules", ".venv"}
+
+BACKTICK_RE = re.compile(r"`([^`\n]+)`")
+MDLINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s#]+)\)")
+DOC_ID_RE = re.compile(r"\b(?:ADR|PDR|UXDR|GDR|DOC|GOV|AGENT|COMPANY)-\d{3}\b")
+PATH_CHARS_RE = re.compile(r"^[A-Za-z0-9_\-./]+$")
+PLACEHOLDER_MARKERS = ("XXX", "path/to", "Example", "example")
+
+
+def looks_like_path(candidate: str) -> bool:
+    """Heuristic: does a backtick/link string look like a repo path?"""
+    if not PATH_CHARS_RE.match(candidate):
+        return False
+    if any(m in candidate for m in PLACEHOLDER_MARKERS):
+        return False
+    return candidate.endswith("/") or candidate.endswith((".md", ".py"))
+
+
+# Lines containing these markers reference planned-but-not-yet-created
+# artifacts on purpose. Missing targets on such lines are warnings, not errors.
+PLANNED_LINE_MARKERS = ("planned", "future", "do not create", "add when", "add as")
+
+
+def check_inline_refs(root: Path, documents: dict) -> tuple:
+    """
+    Scan every Markdown file (excluding archives) for inline references:
+      - backtick paths and markdown link targets → must exist on disk
+        (resolved against repo root, then against the file's own directory)
+      - document IDs (ADR-009, GDR-001, ...) → must exist in the index
+    Returns (errors, warnings). Missing directories, and missing files on
+    lines explicitly marked as planned/future, are warnings — the repo
+    intentionally references artifacts that do not exist yet.
+    """
+    known_ids = set(documents)
+    errors: list = []
+    warnings: list = []
+
+    for md_file in sorted(root.rglob("*.md")):
+        if any(part in INLINE_SKIP_DIRS for part in md_file.parts):
+            continue
+        try:
+            text = md_file.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        rel = md_file.relative_to(root)
+
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            planned = any(m in line.lower() for m in PLANNED_LINE_MARKERS)
+            candidates = set(BACKTICK_RE.findall(line)) | set(MDLINK_RE.findall(line))
+
+            for cand in sorted(candidates):
+                if not looks_like_path(cand):
+                    continue
+                if cand.endswith("/"):
+                    if not ((root / cand).is_dir() or (md_file.parent / cand).is_dir()):
+                        warnings.append(f"  {rel}:{lineno}: directory `{cand}` not found (planned?)")
+                elif not ((root / cand).is_file() or (md_file.parent / cand).is_file()):
+                    if planned:
+                        warnings.append(f"  {rel}:{lineno}: file `{cand}` not found (planned?)")
+                    else:
+                        errors.append(f"  {rel}:{lineno}: `{cand}` — file not found")
+
+            for doc_id in sorted(set(DOC_ID_RE.findall(line))):
+                if doc_id not in known_ids:
+                    errors.append(f"  {rel}:{lineno}: document ID '{doc_id}' — not indexed")
+
+    return errors, warnings
+
+
+def cmd_check(documents: dict, root_dir: str) -> None:
     print(f"\n{SEP}")
     print(f"  Reference Validation")
     print(f"{SEP}\n")
@@ -308,13 +387,26 @@ def cmd_check(documents: dict) -> None:
             if ref and ref not in documents:
                 issues.append(f"  {doc_id}: referenced_by '{ref}' — not indexed")
 
+    inline_errors, inline_warnings = check_inline_refs(Path(root_dir).resolve(), documents)
+    issues.extend(inline_errors)
+
     if not issues:
-        print(f"  ✓ All {len(documents)} cross-references are valid.\n")
+        print(f"  ✓ Frontmatter: all {len(documents)} indexed documents' cross-references are valid.")
+        print(f"  ✓ Inline: all paths, links, and document IDs resolve.\n")
     else:
         print(f"  {len(issues)} issue(s) found:\n")
         for issue in issues:
             print(issue)
         print()
+
+    if inline_warnings:
+        print(f"  {len(inline_warnings)} warning(s) — referenced directories that do not exist yet:\n")
+        for warning in inline_warnings:
+            print(warning)
+        print()
+
+    if issues:
+        sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -368,7 +460,7 @@ Examples:
     elif args.tag:
         cmd_tag(args.tag, documents)
     elif args.check:
-        cmd_check(documents)
+        cmd_check(documents, args.dir)
     else:
         cmd_list(documents)
 

@@ -48,7 +48,7 @@ The `WeeklyMealPlan` is accepted in a single user action. Planning is a review-a
 ## Reasons
 
 - **Effort reduction is the core value proposition.** If the user has to plan every meal every week, KitchenOS is not saving effort — it is repackaging effort. The AI must absorb the routine planning work.
-- **The Household Schedule Model enables this.** The intelligence layer learns typical participants per slot per day of week, absence patterns, takeout nights, and guest frequency. This is precisely the data needed to auto-generate a week's draft. See `40_Technical_Architecture.md`, Household Schedule Model.
+- **The Household Schedule Model enables this.** The intelligence layer learns typical participants per slot per day of week, absence patterns, takeout nights, and guest frequency. This is precisely the data needed to auto-generate a week's draft. See `Products/KitchenOS/40_Technical_Architecture.md`, Household Schedule Model.
 - **Weekly view unlocks downstream features.** A committed `WeeklyMealPlan` drives: shopping list generation for the week, budget forecasting, expiry-aware meal slot ordering (use the chicken before it expires → plan it Thursday not Saturday).
 - **Closed-loop system**: `WeeklyMealPlan accepted → MealPlans created → MealSessions executed → events feed Schedule Model → next week's draft is more accurate`. The system improves with use.
 - **"Planning horizon" is the right mental model.** `WeeklyMealPlan` owns no business rules of its own beyond time-scoping. It is a container for `MealPlan` items. Its invariants are thin: one per household per week, atomic acceptance. It is not a thick aggregate with complex lifecycle management.
@@ -106,6 +106,6 @@ This is the chosen approach. It inverts the default: the AI does the work; the u
 - `Products/KitchenOS/10_Product_Vision.md`, Section 8.14 — closed-loop weekly planning and WeeklyMealPlan UX flow
 - `Products/KitchenOS/20_Domain_Model.md` — WeeklyMealPlan aggregate root and planning horizon design note
 - `Products/KitchenOS/40_Technical_Architecture.md` — Household Schedule Model (sub-model of Household Intelligence Model)
-- `Knowledge/60_Decision_Records/ADR-010_Pantry_Derived_From_Confirmed_Activities.md` — pantry lifecycle rules and weekly planning layer
+- `Products/KitchenOS/60_Decision_Records/ADRs/ADR-010_Pantry_Derived_From_Confirmed_Activities.md` — pantry lifecycle rules and weekly planning layer
 - PDR-005 — Ask only what the AI cannot reasonably learn on its own
 - PDR-007 — Three-object meal lifecycle (MealRecommendation → MealPlan → MealSession)

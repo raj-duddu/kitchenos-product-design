@@ -289,7 +289,7 @@ KitchenOS interacts with multiple distinct actor types. Each actor has its own i
 > verifying credentials, handling disputes, auditing consent compliance, and monitoring marketplace quality.
 >
 > Model it as a bounded context in Version 2. Reserve `support.*` event namespace now.
-> See `Knowledge/95_Customer_Expert_Operations/` for the operational workflows that sit above this domain context.
+> See `Products/KitchenOS/95_Customer_Expert_Operations/` for the operational workflows that sit above this domain context.
 
 ---
 

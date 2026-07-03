@@ -494,5 +494,5 @@ Three types of governance activity and where they are defined:
 | Stage Gate approval | Between every stage | This document |
 | Definition of Done | Stage 7 (Development) | `Templates/Definition_of_Done.md` |
 | Architecture Review | Stage 5 | `Templates/Architecture_Review_Checklist.md` |
-| Security Review | Stage 5 (flagged) | `Knowledge/100_Security/` *(planned)* |
-| Release approval | Stage 9 | `Knowledge/90_Operations/` *(planned)* |
+| Security Review | Stage 5 (flagged) | `Products/KitchenOS/100_Security/` *(planned)* |
+| Release approval | Stage 9 | `Products/KitchenOS/90_Platform_Operations/` *(planned)* |

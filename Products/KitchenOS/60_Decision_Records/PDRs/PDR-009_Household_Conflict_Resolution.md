@@ -172,7 +172,7 @@ Levels 1 and 2 are hard filters — violations block recommendations. Levels 3�
 
 ### Scope Boundary
 
-- This PDR defines the policy. The technical implementation (how the Household Decision Engine applies the hierarchy) is in `Knowledge/45_Solution_Designs/` when that solution design is written.
+- This PDR defines the policy. The technical implementation (how the Household Decision Engine applies the hierarchy) is in `Products/KitchenOS/45_Solution_Designs/` when that solution design is written.
 - Individual goal tracking and nutritional calculations are a separate concern — this PDR only defines their *priority* relative to other constraints.
 - Guest members (temporary, no profile) default to Level 5–6 only. They have no stored constraints or goals.
 

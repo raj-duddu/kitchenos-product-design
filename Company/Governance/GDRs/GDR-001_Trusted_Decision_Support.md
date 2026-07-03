@@ -96,7 +96,7 @@ Not all recommendations carry the same risk. This GDR establishes a four-level c
 | **High** | Meal for a member with known allergies, calorie reduction suggestion, recipe modification for a specific goal | Explicit user confirmation required before any action |
 | **Critical** | Any recommendation that conflicts with a safety rule; anything affecting a medical restriction; anything an expert has flagged as requiring their approval | Never autonomous; safety check must pass; explicit confirmation required; expert involvement may be mandated |
 
-This framework is implemented in `Knowledge/85_Governance/AI_Governance.md`. Product and engineering teams must map every AI output to a criticality level before implementation.
+This framework is implemented in `Company/Governance/AI_Governance.md`. Product and engineering teams must map every AI output to a criticality level before implementation.
 
 ---
 
@@ -150,7 +150,7 @@ This preserves the company identity while allowing the product to be genuinely h
 ### Scope Boundary
 
 - This GDR governs AI outputs and product positioning. It does not govern the technical architecture of the AI systems (see ADR-007, ADR-008).
-- The specific implementation of the criticality framework for KitchenOS is in `Knowledge/85_Governance/AI_Governance.md`.
+- The specific implementation of the criticality framework for KitchenOS is in `Company/Governance/AI_Governance.md`.
 - The household conflict resolution policy (how competing constraints are prioritised in recommendations) is a product decision — see PDR-009.
 
 ---
@@ -158,7 +158,7 @@ This preserves the company identity while allowing the product to be genuinely h
 ## Related
 
 - `Company/Operating_Principles.md`, Principles 1 and 2
-- `Knowledge/85_Governance/AI_Governance.md` — implementation of the criticality framework
+- `Company/Governance/AI_Governance.md` — implementation of the criticality framework
 - `Products/KitchenOS/10_Product_Vision.md`, Section 8.13 — AI predicts the routine, asks only about exceptions
 - `Products/KitchenOS/20_Domain_Model.md`, Actor Model — Support Agent, Expert, AI actor definitions
 - ADR-007 — Household Intelligence Model as separate architectural layer

@@ -52,7 +52,7 @@ The Home screen is a decision layer, not a data dashboard. It surfaces 1–3 pri
 
 **Dashboard home screen** — Rejected. Requires users to do the reasoning the AI should do. Buries the AI value proposition under data. Creates cognitive load instead of reducing it.
 
-**AI-centric conversational home (chat interface)** — Rejected for MVP. Explicitly evaluated and rejected in `10_Product_Vision.md`, Section 18.2. A chat interface increases interaction cost and is not natural for daily household food management. Considered again post-MVP if conversational patterns emerge naturally from usage.
+**AI-centric conversational home (chat interface)** — Rejected for MVP. Explicitly evaluated and rejected in `Products/KitchenOS/10_Product_Vision.md`, Section 18.2. A chat interface increases interaction cost and is not natural for daily household food management. Considered again post-MVP if conversational patterns emerge naturally from usage.
 
 **Activity feed home** — Rejected. Shows what happened, not what to do. Useful as a secondary surface (Household Timeline under Household screen) but not as the primary home.
 
@@ -81,9 +81,9 @@ The Home screen is a decision layer, not a data dashboard. It surfaces 1–3 pri
 
 ## Related
 
-- `10_Product_Vision.md`, Section 8.6 (Decisions, Not Data — core principle)
-- `10_Product_Vision.md`, Section 18 (Information Architecture — dashboard rejected)
-- `10_Product_Vision.md`, Section 19.1 (Home Screen Responsibilities)
-- `10_Product_Vision.md`, Section 21 (Empty States)
-- `40_Technical_Architecture.md`, Section 24 (Household Decision Engine)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 8.6 (Decisions, Not Data — core principle)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 18 (Information Architecture — dashboard rejected)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 19.1 (Home Screen Responsibilities)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 21 (Empty States)
+- `Products/KitchenOS/40_Technical_Architecture.md`, Section 24 (Household Decision Engine)
 - PDR-002: Household as primary unit

@@ -367,15 +367,15 @@ Every topic has exactly one authoritative home. Do not document the same concept
 | Feature development lifecycle | Process | `Process/Product_Development_Lifecycle.md` |
 | Stage gates and governance | Process | `Process/Product_Development_Lifecycle.md` |
 | Architecture governance | Knowledge Map | `00_Knowledge_Map.md` |
-| Why Flutter? | ADR | `Products/KitchenOS/60_Decision_Records/ADR-001_Flutter.md` |
-| Why GCP? | ADR | `Products/KitchenOS/60_Decision_Records/ADR-002_GCP.md` |
-| Why PostgreSQL? | ADR | `Products/KitchenOS/60_Decision_Records/ADR-003_PostgreSQL.md` |
-| Why event sourcing? | ADR | `Products/KitchenOS/60_Decision_Records/ADR-004_Event_Sourcing.md` |
-| Why modular monolith? | ADR | `Products/KitchenOS/60_Decision_Records/ADR-005_Modular_Monolith.md` |
-| Why Cloud Run? | ADR | `Products/KitchenOS/60_Decision_Records/ADR-006_Cloud_Run.md` |
-| Why food before fitness? | PDR | `Products/KitchenOS/60_Decision_Records/PDR-001_Food_Before_Fitness.md` |
-| Why household not individual? | PDR | `Products/KitchenOS/60_Decision_Records/PDR-002_Household_Not_Individual.md` |
-| Why Home screen is a question? | PDR | `Products/KitchenOS/60_Decision_Records/PDR-003_Home_Screen_Question.md` |
+| Why Flutter? | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-001_Flutter.md` |
+| Why GCP? | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-002_GCP.md` |
+| Why PostgreSQL? | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-003_PostgreSQL.md` |
+| Why event sourcing? | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-004_Event_Sourcing.md` |
+| Why modular monolith? | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-005_Modular_Monolith.md` |
+| Why Cloud Run? | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-006_Cloud_Run.md` |
+| Why food before fitness? | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-001_Food_Before_Fitness.md` |
+| Why household not individual? | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-002_Household_Not_Individual.md` |
+| Why Home screen is a question? | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-003_Home_Screen_Question.md` |
 
 ---
 
@@ -399,8 +399,8 @@ When creating new documentation, use this table to find the right home. **Never 
 | A production runbook or infrastructure config | Platform Operations | `Products/KitchenOS/90_Platform_Operations/` |
 | Customer support workflows, SLAs, Expert onboarding and verification | Customer & Expert Operations | `Products/KitchenOS/95_Customer_Expert_Operations/` |
 | Why a company-wide governance policy was decided | GDR | `Company/Governance/GDRs/GDR-XXX_Decision.md` |
-| Why a technology was chosen | ADR | `Products/KitchenOS/60_Decision_Records/ADR-XXX_Decision.md` |
-| Why a product scope or strategy decision was made | PDR | `Products/KitchenOS/60_Decision_Records/PDR-XXX_Decision.md` |
+| Why a technology was chosen | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-XXX_Decision.md` |
+| Why a product scope or strategy decision was made | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-XXX_Decision.md` |
 | Why a UX pattern or navigation choice was made | UXDR | `Products/KitchenOS/60_Decision_Records/UXDR-XXX_Decision.md` |
 | A new ubiquitous language term | Domain Model glossary | `Products/KitchenOS/20_Domain_Model.md` |
 | A company-wide non-negotiable principle (applies to all products) | Operating Principles | `Company/Operating_Principles.md` |
@@ -494,7 +494,7 @@ Every major concept has one owning team and a single source of truth. When the c
 | AI governance policy | Governance | `Company/Governance/AI_Governance.md` | Products, Architecture, Engineering |
 | Architecture governance policy | Governance | `Company/Governance/Architecture_Governance.md` | Architecture, Engineering, Agents |
 | Risk register | Governance | `Company/Governance/Risk_Register.md` | All layers |
-| Household conflict resolution policy | PDR | `Products/KitchenOS/60_Decision_Records/PDR-009_Household_Conflict_Resolution.md` | Domain Model, AI Architecture |
+| Household conflict resolution policy | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-009_Household_Conflict_Resolution.md` | Domain Model, AI Architecture |
 
 ---
 

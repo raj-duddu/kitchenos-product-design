@@ -111,7 +111,7 @@ What does the user see while data is loading?
 
 ## Technical Design
 
-> For simple features, a brief technical design section here is sufficient. For complex features (new services, significant data model changes, or non-trivial flows), create a full Solution Design document at `Knowledge/45_Solution_Designs/SD-XXX_Feature.md` using `Templates/SD_Template.md`.
+> For simple features, a brief technical design section here is sufficient. For complex features (new services, significant data model changes, or non-trivial flows), create a full Solution Design document at `Products/KitchenOS/45_Solution_Designs/SD-XXX_Feature.md` using `Templates/SD_Template.md`.
 
 ### Key Technical Decisions
 
@@ -129,7 +129,7 @@ What does the user see while data is loading?
 |---|---|---|
 | POST | /example | Create example |
 
-Full API contract belongs in: `Knowledge/45_Solution_Designs/SD-XXX.md` or `Knowledge/80_API_Reference/`.
+Full API contract belongs in: `Products/KitchenOS/45_Solution_Designs/SD-XXX.md` or `Products/KitchenOS/80_API_Reference/`.
 
 ---
 

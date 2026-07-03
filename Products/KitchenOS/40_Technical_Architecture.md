@@ -275,7 +275,7 @@ Authorization is evaluated at the API layer on every request. It is never evalua
 | Another member's private goals | Only if that member sets `goal_visibility: household` |
 | Another member's private allergies | Only if that member sets `allergy_visibility: household` |
 | Expert data access | Only within an active, unexpired `ConsentGrant` scoped to named data types |
-| Support Agent data access | Scoped, read-only, time-bounded — defined in `Knowledge/95_Customer_Expert_Operations/` |
+| Support Agent data access | Scoped, read-only, time-bounded — defined in `Products/KitchenOS/95_Customer_Expert_Operations/` |
 
 ---
 

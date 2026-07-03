@@ -81,7 +81,7 @@ The product boundary rule:
 
 ## Related
 
-- `10_Product_Vision.md`, Section 5 (Product Vision)
-- `10_Product_Vision.md`, Section 57 (Nutrition Goals — food-first expression of fitness goals)
-- `10_Product_Vision.md`, Section 58 (Expert Marketplace — food-first coaching)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 5 (Product Vision)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 57 (Nutrition Goals — food-first expression of fitness goals)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 58 (Expert Marketplace — food-first coaching)
 - PDR-002: Household as primary unit

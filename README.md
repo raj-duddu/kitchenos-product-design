@@ -114,14 +114,15 @@ Analyse document dependencies from the command line:
 # List all indexed documents
 python knowledge_index.py
 
-# Validate all cross-references
+# Validate all references: frontmatter IDs, inline paths, links, doc-ID mentions
+# (exits 1 on broken references; planned-but-not-yet-created artifacts are warnings)
 python knowledge_index.py --check
 
 # Show what a document depends on
-python knowledge_index.py --upstream DOC-040
+python knowledge_index.py --deps DOC-040
 
 # Show what is affected if a document changes
-python knowledge_index.py --downstream DOC-010
+python knowledge_index.py --impact DOC-010
 ```
 
 Requires Python 3.8+. No external dependencies.

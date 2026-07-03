@@ -31,7 +31,7 @@ Every AI output in KitchenOS must be classified at one of four criticality level
 - Classification is assigned at feature design time, not runtime.
 - If there is any uncertainty about the level, assign the higher level.
 - A feature that *could* produce Critical output at runtime must be implemented as Critical even if most outputs are Low.
-- Classification must be documented in the Solution Design (`45_Solution_Designs/`) for any feature that produces AI output.
+- Classification must be documented in the Solution Design (`Products/KitchenOS/45_Solution_Designs/`) for any feature that produces AI output.
 
 ---
 

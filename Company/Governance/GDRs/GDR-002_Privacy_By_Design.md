@@ -66,7 +66,7 @@ Consent is required before any data is used beyond its primary purpose.
 
 - Collective Intelligence participation: explicit opt-in, never default. See PDR-006.
 - Expert data access: scoped to named data types, time-bounded, revocable. See `ConsentGrant` in Domain Model.
-- Data retention: explicit policy, documented in `Knowledge/85_Governance/Risk_Register.md`.
+- Data retention: explicit policy, documented in `Company/Governance/Risk_Register.md`.
 
 ### 4. Give users visibility and control
 
@@ -138,8 +138,8 @@ The upfront cost is higher. The long-term cost — in user trust, regulatory ris
 ### Scope Boundary
 
 - This GDR governs principles. The technical implementation is in ADR-009 (identity isolation) and ADR-011 (Person as global domain concept).
-- Data retention periods, specific deletion policies, and incident response procedures are in `Knowledge/85_Governance/Risk_Register.md` and `Knowledge/100_Security/`.
-- GDPR/CCPA specific compliance procedures are in `Knowledge/100_Security/`.
+- Data retention periods, specific deletion policies, and incident response procedures are in `Company/Governance/Risk_Register.md` and `Products/KitchenOS/100_Security/`.
+- GDPR/CCPA specific compliance procedures are in `Products/KitchenOS/100_Security/`.
 
 ---
 

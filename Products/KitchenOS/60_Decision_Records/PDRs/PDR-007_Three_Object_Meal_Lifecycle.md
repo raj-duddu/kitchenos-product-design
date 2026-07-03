@@ -105,6 +105,6 @@ Each object has a single, clear responsibility. This is the chosen approach.
 
 - `Products/KitchenOS/10_Product_Vision.md`, Section 8.13 — AI predicts the routine, asks only about exceptions
 - `Products/KitchenOS/20_Domain_Model.md` — MealRecommendation, MealPlan, MealSession aggregate roots
-- `Knowledge/60_Decision_Records/ADR-010_Pantry_Derived_From_Confirmed_Activities.md` — pantry lifecycle rules
+- `Products/KitchenOS/60_Decision_Records/ADRs/ADR-010_Pantry_Derived_From_Confirmed_Activities.md` — pantry lifecycle rules
 - PDR-005 — Ask only what the AI cannot reasonably learn on its own
 - PDR-008 — WeeklyMealPlan as planning horizon
