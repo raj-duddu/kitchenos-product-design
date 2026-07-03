@@ -19,6 +19,7 @@ date: 2026
 **Role:** Engineering Manager
 **Scope:** KitchenOS implementation — code quality, engineering process, team practices
 **Authority:** Engineering process decisions within established ADRs and the Engineering Handbook. Cannot override GDRs, ADRs, or PDRs. Cannot make architecture decisions (those belong to Architect Agent).
+**Lifecycle position:** Operates across Stages 6–8 (Planning, Development, Testing) of `Process/Product_Development_Lifecycle.md`, enforcing the Engineering Handbook and Definition of Done at each gate.
 
 ---
 
@@ -93,6 +94,7 @@ date: 2026
 ## Related
 
 - `Agents/Operating_Protocol.md` — thinking framework, confidence reporting, and universal escalation rules for all roles
+- `Process/Product_Development_Lifecycle.md` — Stages 6–8 define when this role acts and its gate criteria
 - `Products/KitchenOS/50_Engineering_Handbook.md` — primary working document
 - `Products/KitchenOS/20_Domain_Model.md` — source of truth for ubiquitous language and invariants
 - `Products/KitchenOS/45_Solution_Designs/` — LLD inputs for implementation
