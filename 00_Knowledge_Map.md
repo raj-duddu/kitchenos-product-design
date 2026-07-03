@@ -35,7 +35,7 @@ Product Design/
 ├── 00_Knowledge_Map.md          ← start here (navigation anchor)
 ├── Company/                     ← why the company exists; governs all products
 │   ├── Vision_and_Mission.md   ← company vision, mission, philosophy
-│   ├── Operating_Principles.md  ← seven guiding principles; company constitution
+│   ├── Operating_Principles.md  ← ten guiding principles (0–9); company constitution
 │   └── Governance/              ← GDRs, AI Governance, Risk Register
 │       ├── AI_Governance.md
 │       ├── Architecture_Governance.md
@@ -96,7 +96,7 @@ Product Design/
 |---|---|---|---| ---|
 | Knowledge Map (this file) | `00_Knowledge_Map.md` | Everyone | Navigate all documentation | Active |
 | Vision and Mission | `Company/Vision_and_Mission.md` | Everyone | Company vision, mission, philosophy — the foundation everything else serves | Active |
-| Operating Principles | `Company/Operating_Principles.md` | Everyone | Seven guiding principles — the operational expression of the philosophy | Active |
+| Operating Principles | `Company/Operating_Principles.md` | Everyone | Ten guiding principles (0–9) — the operational expression of the philosophy | Active |
 | Governance | `Company/Governance/` | Founders, Legal, All Leads | GDRs, AI Governance, Risk Register | Active |
 
 ### Shared Knowledge *(company-wide)*
@@ -143,7 +143,7 @@ Product Design/
 |---|---|---|---|---|---|
 | 40 | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md` | Architects, Senior Engineers | System-level architecture — HLD, services, patterns, principles | Active |
 | 45 | Solution Designs | `Products/KitchenOS/45_Solution_Designs/` | Engineers, Architects | Feature-level technical design — module responsibilities, sequence diagrams, data flows (LLD) | Planned |
-| 60 | Decision Records | `Products/KitchenOS/60_Decision_Records/` | Everyone | ADRs, PDRs, UXDRs (GDRs live in `Company/Governance/GDRs/`) | Active (11 ADRs, 9 PDRs) |
+| 60 | Decision Records | `Products/KitchenOS/60_Decision_Records/` | Everyone | ADRs, PDRs, UXDRs (GDRs live in `Company/Governance/GDRs/`) | Active |
 | 80 | API Reference | `Products/KitchenOS/80_API_Reference/` | Engineers, QA | How systems communicate | Planned |
 | 100 | Security | `Products/KitchenOS/100_Security/` | Engineering, Legal, Compliance | Auth, encryption, privacy, threat model, incident response | Planned |
 
@@ -369,10 +369,12 @@ Every topic has exactly one authoritative home. Do not document the same concept
 | Domain events catalogue | Domain Model | `Products/KitchenOS/20_Domain_Model.md` |
 | Standard event envelope | Domain Model | `Products/KitchenOS/20_Domain_Model.md` |
 | Business invariants | Domain Model | `Products/KitchenOS/20_Domain_Model.md` |
+| Household Timeline (product behaviour) | Product Vision | `Products/KitchenOS/10_Product_Vision.md`, Section 59.6 |
 | Household Decision Engine (architecture) | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 24 |
 | Household Timeline (architecture) | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 32.8 |
 | Domain event architecture | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 32 |
 | Offline AI context constraint | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.8 |
+| recommendation_expires_at | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.8 |
 | Cloud infrastructure | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.6 |
 | Architecture principles | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.9 |
 | Architecture building blocks | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
@@ -383,7 +385,6 @@ Every topic has exactly one authoritative home. Do not document the same concept
 | Engineering principles | Engineering Handbook | `Products/KitchenOS/50_Engineering_Handbook.md`, Section 42.5 |
 | Feature development lifecycle | Process | `Process/Product_Development_Lifecycle.md` |
 | Stage gates and governance | Process | `Process/Product_Development_Lifecycle.md` |
-| Architecture governance | Knowledge Map | `00_Knowledge_Map.md` |
 | Why Flutter? | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-001_Flutter.md` |
 | Why GCP? | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-002_GCP.md` |
 | Why PostgreSQL? | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-003_PostgreSQL.md` |
@@ -393,6 +394,7 @@ Every topic has exactly one authoritative home. Do not document the same concept
 | Why food before fitness? | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-001_Food_Before_Fitness.md` |
 | Why household not individual? | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-002_Household_Not_Individual.md` |
 | Why Home screen is a question? | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-003_Home_Screen_Question.md` |
+| Household conflict resolution policy | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-009_Household_Conflict_Resolution.md` |
 
 ---
 
@@ -418,7 +420,7 @@ When creating new documentation, use this table to find the right home. **Never 
 | Why a company-wide governance policy was decided | GDR | `Company/Governance/GDRs/GDR-XXX_Decision.md` |
 | Why a technology was chosen | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-XXX_Decision.md` |
 | Why a product scope or strategy decision was made | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-XXX_Decision.md` |
-| Why a UX pattern or navigation choice was made | UXDR | `Products/KitchenOS/60_Decision_Records/UXDR-XXX_Decision.md` |
+| Why a UX pattern or navigation choice was made | UXDR | `Products/KitchenOS/60_Decision_Records/UXDRs/UXDR-XXX_Decision.md` |
 | A new ubiquitous language term | Domain Model glossary | `Products/KitchenOS/20_Domain_Model.md` |
 | A company-wide non-negotiable principle (applies to all products) | Operating Principles | `Company/Operating_Principles.md` |
 | A company-wide governance policy (AI, privacy, cross-cutting) | GDR | `Company/Governance/GDRs/` |
@@ -443,103 +445,26 @@ Decision Records capture *why* a decision was made, not how it was implemented. 
 
 > **GDRs are company-wide.** They are not superseded by PDRs or ADRs. A PDR may implement a GDR but cannot override it. Example: GDR-001 says "AI never diagnoses." A PDR may specify *how* KitchenOS surfaces recommendations, but may not contradict the GDR.
 
-### Governance Decision Records
+### Where the Records Are
 
-| ID | Decision | Status | Date |
-|---|---|---|---|
-| GDR-001 | Trusted Decision Support, Not Autonomous Diagnosis | Accepted | 2026 |
-| GDR-002 | Privacy by Design | Accepted | 2026 |
+The record lists are deliberately not duplicated here. Each record's frontmatter is the source of truth for its title and status:
 
-### Architecture Decision Records
-
-| ID | Decision | Status | Date |
-|---|---|---|---|
-| ADR-001 | Flutter for mobile | Accepted | 2026 |
-| ADR-002 | Google Cloud Platform | Accepted | 2026 |
-| ADR-003 | PostgreSQL as primary database | Accepted | 2026 |
-| ADR-004 | Domain-driven event sourcing | Accepted | 2026 |
-| ADR-005 | Modular monolith for backend | Accepted | 2026 |
-| ADR-006 | Cloud Run for compute | Accepted | 2026 |
-| ADR-007 | Household Intelligence Model as a separate architectural layer | Accepted | 2026 |
-| ADR-008 | Collective Intelligence Model with explicit opt-in consent | Accepted | 2026 |
-| ADR-009 | Privacy-by-design and identity isolation | Accepted | 2026 |
-| ADR-010 | Pantry state derived only from confirmed activities | Accepted | 2026 |
-| ADR-011 | Person as a global domain concept, separate from HouseholdMembership | Accepted | 2026 |
-
-> ADR-007 through ADR-011 are not yet listed in earlier summary counts — the count above reflects all 11 accepted ADRs.
-
-### Product Decision Records
-
-| ID | Decision | Status | Date |
-|---|---|---|---|
-| PDR-001 | Food decisions before fitness features | Accepted | 2026 |
-| PDR-002 | Household as primary unit, not individual | Accepted | 2026 |
-| PDR-003 | Home screen answers a question, not a dashboard | Accepted | 2026 |
-| PDR-004 | Personas as Household Intelligence Profiles, not UX personas | Accepted | 2026 |
-| PDR-005 | Ask only what the AI cannot reasonably learn on its own | Accepted | 2026 |
-| PDR-006 | Collective Intelligence participation is explicit opt-in, never default | Accepted | 2026 |
-| PDR-007 | Three-object meal lifecycle — MealRecommendation, MealPlan, MealSession | Accepted | 2026 |
-| PDR-008 | WeeklyMealPlan as planning horizon — AI predicts routine, asks only about exceptions | Accepted | 2026 |
-| PDR-009 | Household Conflict Resolution Policy — six-level priority hierarchy | Accepted | 2026 |
-
-### UX Decision Records
-
-| ID | Decision | Status | Date |
-|---|---|---|---|
-| *(none yet)* | | | |
-
----
-
-## Concept Ownership
-
-Every major concept has one owning team and a single source of truth. When the concept changes, the owner is responsible for updating all downstream references.
-
-| Concept | Owner | Source of Truth | Referenced By |
-|---|---|---|---|
-| Household | Domain Model | `Products/KitchenOS/20_Domain_Model.md` | All documents |
-| Household Timeline | Product + Architecture | `Products/KitchenOS/10_Product_Vision.md` Section 59.6 (product), `Products/KitchenOS/40_Technical_Architecture.md` Section 32.8 (architecture), `Products/KitchenOS/20_Domain_Model.md` (data model) | Vision, Architecture, Engineering Handbook, Mobile UI |
-| Household Decision Engine | Product + Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 24 | Vision, Domain Model, Architecture, AI Layer |
-| Domain event architecture | Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 32 | Domain Model, Engineering Handbook, Tests |
-| Domain events catalogue | Domain Model | `Products/KitchenOS/20_Domain_Model.md` | Architecture, Tests, ADR-004 |
-| Business invariants | Domain Model | `Products/KitchenOS/20_Domain_Model.md` | Architecture, Engineering Handbook, Tests |
-| Allergy safety rules | Product + Domain Model | `Products/KitchenOS/10_Product_Vision.md` Section 56 (product), `Products/KitchenOS/20_Domain_Model.md` (data model + invariants) | Vision, Architecture, Tests |
-| Offline AI staleness model | Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.8 | Offline UX (`Products/KitchenOS/10_Product_Vision.md` Section 22) |
-| recommendation_expires_at | Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.8 | Architecture, Mobile, Tests |
-| MVP-0 scope | Product | `Products/KitchenOS/10_Product_Vision.md`, Sections 38–39 | Vision, PRDs, Architecture |
-| Company vision, mission, philosophy | Company | `Company/Vision_and_Mission.md` | All layers |
-| Company operating principles | Company | `Company/Operating_Principles.md` | All layers |
-| AI governance policy | Governance | `Company/Governance/AI_Governance.md` | Products, Architecture, Engineering |
-| Architecture governance policy | Governance | `Company/Governance/Architecture_Governance.md` | Architecture, Engineering, Agents |
-| Risk register | Governance | `Company/Governance/Risk_Register.md` | All layers |
-| Household conflict resolution policy | PDR | `Products/KitchenOS/60_Decision_Records/PDRs/PDR-009_Household_Conflict_Resolution.md` | Domain Model, AI Architecture |
+- Browse: `Company/Governance/GDRs/`, `Products/KitchenOS/60_Decision_Records/ADRs/`, `Products/KitchenOS/60_Decision_Records/PDRs/`, `Products/KitchenOS/60_Decision_Records/UXDRs/`
+- Live list with statuses: `python knowledge_index.py`
 
 ---
 
 ## Glossary
 
-Canonical definitions for all KitchenOS domain terms. Use these exact terms in code, tickets, tests, and documentation. Do not invent synonyms.
+Canonical vocabulary has two homes — link to them, do not copy definitions:
 
-| Term | Definition |
+| Vocabulary | Source of Truth |
 |---|---|
-| Household | The primary unit of KitchenOS. A group of people (1 or more) sharing a food environment. All decisions are made at household level. |
-| Household Member | An individual within a Household. Has their own profile, allergies, and goals. |
-| Household State | The materialised view of all household data derived from the event log: current pantry, shopping list, meal plan, budget status, and recent timeline. |
-| Household Timeline | The user-facing event log of the household. Tracks what was bought, cooked, consumed, corrected, recommended, accepted, or rejected. First-class product surface. |
-| Household Decision Engine | The backend coordination layer that turns household context (pantry, goals, allergies, history) into safe, trusted food decisions. Not a single AI model — an orchestration layer. |
-| Domain Event | An immutable, append-only record of something that happened in the household. Written to the `domain_events` table. Never deleted, only reversed. |
-| Correction Event | A domain event that reverses or amends a prior event. Not a delete. The original event remains in the log. |
-| Cook Mode | The guided cooking experience in the app. Step-by-step instructions with automatic pantry deduction on completion. |
-| Pantry | The household's current food inventory. A materialised view derived from receipts scanned, meals cooked, manual adjustments, and corrections. |
-| Pantry Snapshot | A point-in-time record of pantry state. Used for rollback and AI context. |
-| Receipt | A scanned or manually entered purchase record. Source of pantry additions and budget tracking. |
-| Shopping List | A household-level list of items to buy. Derived from pantry state, meal plans, and AI recommendations. |
-| Recommendation | An AI-generated suggestion for a meal, recipe, or shopping action, grounded in household context and safety constraints. |
-| recommendation_expires_at | A server-set timestamp on each cached recommendation indicating when it should be suppressed offline, based on household activity level. |
-| Allergy Guard | The safety layer that checks all recommendations and expert suggestions against household-level allergy rules before any suggestion reaches the user. |
-| Goal | An individual household member's nutrition or fitness objective (e.g., muscle gain, weight reduction). Goals influence recommendation ranking but never override safety constraints. |
-| Expert | A verified nutritionist or fitness coach on the KitchenOS marketplace. Works within the platform's safety and privacy boundaries. |
-| Pending Sync Event | A domain event queued in local SQLite on a device because it has not yet synced to the backend. Does not affect backend state until synced. |
-| Ubiquitous Language | The shared vocabulary used consistently by product, engineering, QA, and support. Defined in this glossary. Deviating from it causes specification bugs. |
+| KitchenOS domain terms (Household, Pantry, Domain Event, Allergy Guard, …) | `Products/KitchenOS/20_Domain_Model.md`, Ubiquitous Language |
+| Company-wide pattern and governance terms (DDD, Event Sourcing, Four-Layer Model, …) | `Knowledge/Glossary.md` |
+| Shared cross-product entities (Person, Identity, ConsentGrant) — schema and rules | `Knowledge/Canonical_Data_Model.md` |
+
+Use these exact terms in code, tickets, tests, and documentation. Do not invent synonyms.
 
 ---
 
@@ -593,18 +518,11 @@ Follow this sequence when joining the KitchenOS team:
 
 ## Architecture Building Blocks
 
-These are the reusable architectural components that appear across multiple features. Each is a well-defined module within the modular monolith in MVP-0 and a natural extraction candidate as the product scales.
+The reusable architectural components — Household Decision Engine, Allergy Guard, Sync Engine, Household Timeline, AI Provider Abstraction, Receipt OCR Pipeline, Notification Engine, Domain Event Bus — are defined in one place:
 
-| Building Block | One-Line Responsibility | Detail |
-|---|---|---|
-| Household Decision Engine | Turns household context into safe, trusted food decisions | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
-| Allergy Guard | Safety check on all recommendations. Never bypassed. | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
-| Sync Engine | Pending event queue, conflict resolution, online/offline transitions | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
-| Household Timeline | Event log read model for the user-facing activity history | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
-| AI Provider Abstraction | Interface over AI providers. Never call a provider directly. | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
-| Receipt OCR Pipeline | Cloud Vision → Cloud Tasks → pantry update → event write | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
-| Notification Engine | FCM delivery of alerts, nudges, and sync events | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
-| Domain Event Bus | Append-only domain_events table and write/dispatch logic | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
+> **`Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10** is the single source of truth for building blocks and their responsibilities.
+
+This section exists only as a pointer. Do not duplicate responsibilities here.
 
 ---
 
@@ -671,35 +589,24 @@ Documents are the authoritative explanation. The index is an acceleration layer 
 
 ### What the Index Enables
 
-**For a human today:** Ctrl+F through the main document.
+**For a human today:** navigate via this Knowledge Map.
 
 **For an AI agent with the index:**
 ```text
 Query: "Where is Household Timeline defined and what depends on it?"
 
 Index reply:
-  Defined in:    Main doc, Section 29
+  Defined in:    Products/KitchenOS/40_Technical_Architecture.md, Section 32.8
   Referenced by: Shopping PRD, Domain Model, Architecture, Mobile UI
   Implemented by: Household screen, Home screen
   Tested by:     Timeline integration tests
 ```
 
-The AI reads only those sections. Not 400 pages.
+The AI reads only those sections — not the entire corpus.
 
 ### Current Tooling: knowledge_index.py
 
-A lightweight Python script at the root of this repository implements the Knowledge Index Builder today. It parses YAML frontmatter from all knowledge documents and provides impact analysis with no database or external dependencies:
-
-```text
-python knowledge_index.py                    List all indexed documents
-python knowledge_index.py --impact ADR-004   What needs review if ADR-004 changes?
-python knowledge_index.py --deps ADR-005     What does ADR-005 depend on?
-python knowledge_index.py --graph            Full dependency graph
-python knowledge_index.py --tag ddd          Documents by tag
-python knowledge_index.py --check            Validate all cross-references exist
-```
-
-The YAML frontmatter files are the data store. The script is stateless — run it any time, it always reflects the current state of the documents.
+The Knowledge Index Builder exists today as `knowledge_index.py` at the repository root — stateless, stdlib-only, rebuilt from frontmatter on every run. Usage is documented in `README.md`.
 
 ### What Moves This Forward
 

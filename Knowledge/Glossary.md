@@ -38,8 +38,8 @@ date: 2026
 |---|---|
 | **Four-Layer Model** | The Amanaska data architecture: Auth (PII isolation) → Person (stable domain facts) → Domain (business entities and relationships) → Intelligence (AI beliefs, confidence scores, learned patterns). No layer depends on a layer above it. |
 | **PII** | Personally Identifiable Information. In Amanaska systems, PII is isolated to the Auth layer (email only). The domain and intelligence layers never contain PII. |
-| **Identity** | An authentication mechanism. Not a business entity. Identity ≠ Person. |
-| **Person** | A business entity representing a human being in the Amanaska platform. Global across all products. Keyed by `person_id`. Never contains email or auth credentials. |
+| **Identity** | An authentication mechanism. Not a business entity. Identity ≠ Person. Schema and rules: `Knowledge/Canonical_Data_Model.md`. |
+| **Person** | A human being as a business entity, global across all Amanaska products. Schema and rules: `Knowledge/Canonical_Data_Model.md`. |
 | **Intelligence Layer** | The AI belief system for a product or household. Contains learned preferences, confidence scores, and behavioural patterns. Keyed on `person_id` + context identifier. Never contains PII or authoritative domain facts. |
 | **Canonical Data Model** | The shared schema for concepts that exist across multiple Amanaska products (Person, Identity, HouseholdMembership). Documented in `Knowledge/Canonical_Data_Model.md`. |
 
@@ -65,7 +65,7 @@ date: 2026
 | **Privacy by Design** | A principle that privacy protections are built into a system from the start, not added as a compliance layer. Implemented as GDR-002. |
 | **Data Minimisation** | Collecting only the data required for a stated purpose. A core principle of Privacy by Design. |
 | **Consent** | Explicit, informed, and freely given agreement to use data for a specific purpose. All Amanaska products require explicit consent for data use beyond primary purpose. |
-| **ConsentGrant** | A domain entity representing a scoped, time-bounded, revocable permission granted by a user for a specific data use (e.g., expert access to household data). |
+| **ConsentGrant** | A scoped, time-bounded, revocable permission granted by a user for a specific data use. Schema and rules: `Knowledge/Canonical_Data_Model.md`. |
 | **Right to Erasure** | A user's right to have their data deleted. Amanaska products must support full account and data deletion, including deletion of intelligence models. |
 | **Breach Containment** | The architectural principle that a breach of one system layer must not expose data from another layer. Achieved via schema separation and least-privilege access. |
 

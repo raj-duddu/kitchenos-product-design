@@ -67,5 +67,5 @@ Mission    ← what we build (company-level)
 Philosophy ← how we build (practice-level)
     │
     ▼ operationalised as
-Operating Principles  ← the seven non-negotiable behaviours
+Operating Principles  ← the ten guiding principles (0–9)
 ```
