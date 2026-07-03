@@ -519,7 +519,7 @@ Follow this sequence when joining the KitchenOS team:
 
 ## Architecture Building Blocks
 
-The reusable architectural components — Household Decision Engine, Allergy Guard, Sync Engine, Household Timeline, AI Provider Abstraction, Receipt OCR Pipeline, Notification Engine, Domain Event Bus — are defined in one place:
+The reusable architectural components — Household Decision Engine, Allergy Guard, Sync Engine, Household Timeline, AI Provider Abstraction, Document Understanding, Notification Engine, Domain Event Bus — are defined in one place:
 
 > **`Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10** is the single source of truth for building blocks and their responsibilities.
 

@@ -73,7 +73,7 @@ At founding stage with two founders, "require approvals: 1" plus CODEOWNERS impl
 
 ## Known Debt
 
-- All 22 existing decision records (11 ADRs, 9 PDRs, 2 GDRs) predate enforcement and lack the `operating_principles:` frontmatter field. They surface as CI warnings. Backfill deliberately — citing principles is a judgment call, not a mechanical edit.
+- The 22 decision records that predate enforcement (11 ADRs, 9 PDRs, 2 GDRs) lack the `operating_principles:` frontmatter field and the `History` section. Both surface as CI warnings. Backfill deliberately — citing principles is a judgment call; History rows for pre-enforcement records can state `pre-dates History enforcement` with the original date.
 
 ---
 

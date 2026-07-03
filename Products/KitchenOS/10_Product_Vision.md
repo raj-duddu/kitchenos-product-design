@@ -1353,7 +1353,7 @@ Not as a permanent chat window.
 
 KitchenOS should feel instant, even when intelligence is still processing.
 
-Core flows must not wait for AI, OCR, sync, or marketplace systems.
+Core flows must not wait for AI, document understanding, sync, or marketplace systems.
 
 Performance principles:
 
@@ -1363,7 +1363,7 @@ Performance principles:
 - Pending states should be clear when accuracy matters.
 - Cook Mode and Shopping Mode should never feel blocked by network latency.
 - AI suggestions can arrive progressively after the core screen is usable.
-- Receipt OCR can process asynchronously while the user continues other tasks.
+- Receipt document understanding can process asynchronously while the user continues other tasks.
 - Sync should feel calm and recoverable, not alarming.
 
 Product rule:
@@ -1471,7 +1471,7 @@ Available offline:
 Unavailable or limited offline:
 
 - New AI generation.
-- Receipt OCR.
+- Receipt document understanding.
 - Cloud sync insights.
 
 Offline indicators:
@@ -1690,7 +1690,7 @@ Why this matters:
 
 Build in MVP-0:
 
-- Basic OCR.
+- Document Understanding extraction (ADR-012) — structured line items with per-field confidence.
 - Item extraction.
 - Manual correction UI.
 - Pantry update.
@@ -1702,7 +1702,7 @@ Build in MVP-1 if duplicate receipt detection is required:
 - Receipt date and time extraction.
 - Total amount extraction.
 - Receipt image hash.
-- OCR text hash.
+- Extraction text hash.
 - Item similarity check.
 
 Skip in MVP-0:
@@ -2084,7 +2084,7 @@ Scan Recent Receipt
 
 ### 50.2 Pantry-Light Path
 
-Best for users who want fast setup without OCR.
+Best for users who want fast setup without scanning receipts.
 
 ```text
 Add 5 to 10 Staples
@@ -3685,7 +3685,7 @@ KitchenOS should detect likely duplicates using:
 - Total amount.
 - Item list similarity.
 - Receipt image hash.
-- OCR text similarity.
+- Extraction text similarity.
 - Recently scanned receipts.
 
 Recommended UX:
@@ -4067,7 +4067,7 @@ The final product rule:
 
 - Which household members can see spending?
 - Which household members can edit pantry and meal plans?
-- Should receipt OCR be cloud-only at MVP?
+- Should receipt document understanding be cloud-only at MVP?
 - What data should be encrypted locally?
 - Which household members can view allergies, medical restrictions, and body goals?
 - What household data can experts access by default?

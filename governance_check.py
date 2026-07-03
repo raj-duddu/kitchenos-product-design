@@ -17,6 +17,7 @@ from the frontmatter of the documents that own the rules:
       enforced_decision_statuses     legal status values for decision records
       enforced_principles_field      frontmatter field citing Operating Principles
       enforced_no_delete_dirs        directories whose records are never deleted
+      enforced_history_section       section logging state transitions
 
 To change a rule: change the governing document (prose AND its enforced_*
 frontmatter, same commit). This script never needs to change for a rule
@@ -62,7 +63,8 @@ def load_enforcement(root: Path) -> dict:
                          "enforced_required_sections",
                          "enforced_decision_statuses",
                          "enforced_principles_field",
-                         "enforced_no_delete_dirs"],
+                         "enforced_no_delete_dirs",
+                         "enforced_history_section"],
     }
     config: dict = {}
     missing: list = []
@@ -158,12 +160,24 @@ def check(root: Path, cfg: dict, strict_files: set) -> tuple:
         if not is_decision:
             continue
 
+        text = md_file.read_text(encoding="utf-8")
+
         # Required sections in decision records
         if doc_type in section_types:
-            text = md_file.read_text(encoding="utf-8")
             for section in required_sections:
                 if section not in text:
                     errors.append(f"  {rel}: missing required section '{section}'")
+
+        # History section — state transitions recorded in the record itself
+        history_heading = f"## {cfg['enforced_history_section']}"
+        if history_heading not in text:
+            msg = (f"  {rel}: missing '{history_heading}' section — every state "
+                   f"change is logged in the record ({GOVERNANCE_DOC}, "
+                   f"Recording State Changes)")
+            if str(rel) in strict_files or str(md_file) in strict_files:
+                errors.append(msg)
+            else:
+                warnings.append(msg + "  [warning: pre-existing record]")
 
         # Operating Principles citation
         principles = fm.get(principles_field)

@@ -55,7 +55,7 @@ These terms have precise meanings within KitchenOS. Use them exactly as defined.
 | **MealSession** | A first-class domain aggregate representing a real-world cooking and eating event. Owns participants, portions, leftovers, and the pantry changes that result from confirmed cooking completion. The source of truth for all pantry deductions from food consumption. |
 | **ShoppingTrip** | A real-world purchasing event, initiated by a Shopping List and completed by receipt scan or manual confirmation. The source of truth for all pantry additions from purchasing. |
 | **Household Activity Lifecycle** | An architectural pattern (not a domain entity) describing the shared lifecycle all household activities follow: Planned → Started → In Progress → Completed → Domain Events produced. Applies to MealSession, ShoppingTrip, PantryCorrection, and WasteEvent. |
-| **Receipt OCR Pipeline** | The async process: Cloud Vision API scan → item extraction → pantry update → domain event → budget update. |
+| **Document Understanding** | The async capability that converts a scanned household document (receipts in MVP-0) into a structured proposal with per-field confidence for user confirmation. On confirmation: domain event → pantry update → budget update. Defined by ADR-012. |
 | **Sync Engine** | The mobile component managing the SQLite pending event queue, conflict resolution on reconnect, and online/offline transitions. |
 | **Staleness Indicator** | A visible UI signal that data may be outdated. Required whenever cached or offline data is shown. |
 | **Learning Impact** | A field on domain events indicating whether the event should influence future AI recommendations. Some corrections explicitly carry `no_learning_impact`. |
@@ -72,7 +72,7 @@ KitchenOS is organised into the following bounded contexts. Each context owns it
 | **Household** | Household, HouseholdMembership, roles, permissions, shared settings | `household.*` |
 | **Person** | Person, PersonProfile, age group, health profile | `person.*` |
 | **Profile & Safety** | Dietary restrictions, allergies, goals, household safety rules | `profile.*`, `safety.*` |
-| **Receipt** | Receipt scanning, OCR, item extraction, duplicate detection | `receipt.*` |
+| **Receipt** | Receipt scanning, document understanding, item extraction, duplicate detection | `receipt.*` |
 | **Pantry** | Pantry inventory, quantities, expiry, consumption, waste | `pantry.*` |
 | **Shopping** | Shopping lists, items, purchase status | `shopping.*` |
 | **Planning & Recipe** | Recipes, WeeklyMealPlans, MealPlans (intentions), MealRecommendations (ephemeral), substitutions | `planning.*` |

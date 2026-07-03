@@ -5,7 +5,7 @@ type: adr
 status: accepted
 owner: architecture
 depends_on: [ADR-010, GDR-002, GOV-001]
-referenced_by: []
+referenced_by: [DOC-010, DOC-020, DOC-040, DOC-050]
 operating_principles: ["1. Transform Complexity into Clarity", "4. AI Recommends. People Decide.", "5. Earn Trust Through Transparency", "6. Learn Continuously", "9. Simplicity Is a Feature"]
 tags: [receipts, ocr, document-understanding, llm, multimodal, ai-pipeline, pantry, privacy]
 date: 2026

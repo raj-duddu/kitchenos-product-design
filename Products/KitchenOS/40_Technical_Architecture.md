@@ -4,7 +4,7 @@ title: KitchenOS Technical Architecture
 type: architecture
 status: active
 owner: architecture
-depends_on: [DOC-020, ADR-001, ADR-002, ADR-003, ADR-004, ADR-005, ADR-006]
+depends_on: [DOC-020, ADR-001, ADR-002, ADR-003, ADR-004, ADR-005, ADR-006, ADR-012]
 referenced_by: [DOC-050]
 tags: [architecture, backend, ai, event-sourcing, offline, technology-stack, ddd, household-decision-engine, building-blocks]
 date: 2026
@@ -664,7 +664,7 @@ Example:
 
 Responsible for:
 
-- OCR extraction.
+- Document extraction via Document Understanding (multimodal LLM — ADR-012).
 - Item normalization.
 - Price mapping.
 - Store detection.
@@ -894,7 +894,7 @@ Profile and Safety
   -> allergies, dietary restrictions, goals, medical constraints
 
 Receipt
-  -> scanning, OCR, item extraction, duplicate detection, reversal
+  -> scanning, document understanding, item extraction, duplicate detection, reversal
 
 Pantry
   -> item creation, quantity changes, expiry, consumption, waste, correction
@@ -1129,7 +1129,7 @@ Responsibilities:
 
 Responsibilities:
 
-- OCR ingestion.
+- Document Understanding ingestion (ADR-012).
 - Item normalization.
 - Price mapping.
 
@@ -1602,7 +1602,7 @@ KitchenOS should run on **Google Cloud Platform (GCP)** for MVP-0.
 Rationale specific to KitchenOS:
 
 - Flutter is a Google product. Firebase integrates natively for auth, push notifications, and analytics with excellent Flutter SDK support.
-- Google Cloud Vision API is best-in-class for receipt and document OCR, which is a core MVP-0 feature.
+- Gemini multimodal models, reached through the AI Provider Abstraction, cover Document Understanding for receipts within the same ecosystem (ADR-012).
 - Cloud Run provides simple serverless container deployment for NestJS without Kubernetes complexity.
 - Firebase Authentication handles Google Sign-In and Apple Sign-In cleanly with less configuration than alternatives.
 - Future AI expansion using Vertex AI or Gemini stays within the same cloud ecosystem.
@@ -1624,7 +1624,7 @@ Flutter App (Firebase Auth, Firebase Cloud Messaging)
  ├── Cloud SQL (PostgreSQL)
  ├── Memorystore (Redis)
  ├── Cloud Storage (receipt images)
- ├── Cloud Vision API (receipt OCR)
+ ├── Multimodal LLM API (Document Understanding — ADR-012)
  └── Secret Manager (API keys, LLM tokens)
 ```
 
@@ -1649,13 +1649,13 @@ GitHub
 | Database | Cloud SQL (PostgreSQL) | Managed Postgres with automated backups. |
 | Cache | Memorystore (Redis) | Home screen state, AI recommendations, pantry summary. |
 | Object Storage | Cloud Storage | Receipt images, attachments. Metadata stored in Postgres. |
-| Receipt OCR | Cloud Vision API | Best-in-class document and receipt text extraction. |
+| Document Understanding | Multimodal LLM via AI Provider Abstraction | Structured receipt extraction with per-field confidence; model choice per AI Governance Model Evaluation (ADR-012). |
 | Authentication | Firebase Authentication | Email, Google, Apple Sign-In. Native Flutter SDK. |
 | Push Notifications | Firebase Cloud Messaging | Android and iOS notifications from a single API. |
 | Secrets | Secret Manager | API keys and credentials. Never hardcoded. |
 | CI/CD | GitHub Actions + Cloud Build | Automated builds, tests, and deployments. |
 | Monitoring | Cloud Logging + Cloud Error Reporting + Sentry | Crash tracking and production visibility. |
-| Job Queue | Cloud Tasks | Async receipt OCR processing. Add from MVP-0. |
+| Job Queue | Cloud Tasks | Async Document Understanding processing. Add from MVP-0. |
 
 **Connection pooling note:**
 
@@ -1815,7 +1815,7 @@ The system never silently serves outdated state. Cached recommendations, stale p
 *→ Operating Principle 7 (Truth Before Convenience): direct implementation. Implicit staleness is the most common way systems fake certainty.*
 
 **Manage, don't self-host.**
-In MVP-0, authentication, push notifications, AI models, OCR, and job queue infrastructure are all managed services. Self-hosting commodity infrastructure is a distraction from building the product.
+In MVP-0, authentication, push notifications, AI models, document understanding, and job queue infrastructure are all managed services. Self-hosting commodity infrastructure is a distraction from building the product.
 *→ Operating Principle 9 (Simplicity Is a Feature): absorb infrastructure complexity so we can focus on product complexity.*
 
 ### 37.10 Architecture Building Blocks
@@ -1829,7 +1829,7 @@ Building blocks are reusable architectural components that appear across multipl
 | **Sync Engine** | Manages the pending event queue in local SQLite, conflict resolution on reconnect, and online/offline state transitions. | All mobile flows, Offline UX |
 | **Household Timeline** | The event log read model. A filtered, human-readable projection of domain events for the user-facing activity history. | Household screen, Home, Corrections |
 | **AI Provider Abstraction** | Interface layer over AI providers (OpenAI, Gemini). Domain code never calls a provider directly. Enables provider switching without architectural changes. | Decision Engine, Recipe generation |
-| **Receipt OCR Pipeline** | Cloud Vision API call → async Cloud Tasks job → pantry update chain → event write → budget update. | Receipt scanning flow |
+| **Document Understanding** | Multimodal LLM extraction (via AI Provider Abstraction) → async Cloud Tasks job → structured proposal with per-field confidence → user confirmation → event write → pantry and budget update. | Receipt scanning flow (ADR-012) |
 | **Notification Engine** | Firebase Cloud Messaging delivery of household alerts, recommendation nudges, and sync completion events. | Home, Cook Mode, Shopping, Expert Marketplace |
 | **Domain Event Bus** | The `domain_events` append-only table and the write/dispatch logic around it. All domain modules emit events through this; none depend on it for reads. | All domain modules |
 
