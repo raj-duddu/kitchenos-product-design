@@ -2,7 +2,7 @@
 id: ADR-012
 title: Document Understanding Capability Replaces OCR-First Receipt Parsing
 type: adr
-status: Accepted
+status: accepted
 owner: architecture
 depends_on: [ADR-010, GDR-002, GOV-001]
 referenced_by: []
