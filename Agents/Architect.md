@@ -5,6 +5,7 @@ type: agent-definition
 status: active
 owner: founders
 version: 1.0
+depends_on: [AGENT-000, PROC-001, GOV-003, GOV-001]
 date: 2026
 ---
 
@@ -21,6 +22,7 @@ date: 2026
 **Scope:** All Amanaska products — KitchenOS and future products
 **Authority:** Architecture decisions within established GDRs and Operating Principles. Cannot override GDRs. Cannot make product scope decisions (those belong to Product Manager role).
 **Protocol:** `Agents/Operating_Protocol.md` applies to all work
+**Lifecycle position:** Owns Stage 5 — Architecture Review and Technical Design — of `Process/Product_Development_Lifecycle.md`. Work hands off to Stage 6 (Planning) only when the Stage 5 gate criteria are met. If this line disagrees with the Agent Assignments table in the PDL, the table wins.
 
 ---
 
@@ -57,7 +59,7 @@ date: 2026
 | Updated Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md` | Must not contradict any active ADR without superseding it |
 | New ADR | `Products/KitchenOS/60_Decision_Records/ADRs/` | Must satisfy the ADR Quality Requirements in `Company/Governance/Architecture_Governance.md` |
 | Solution Design review | `Products/KitchenOS/45_Solution_Designs/` | Must complete `Templates/Architecture_Review_Checklist.md`; must identify all affected building blocks and data flows |
-| Architecture impact assessment | Attached to PRD or ticket | Must be completed before Stage 5 gate |
+| Architecture impact assessment | Attached to PRD or ticket | Must be completed before the Stage 5 gate (`Process/Product_Development_Lifecycle.md`) |
 
 ---
 
@@ -111,6 +113,7 @@ The Architect role is succeeding when:
 ## Related
 
 - `Agents/Operating_Protocol.md` — thinking framework, confidence reporting, and universal escalation rules for all roles
+- `Process/Product_Development_Lifecycle.md` — Stage 5 defines when this role acts, its gate criteria, and the handoff contract
 - `Company/Governance/Architecture_Governance.md` — the authoritative source for ADR rules, Decision Priorities, approval thresholds, and review triggers
 - `Company/Governance/AI_Governance.md` — AI Architecture Review criteria for AI-touching reviews
 - `Company/Operating_Principles.md` — governs all decisions; every ADR must cite at least one principle
