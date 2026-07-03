@@ -53,7 +53,10 @@ These terms have precise meanings within KitchenOS. Use them exactly as defined.
 | **Consent Grant** | Explicit, scoped, time-bounded permission a Member gives an Expert to access specific household data. |
 | **Cook Mode** | A UI capability that facilitates a Meal Session. Guides users step-by-step through a recipe. Cook Mode does not directly update the Pantry — it drives a Meal Session to completion, and the completed Meal Session produces the pantry update events. |
 | **ShoppingTrip** | A real-world purchasing event, initiated by a Shopping List and completed by receipt scan or manual confirmation. The source of truth for all pantry additions from purchasing. |
-| **Household Activity Lifecycle** | An architectural pattern (not a domain entity) describing the shared lifecycle all household activities follow: Planned → Started → In Progress → Completed → Domain Events produced. Applies to MealSession, ShoppingTrip, PantryCorrection, and WasteEvent. |
+| **Household Activity Lifecycle** | An architectural pattern (not a domain entity). Staged activities (MealSession, ShoppingTrip) follow Planned → Started → In Progress → Completed → Domain Events produced. Lightweight activities (WasteEvent, PantryCorrection, GiveawayEvent) are single-step: user confirms → Domain Events produced. |
+| **WasteEvent** | A lightweight confirmed activity: food left the household as waste (thrown away, spilled, spoiled, expired). Produces `PantryItemThrownAway` or `PantryItemExpired`. Carries `waste_signal` learning impact. |
+| **PantryCorrection** | A lightweight confirmed activity: the pantry record was wrong (miscount, lost item, incorrect entry). Produces `PantryItemQuantityCorrected` or `PantryItemConsumptionCorrected`. A miscount is not a behaviour — usually `no_learning` or `correction_signal`. |
+| **GiveawayEvent** | A lightweight confirmed activity: an item left the household unconsumed and unwasted (donated, shared, given to family). Produces `PantryItemGivenAway`. Carries `surplus_signal` — often means over-purchasing, never counted as waste. |
 | **Document Understanding** | The async capability that converts a scanned household document (receipts in MVP-0) into a structured proposal with per-field confidence for user confirmation. On confirmation: domain event → pantry update → budget update. Defined by ADR-012. |
 | **Sync Engine** | The mobile component managing the SQLite pending event queue, conflict resolution on reconnect, and online/offline transitions. |
 | **Staleness Indicator** | A visible UI signal that data may be outdated. Required whenever cached or offline data is shown. |
@@ -117,8 +120,8 @@ The current food inventory of a Household.
 **Invariants:**
 - PantryItem quantity is never negative.
 - Quantity changes always produce a domain event — no silent mutations.
-- Deletions are modelled as `PantryItemThrownAway` or `PantryItemExpired` events, not hard deletes.
-- **Pantry state is derived exclusively from confirmed household activities.** The pantry is never updated by a recommendation, a recipe, or a prediction. Only completed ShoppingTrips, completed MealSessions, confirmed WasteEvents, and confirmed PantryCorrections may produce pantry update events. This is a non-negotiable invariant.
+- Deletions are modelled as `PantryItemThrownAway`, `PantryItemExpired`, or `PantryItemGivenAway` events, not hard deletes.
+- **Pantry state is derived exclusively from confirmed household activities.** The pantry is never updated by a recommendation, a recipe, or a prediction. Only completed ShoppingTrips, completed MealSessions, confirmed WasteEvents, confirmed GiveawayEvents, and confirmed PantryCorrections may produce pantry update events. This is a non-negotiable invariant.
 
 ### Person
 A human being in the KitchenOS domain. Global and portable across households.
@@ -214,6 +217,18 @@ A real-world purchasing event. The Execution Layer for shopping — the exact pa
 >         ↓                              ↓
 > Pantry ADDED              ←→  Pantry DEDUCTED
 > ```
+
+### Lightweight Confirmed Activities: WasteEvent, PantryCorrection, GiveawayEvent
+
+Not every confirmed activity is staged. MealSession and ShoppingTrip follow the full lifecycle because they take time in the real world. Waste, corrections, and giveaways happen in a moment — they are **single-step confirmed activities**: the user confirms, domain events are produced.
+
+**Invariants:**
+- Lightweight activities have no staged lifecycle and no persistent aggregate state — they exist as their confirmed domain events.
+- They are still activities under ADR-010: user-confirmed, never inferred. The AI may *suggest* one ("this looks expired") — only the user confirms it.
+- **WasteEvent** → `PantryItemThrownAway` or `PantryItemExpired` (`waste_signal`).
+- **PantryCorrection** → `PantryItemQuantityCorrected` or `PantryItemConsumptionCorrected` (`no_learning` or `correction_signal`).
+- **GiveawayEvent** → `PantryItemGivenAway` (`surplus_signal` — over-purchasing evidence, never counted as waste in learning or analytics).
+- Every removal reason in the UX (`Products/KitchenOS/10_Product_Vision.md`, Section 59) maps to exactly one of these doors or to MealSession. "Remove item" is always a reclassification into *why the item is gone* — never a hard delete.
 
 ### Budget
 Grocery spend tracking for a Household over a period.
@@ -715,6 +730,7 @@ Events are organised by bounded context. All events share the standard envelope 
 - `ItemConsumed`
 - `PantryItemThrownAway`
 - `PantryItemExpired`
+- `PantryItemGivenAway`
 - `PantryItemQuantityCorrected`
 - `PantryItemConsumptionCorrected`
 
@@ -803,7 +819,7 @@ payload             jsonb           event-specific data
 correlation_id      uuid            groups all events from one user action
 causation_id        uuid            the event_id that caused this event (nullable)
 reversal_of         uuid            the event_id being reversed or corrected (nullable)
-learning_impact     string          "learning" | "no_learning" | "waste_signal" | "correction_signal"
+learning_impact     string          "learning" | "no_learning" | "waste_signal" | "correction_signal" | "surplus_signal"
 privacy_level       string          "household" | "member_only" | "expert_scoped"
 ```
 
@@ -873,7 +889,8 @@ Household Intelligence Model
 │   ├── Pantry depletion rates per item category
 │   ├── Typical portion sizes per person per meal type
 │   ├── Leftover behaviour (how often leftovers are eaten vs wasted)
-│   └── Waste patterns per category (what expires unused)
+│   ├── Waste patterns per category (what expires unused)
+│   └── Surplus patterns (what is given away — over-purchasing signal)
 │
 ├── Shopping Model
 │   ├── Store preferences and frequency
@@ -904,7 +921,7 @@ Household Intelligence Model
 | Sub-Model | Primary event sources |
 |---|---|
 | Preference Model | `MealSessionCompleted`, `MealRecommendationRejected`, `MealPlanSwapped` |
-| Consumption Model | `PantryItemConsumed`, `PantryItemThrownAway`, `PantryItemExpired`, `LeftoversCreated` |
+| Consumption Model | `PantryItemConsumed`, `PantryItemThrownAway`, `PantryItemExpired`, `PantryItemGivenAway`, `LeftoversCreated` |
 | Shopping Model | `ShoppingTripConfirmed`, `ReceiptItemsConfirmed`, `ShoppingItemRemoved` |
 | Schedule Model | `MealSessionCompleted` (who participated), `MealPlanCancelled`, `WeeklyMealPlanAccepted` |
 | Cooking Confidence | `CookModeSessionAbandoned`, `MealSessionCompleted` (recipe complexity) |
