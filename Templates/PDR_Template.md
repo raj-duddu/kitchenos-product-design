@@ -62,6 +62,17 @@ What does this decision explicitly exclude or defer?
 
 ---
 
+## History
+
+Every state change gets a row. The PR is the evidence; this table is the readable record (see `Company/Governance/Architecture_Governance.md`, Recording State Changes).
+
+| Date | Change | By | Evidence |
+|---|---|---|---|
+| YYYY-MM-DD | Proposed | [author — role and/or person] | PR #N |
+| YYYY-MM-DD | Accepted | [reviewer — never the author] | PR #N review |
+
+---
+
 ## Related
 
 - `Products/KitchenOS/10_Product_Vision.md`, Section X
