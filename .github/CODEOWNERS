@@ -6,23 +6,23 @@
 #   "Require review from Code Owners" in branch protection.
 
 # Default: founders review everything.
-*                                           @RAJ-GITHUB-USERNAME
+*                                           @raj-duddu
 
 # Company constitution and governance — founder sign-off required.
 # (No ADR conflicting with GDR-001/002 may be Accepted without founder
 # sign-off; principles and GDRs govern all layers below.)
-/Company/                                   @RAJ-GITHUB-USERNAME
-/Company/Governance/                        @RAJ-GITHUB-USERNAME
-/Company/Operating_Principles.md            @RAJ-GITHUB-USERNAME
+/Company/                                   @raj-duddu
+/Company/Governance/                        @raj-duddu
+/Company/Operating_Principles.md            @raj-duddu
 
 # Decision records — architecture/product reviewer required.
 # "No single person approves their own ADR."
-/Products/KitchenOS/60_Decision_Records/    @RAJ-GITHUB-USERNAME
+/Products/KitchenOS/60_Decision_Records/    @raj-duddu
 
 # Agent operating manuals — changes alter how AI agents behave.
-/Agents/                                    @RAJ-GITHUB-USERNAME
+/Agents/                                    @raj-duddu
 
 # The gates themselves — changing the rules requires founder review.
-/.github/                                   @RAJ-GITHUB-USERNAME
-/knowledge_index.py                         @RAJ-GITHUB-USERNAME
-/governance_check.py                        @RAJ-GITHUB-USERNAME
+/.github/                                   @raj-duddu
+/knowledge_index.py                         @raj-duddu
+/governance_check.py                        @raj-duddu
