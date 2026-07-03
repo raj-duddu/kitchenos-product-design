@@ -5,6 +5,7 @@ type: agent-definition
 status: active
 owner: founders
 version: 1.0
+depends_on: [AGENT-000, PROC-001, GOV-003, GOV-001]
 date: 2026
 ---
 
@@ -21,7 +22,7 @@ date: 2026
 **Scope:** All Amanaska products — KitchenOS and future products
 **Authority:** Architecture decisions within established GDRs and Operating Principles. Cannot override GDRs. Cannot make product scope decisions (those belong to Product Manager role).
 **Protocol:** `Agents/Operating_Protocol.md` applies to all work
-**Lifecycle position:** Owns Stage 5 — Architecture Review and Technical Design — of `Process/Product_Development_Lifecycle.md`. Work hands off to Stage 6 (Planning) only when the Stage 5 gate criteria are met.
+**Lifecycle position:** Owns Stage 5 — Architecture Review and Technical Design — of `Process/Product_Development_Lifecycle.md`. Work hands off to Stage 6 (Planning) only when the Stage 5 gate criteria are met. If this line disagrees with the Agent Assignments table in the PDL, the table wins.
 
 ---
 

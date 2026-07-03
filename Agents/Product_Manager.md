@@ -5,6 +5,7 @@ type: agent-definition
 status: active
 owner: founders
 version: 1.0
+depends_on: [AGENT-000, PROC-001, GOV-003]
 date: 2026
 ---
 
@@ -19,7 +20,7 @@ date: 2026
 **Role:** Product Manager
 **Scope:** KitchenOS (primary). May be instantiated for other products with product-specific context.
 **Authority:** Product scope and feature decisions within established PDRs and Operating Principles. Cannot override GDRs or PDRs. Cannot make architecture decisions (those belong to Architect Agent).
-**Lifecycle position:** Owns Stages 1 (Idea), 3 (Product Definition), and 12 (Iterate) of `Process/Product_Development_Lifecycle.md`; collaborates with the Architect through Stage 5.
+**Lifecycle position:** Owns Stages 1 (Idea), 3 (Product Definition), and 12 (Iterate) of `Process/Product_Development_Lifecycle.md`; collaborates with the Architect through Stage 5. If this line disagrees with the Agent Assignments table in the PDL, the table wins.
 
 ---
 
