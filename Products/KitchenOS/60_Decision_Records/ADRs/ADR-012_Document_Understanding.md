@@ -2,7 +2,7 @@
 id: ADR-012
 title: Document Understanding Capability Replaces OCR-First Receipt Parsing
 type: adr
-status: proposed
+status: Accepted
 owner: architecture
 depends_on: [ADR-010, GDR-002, GOV-001]
 referenced_by: []
@@ -13,7 +13,7 @@ date: 2026
 
 # ADR-012: Document Understanding Capability Replaces OCR-First Receipt Parsing
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-03
 **Deciders:** Founders (proposed via Architect role)
 **Stage Gate:** Stage 5 of Product Development Lifecycle
@@ -113,7 +113,8 @@ As decided above.
 
 | Date | Change | By | Evidence |
 |---|---|---|---|
-| 2026-07-03 | Proposed | Claude (Architect role), sponsored by @raj-duddu | PR # (add on push) |
+| 2026-07-03 | Proposed | Claude (Architect role), sponsored by @raj-duddu | PR # 6 |
+| 2026-07-03 | Accepted | @raj-duddu | PR # 6 review |
 
 ---
 
