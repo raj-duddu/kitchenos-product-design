@@ -1,6 +1,21 @@
+---
+id: DOC-000
+title: Knowledge Map
+type: navigation
+status: active
+owner: founders
+scope: company-wide
+date: 2026
+enforced_governed_dirs: [Company, Products, Knowledge, Agents, Process]
+enforced_required_frontmatter: [id, title, type, status, owner]
+enforced_document_statuses: [draft, in-review, active, superseded, deprecated]
+---
+
 # Knowledge Map
 
 > **Every piece of information has exactly one authoritative home. Other documents may reference it but must not duplicate it.**
+
+> The `enforced_*` frontmatter fields above are the documentation-system rules CI enforces (`governance_check.py` reads them at runtime). Decision-record rules live in `Company/Governance/Architecture_Governance.md` the same way.
 
 This principle governs the entire documentation system. When in doubt about where something belongs, consult the Documentation Manifest below. When in doubt about whether to copy content, don't — link instead.
 
@@ -153,6 +168,7 @@ Product Design/
 | Document | File | Audience | Purpose | Status |
 |---|---|---|---|---|
 | Product Development Lifecycle | `Process/Product_Development_Lifecycle.md` | Everyone | How ideas become shipped features — 12 stages with gate criteria | Active |
+| Quality Gates | `Process/Quality_Gates.md` | Everyone | How governance rules are enforced in the GitHub flow — CI checks, review paths, branch protection | Active |
 
 ### Templates — Reusable Formats
 

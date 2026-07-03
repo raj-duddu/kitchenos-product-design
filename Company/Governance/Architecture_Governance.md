@@ -7,6 +7,12 @@ owner: founders
 scope: company-wide
 applies_to: [KitchenOS, HealthOS, FinanceOS, LearningOS, all future products]
 date: 2026
+enforced_decision_types: [adr, pdr, uxdr, gdr]
+enforced_section_types: [adr, pdr, uxdr]
+enforced_required_sections: [Context, Decision, Alternatives Considered, Consequences]
+enforced_decision_statuses: [proposed, accepted, superseded, deprecated]
+enforced_principles_field: operating_principles
+enforced_no_delete_dirs: [60_Decision_Records, GDRs]
 ---
 
 # Architecture Governance
@@ -28,6 +34,21 @@ This means:
 - No agent owns governance. Agents enforce it.
 
 This applies to all governance documents: `AI_Governance.md`, `Risk_Register.md`, GDRs, and this document.
+
+---
+
+## Machine-Readable Enforcement
+
+The `enforced_*` fields in this document's frontmatter are the parameters CI enforces (`governance_check.py` reads them at runtime — it contains no rules of its own). The prose in this document and those fields are two views of the same rule and must change together, in the same commit. If they disagree, the prose is the intent and the frontmatter is a bug.
+
+| Field | Enforces |
+|---|---|
+| `enforced_decision_types` | Which document types are decision records |
+| `enforced_section_types` | Which decision records must carry the required sections |
+| `enforced_required_sections` | ADR Quality Requirements — mandatory sections |
+| `enforced_decision_statuses` | ADR Lifecycle — legal status values |
+| `enforced_principles_field` | Every decision record cites Operating Principles |
+| `enforced_no_delete_dirs` | ADR Lifecycle — records under these directories are never deleted, only Superseded or Deprecated |
 
 ---
 

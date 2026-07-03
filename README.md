@@ -118,6 +118,11 @@ python knowledge_index.py
 # (exits 1 on broken references; planned-but-not-yet-created artifacts are warnings)
 python knowledge_index.py --check
 
+# Lint documents against governance rules (rules are read at runtime from
+# the enforced_* frontmatter of 00_Knowledge_Map.md and Architecture_Governance.md
+# — see Process/Quality_Gates.md)
+python governance_check.py
+
 # Show what a document depends on
 python knowledge_index.py --deps DOC-040
 
