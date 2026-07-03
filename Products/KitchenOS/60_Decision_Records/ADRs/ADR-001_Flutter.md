@@ -6,6 +6,7 @@ status: accepted
 owner: architecture
 depends_on: []
 referenced_by: [ADR-002, ADR-012]
+operating_principles: ["9. Simplicity Is a Feature"]
 tags: [mobile, flutter, dart, offline, firebase, riverpod, sqlite]
 date: 2026
 ---
@@ -86,6 +87,7 @@ Best possible performance and platform integration. Rejected because it requires
 |---|---|---|---|
 | 2026 | Accepted | Founders, Product Architect | pre-dates History enforcement |
 | 2026-07-03 | Amended — Cloud Vision mention overtaken by ADR-012; decision unaffected | @raj-duddu | PR # (add on merge) |
+| 2026-07-03 | Backfilled `operating_principles` (retrospective citation: Principle 9 — single codebase, small team) | @raj-duddu | PR # (add on merge) |
 
 ---
 

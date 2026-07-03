@@ -6,6 +6,7 @@ status: accepted
 owner: architecture
 depends_on: [ADR-001]
 referenced_by: [ADR-003, ADR-006, ADR-012]
+operating_principles: ["9. Simplicity Is a Feature"]
 tags: [cloud, gcp, firebase, cloud-run, cloud-sql, cloud-vision, infrastructure]
 date: 2026
 ---
@@ -86,6 +87,7 @@ Strong enterprise integrations. Rejected because it has no meaningful advantage 
 |---|---|---|---|
 | 2026 | Accepted | Founders, Product Architect | pre-dates History enforcement |
 | 2026-07-03 | Amended — OCR rationale element overtaken by ADR-012; decision unaffected | @raj-duddu | PR # (add on merge) |
+| 2026-07-03 | Backfilled `operating_principles` (retrospective citation: Principle 9 — managed services, no DevOps burden) | @raj-duddu | PR # (add on merge) |
 
 ---
 
