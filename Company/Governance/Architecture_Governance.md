@@ -117,7 +117,9 @@ CI enforces the presence of the History section (`enforced_history_section`): an
 
 A later record sometimes overtakes part of an earlier record's *rationale or context* without touching its *decision*. That is an **amendment**, not a supersession:
 
-- A dated amendment note is added directly below the earlier record's header, naming what is overtaken, what record overtakes it, and stating explicitly that the decision is unaffected.
+- A dated amendment note is added directly below the earlier record's header, in the standard form — every amendment reads identically for humans and parses identically for agents:
+
+  > **Amended YYYY-MM-DD by ADR-XXX** — scope: [what is overtaken]; decision: unchanged. [One-sentence summary.] See History.
 - A History row records the amendment.
 - The earlier record's `referenced_by` gains the later record, so impact analysis flows in both directions.
 - The original text is never edited — it remains what was true at decision time.

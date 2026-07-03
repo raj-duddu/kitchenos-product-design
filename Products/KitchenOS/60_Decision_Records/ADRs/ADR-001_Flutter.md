@@ -16,7 +16,7 @@ date: 2026
 **Date:** 2026
 **Deciders:** Founders, Product Architect
 
-> **Amended 2026-07-03:** the mention of Cloud Vision API among the Google-integration benefits is overtaken by ADR-012 — receipt extraction is now Document Understanding via a multimodal LLM behind the AI Provider Abstraction. The Flutter decision is unaffected. See History.
+> **Amended 2026-07-03 by ADR-012** — scope: the Cloud Vision API mention among the Google-integration benefits; decision: unchanged. Receipt extraction is now Document Understanding via a multimodal LLM behind the AI Provider Abstraction. See History.
 
 ---
 

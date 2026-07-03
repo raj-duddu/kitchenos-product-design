@@ -16,7 +16,7 @@ date: 2026
 **Date:** 2026
 **Deciders:** Founders, Product Architect
 
-> **Amended 2026-07-03:** the receipt-OCR element of this rationale (Cloud Vision API, including the Rekognition comparison under the AWS alternative) is overtaken by ADR-012 — Document Understanding via a multimodal LLM behind the AI Provider Abstraction. The GCP decision is unaffected; Gemini multimodal models keep Document Understanding within the same ecosystem, so the same-cloud argument survives with a different service filling the slot. See History.
+> **Amended 2026-07-03 by ADR-012** — scope: the receipt-OCR rationale element (Cloud Vision API, including the Rekognition comparison under the AWS alternative); decision: unchanged. Document Understanding via a multimodal LLM replaces Cloud Vision, and Gemini multimodal models keep it within the same ecosystem, so the same-cloud argument survives with a different service filling the slot. See History.
 
 ---
 
