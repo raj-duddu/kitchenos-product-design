@@ -1,0 +1,64 @@
+name: Docs Quality
+
+# Quality gates enforcing the governance rules in
+# Company/Governance/Architecture_Governance.md and 00_Knowledge_Map.md.
+# See Process/Quality_Gates.md for the full mapping of gate → rule.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  docs-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Gate 1 — every inline path, link, and document ID must resolve.
+      - name: Validate references (knowledge_index.py --check)
+        run: python3 knowledge_index.py --check
+
+      - name: Determine changed and deleted files
+        if: github.event_name == 'pull_request'
+        id: changed
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          BASE="origin/${{ github.base_ref }}"
+          echo "files=$(git diff --name-only --diff-filter=ACMR "$BASE"...HEAD -- '*.md' | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+          echo "deleted=$(git diff --name-only --diff-filter=D "$BASE"...HEAD | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+
+      # Gates 2 + 3 — deletion guard, frontmatter, unique IDs, required
+      # sections, Operating-Principles citation. This workflow contains no
+      # policy: governance_check.py reads every rule parameter at runtime
+      # from the enforced_* frontmatter of the governing documents.
+      - name: Governance lint (pull request — strict on changed files)
+        if: github.event_name == 'pull_request'
+        run: >
+          python3 governance_check.py
+          --strict-files ${{ steps.changed.outputs.files }}
+          --deleted-files ${{ steps.changed.outputs.deleted }}
+
+      - name: Governance lint (push)
+        if: github.event_name != 'pull_request'
+        run: python3 governance_check.py
+
+      # Gate 4 — surface downstream impact of changed documents so the
+      # reviewer knows what else needs review (Knowledge Map dependency chain).
+      - name: Impact analysis for changed documents
+        if: github.event_name == 'pull_request'
+        run: |
+          {
+            echo "## Downstream impact of changed documents"
+            echo ""
+            for f in ${{ steps.changed.outputs.files }}; do
+              [ -f "$f" ] || continue
+              DOC_ID=$(sed -n '/^---$/,/^---$/p' "$f" | sed -n 's/^id:[[:space:]]*//p' | head -1)
+              [ -n "$DOC_ID" ] || continue
+              echo '```'
+              python3 knowledge_index.py --impact "$DOC_ID"
+              echo '```'
+            done
+          } >> "$GITHUB_STEP_SUMMARY"

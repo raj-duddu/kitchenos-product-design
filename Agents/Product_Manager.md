@@ -93,6 +93,7 @@ date: 2026
 
 ## Related
 
+- `Agents/Operating_Protocol.md` — thinking framework, confidence reporting, and universal escalation rules for all roles
 - `Company/Operating_Principles.md` — principles 1, 5, 6, 7, 8 are directly relevant to product decisions
 - `Company/Governance/GDRs/GDR-001_Trusted_Decision_Support.md` — governs all AI output features
 - `Company/Governance/GDRs/GDR-002_Privacy_By_Design.md` — governs all data collection features

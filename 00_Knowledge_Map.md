@@ -1,6 +1,21 @@
+---
+id: DOC-000
+title: Knowledge Map
+type: navigation
+status: active
+owner: founders
+scope: company-wide
+date: 2026
+enforced_governed_dirs: [Company, Products, Knowledge, Agents, Process]
+enforced_required_frontmatter: [id, title, type, status, owner]
+enforced_document_statuses: [draft, in-review, active, superseded, deprecated]
+---
+
 # Knowledge Map
 
 > **Every piece of information has exactly one authoritative home. Other documents may reference it but must not duplicate it.**
+
+> The `enforced_*` frontmatter fields above are the documentation-system rules CI enforces (`governance_check.py` reads them at runtime). Decision-record rules live in `Company/Governance/Architecture_Governance.md` the same way.
 
 This principle governs the entire documentation system. When in doubt about where something belongs, consult the Documentation Manifest below. When in doubt about whether to copy content, don't — link instead.
 
@@ -98,6 +113,7 @@ Product Design/
 
 | Agent | File | Role | Scope |
 |---|---|---|---|
+| Operating Protocol | `Agents/Operating_Protocol.md` | How every role works — thinking framework, confidence reporting, universal escalation. Applies to AI and human role-holders alike | All roles, all products |
 | Architect | `Agents/Architect.md` | Technical architecture, ADRs, Solution Design review | All products |
 | Product Manager | `Agents/Product_Manager.md` | PRDs, PDRs, Product Vision, feature scoping | KitchenOS (primary) |
 | Engineering Manager | `Agents/Engineering_Manager.md` | Engineering Handbook, quality gates, implementation fidelity | KitchenOS |
@@ -153,6 +169,7 @@ Product Design/
 | Document | File | Audience | Purpose | Status |
 |---|---|---|---|---|
 | Product Development Lifecycle | `Process/Product_Development_Lifecycle.md` | Everyone | How ideas become shipped features — 12 stages with gate criteria | Active |
+| Quality Gates | `Process/Quality_Gates.md` | Everyone | How governance rules are enforced in the GitHub flow — CI checks, review paths, branch protection | Active |
 
 ### Templates — Reusable Formats
 

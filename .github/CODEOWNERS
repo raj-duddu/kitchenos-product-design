@@ -1,0 +1,28 @@
+# CODEOWNERS — encodes the approval thresholds from
+# Company/Governance/Architecture_Governance.md into the merge path.
+#
+# ⚠ Replace the placeholder handles below with real GitHub usernames
+#   (or team handles like @amanaska/founders) before enabling
+#   "Require review from Code Owners" in branch protection.
+
+# Default: founders review everything.
+*                                           @raj-duddu
+
+# Company constitution and governance — founder sign-off required.
+# (No ADR conflicting with GDR-001/002 may be Accepted without founder
+# sign-off; principles and GDRs govern all layers below.)
+/Company/                                   @raj-duddu
+/Company/Governance/                        @raj-duddu
+/Company/Operating_Principles.md            @raj-duddu
+
+# Decision records — architecture/product reviewer required.
+# "No single person approves their own ADR."
+/Products/KitchenOS/60_Decision_Records/    @raj-duddu
+
+# Agent operating manuals — changes alter how AI agents behave.
+/Agents/                                    @raj-duddu
+
+# The gates themselves — changing the rules requires founder review.
+/.github/                                   @raj-duddu
+/knowledge_index.py                         @raj-duddu
+/governance_check.py                        @raj-duddu

@@ -92,6 +92,7 @@ date: 2026
 
 ## Related
 
+- `Agents/Operating_Protocol.md` — thinking framework, confidence reporting, and universal escalation rules for all roles
 - `Products/KitchenOS/50_Engineering_Handbook.md` — primary working document
 - `Products/KitchenOS/20_Domain_Model.md` — source of truth for ubiquitous language and invariants
 - `Products/KitchenOS/45_Solution_Designs/` — LLD inputs for implementation
