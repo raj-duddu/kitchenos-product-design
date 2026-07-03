@@ -109,6 +109,25 @@ Before any new AI model is deployed to production:
 
 ---
 
+## AI Architecture Review
+
+Any architecture or Solution Design review that touches AI functionality must verify, in addition to the standard checklist (`Templates/Architecture_Review_Checklist.md`):
+
+| Verify | Governed by |
+|---|---|
+| Criticality level assigned at design time, uncertainty resolved upward | Decision Criticality Framework (this document) |
+| No autonomous action beyond what the Autonomous Action Policy permits | Autonomous Action Policy (this document) |
+| Confidence score, explanation, and reversibility fields present in the output contract | Confidence and Explanation Requirements (this document) |
+| Prompt ownership and versioning defined; output-changing prompt edits trigger re-classification | Prompt and Model Governance (this document) |
+| Context boundaries — what household data the feature may read, and that intelligence-layer data contains no PII | GDR-002; ADR-007, ADR-009 |
+| Hallucination and failure modes identified, with defined fallback behaviour when the model fails or confidence is below threshold | Confidence and Explanation Requirements (this document) |
+| Human approval points explicit for Medium+ criticality | What Is Never Delegated to AI (this document) |
+| Children's data constraints applied if any household member may be a child | Children's Data (this document) |
+
+This section defines *what* is verified. The Architect role (or any reviewer) enforces it; it does not own it.
+
+---
+
 ## AI Quality Metrics
 
 | Metric | Target | Notes |

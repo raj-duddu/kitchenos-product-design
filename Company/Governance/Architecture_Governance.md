@@ -52,6 +52,24 @@ The `enforced_*` fields in this document's frontmatter are the parameters CI enf
 
 ---
 
+## Decision Priorities
+
+When evaluating architectural alternatives, prefer the option that maximises, in this order:
+
+1. **Alignment with Operating Principles and GDRs** — an option that conflicts with a principle or GDR is disqualified, not deprioritised.
+2. **Domain correctness** — respects bounded contexts, aggregate boundaries, business invariants, and the dependency direction. A simple design built on a wrong model is worse than a complex one on a correct model.
+3. **Simplicity** — the least machinery that solves the problem (Principle 9: Simplicity Is a Feature). Prefer boring technology and existing patterns over new ones.
+4. **Long-term maintainability and reversibility** — how hard is this to change or undo when we learn more?
+5. **Reuse across products** — does this create or strengthen a capability future products can share?
+6. **Performance** — sufficient for the product requirement; optimise beyond that only with evidence.
+7. **Cost** — infrastructure and operational cost, within the constraints above.
+
+A lower criterion never outranks a higher one. If two alternatives are genuinely tied after applying all seven, that is an escalation: document both in the ADR and flag for human decision — do not pick arbitrarily.
+
+This ordering exists so that different evaluators — human architects, AI agents, different AI models — optimise for the same things.
+
+---
+
 ## When an ADR is Required
 
 Write an ADR when any of the following is true:

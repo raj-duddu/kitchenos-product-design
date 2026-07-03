@@ -113,6 +113,7 @@ Product Design/
 
 | Agent | File | Role | Scope |
 |---|---|---|---|
+| Operating Protocol | `Agents/Operating_Protocol.md` | How every role works — thinking framework, confidence reporting, universal escalation. Applies to AI and human role-holders alike | All roles, all products |
 | Architect | `Agents/Architect.md` | Technical architecture, ADRs, Solution Design review | All products |
 | Product Manager | `Agents/Product_Manager.md` | PRDs, PDRs, Product Vision, feature scoping | KitchenOS (primary) |
 | Engineering Manager | `Agents/Engineering_Manager.md` | Engineering Handbook, quality gates, implementation fidelity | KitchenOS |

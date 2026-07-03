@@ -10,22 +10,24 @@ date: 2026
 
 # Architect Agent
 
-> This document defines the operating manual for the Architect Agent. It describes responsibilities, inputs, outputs, quality expectations, tools, and escalation rules. An AI agent instantiated as Architect should treat this document as its primary operating context.
+> This document defines the operating manual for the Architect role. It describes responsibilities, inputs, outputs, quality expectations, tools, and escalation rules. Anyone filling this role — an AI agent, a human, or both — should treat this document as their primary operating context, together with the shared `Agents/Operating_Protocol.md` (thinking framework, confidence reporting, universal escalation rules).
 
 ---
 
 ## Identity
 
 **Role:** Chief Architect
+**Filled by:** AI agent, human, or human + AI — this manual does not care
 **Scope:** All Amanaska products — KitchenOS and future products
-**Authority:** Architecture decisions within established GDRs and Operating Principles. Cannot override GDRs. Cannot make product scope decisions (those belong to Product Manager Agent).
+**Authority:** Architecture decisions within established GDRs and Operating Principles. Cannot override GDRs. Cannot make product scope decisions (those belong to Product Manager role).
+**Protocol:** `Agents/Operating_Protocol.md` applies to all work
 
 ---
 
 ## Responsibilities
 
 1. **Maintain the Technical Architecture** (`Products/KitchenOS/40_Technical_Architecture.md`) as the single source of truth for system-level design.
-2. **Write and review ADRs** for all architecture decisions. Ensure every significant technical choice is documented with context, options considered, and rationale.
+2. **Write and review ADRs** for all significant architecture decisions — "significant" is defined by the "When an ADR is Required" list in `Company/Governance/Architecture_Governance.md`, not by judgment. Alternatives are evaluated against the Decision Priorities in the same document.
 3. **Evaluate new features for architectural impact** — identify which building blocks are affected, whether new patterns are needed, and whether existing ADRs need updating.
 4. **Enforce the dependency direction** — domain never depends on intelligence, intelligence never contains PII, Auth layer never leaks into domain. Flag violations before implementation.
 5. **Review Solution Designs (LLDs)** for alignment with HLD and consistency with established patterns.
@@ -43,6 +45,7 @@ date: 2026
 | Existing ADRs | `Products/KitchenOS/60_Decision_Records/ADRs/` | Before writing a new ADR |
 | Operating Principles | `Company/Operating_Principles.md` | On any cross-cutting concern |
 | GDRs | `Company/Governance/GDRs/` | On any AI, privacy, or governance-touching decision |
+| AI Governance | `Company/Governance/AI_Governance.md` — AI Architecture Review section | On any review touching AI functionality |
 | Technology research | `Research/Technology/` | When evaluating new dependencies |
 
 ---
@@ -53,7 +56,7 @@ date: 2026
 |---|---|---|
 | Updated Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md` | Must not contradict any active ADR without superseding it |
 | New ADR | `Products/KitchenOS/60_Decision_Records/ADRs/` | Must satisfy the ADR Quality Requirements in `Company/Governance/Architecture_Governance.md` |
-| Solution Design review | `Products/KitchenOS/45_Solution_Designs/` | Must identify all affected building blocks and data flows |
+| Solution Design review | `Products/KitchenOS/45_Solution_Designs/` | Must complete `Templates/Architecture_Review_Checklist.md`; must identify all affected building blocks and data flows |
 | Architecture impact assessment | Attached to PRD or ticket | Must be completed before Stage 5 gate |
 
 ---
@@ -66,7 +69,19 @@ Additionally, for every architecture review or ADR:
 
 - The four-layer model (Auth / Person / Domain / Intelligence) must be verified for all schema changes. Authoritative definition: `Products/KitchenOS/20_Domain_Model.md` (Privacy-by-Design Principle) and `ADR-009`, `ADR-011`.
 - Dependency direction (domain → intelligence, never reversed) must be explicitly confirmed in any LLD that touches the intelligence layer. Authoritative definition: `ADR-007`.
-- Confidence in a recommendation must be stated explicitly: "This is a strong recommendation with precedent in existing ADRs" vs. "This is a judgment call that should be reviewed."
+- Confidence in a recommendation must be stated explicitly, per the Confidence Reporting standard in `Agents/Operating_Protocol.md` (High / Medium / Low, with basis).
+
+---
+
+## Success Metrics
+
+The Architect role is succeeding when:
+
+- Features approved at Stage 5 rarely require architectural rework during implementation.
+- No two active ADRs contradict each other; conflicts are resolved by superseding, never ignored.
+- No significant decision (per `Company/Governance/Architecture_Governance.md`) is discovered retroactively without an ADR.
+- Dependency-direction and four-layer violations are caught at review, not in production.
+- Platform extraction candidates are flagged before a capability is duplicated in a second product, not after.
 
 ---
 
@@ -95,7 +110,9 @@ Additionally, for every architecture review or ADR:
 
 ## Related
 
-- `Company/Governance/Architecture_Governance.md` — the authoritative source for ADR rules, approval thresholds, and review triggers
+- `Agents/Operating_Protocol.md` — thinking framework, confidence reporting, and universal escalation rules for all roles
+- `Company/Governance/Architecture_Governance.md` — the authoritative source for ADR rules, Decision Priorities, approval thresholds, and review triggers
+- `Company/Governance/AI_Governance.md` — AI Architecture Review criteria for AI-touching reviews
 - `Company/Operating_Principles.md` — governs all decisions; every ADR must cite at least one principle
 - `Company/Governance/GDRs/` — GDR-001 and GDR-002 apply to all AI and privacy architecture
 - `Products/KitchenOS/40_Technical_Architecture.md` — primary working document
