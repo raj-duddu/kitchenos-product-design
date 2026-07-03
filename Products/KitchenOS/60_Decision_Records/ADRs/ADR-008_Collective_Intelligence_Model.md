@@ -182,5 +182,5 @@ Rejected because it violates the product principle "Trust is earned through tran
 
 - ADR-004: Domain-Driven Event Sourcing (domain events are the raw input to the anonymisation pipeline)
 - ADR-007: Household Intelligence Model (the per-household counterpart to this collective model)
-- `Knowledge/10_Product_Vision.md`, Section 54A: Collective Intelligence and Strategic Moat (product explanation)
-- `Knowledge/40_Technical_Architecture.md`, Section 36A: Collective Intelligence Architecture (architectural specification)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 54A: Collective Intelligence and Strategic Moat (product explanation)
+- `Products/KitchenOS/40_Technical_Architecture.md`, Section 36A: Collective Intelligence Architecture (architectural specification)

@@ -114,5 +114,5 @@ Rejected because:
 ## Related
 
 - PDR-002: Household as Primary Unit (profiles are household-level, not individual-level)
-- `Knowledge/10_Product_Vision.md`, Section 12: Household Intelligence Profiles
+- `Products/KitchenOS/10_Product_Vision.md`, Section 12: Household Intelligence Profiles
 - ADR-007: Household Intelligence Model Separation (the intelligence each profile requires lives in the Household Intelligence Model)

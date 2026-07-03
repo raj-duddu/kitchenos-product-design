@@ -184,5 +184,5 @@ Levels 1 and 2 are hard filters — violations block recommendations. Levels 3�
 - GDR-001 — Trusted Decision Support, Not Autonomous Diagnosis (the policy that Level 1 conflicts are never autonomous)
 - PDR-002 — Household as primary unit, not individual
 - PDR-007 — Three-object meal lifecycle
-- `Knowledge/20_Domain_Model.md` — PersonProfile invariants (allergies and goals), household_safety_rules derivation
-- `Knowledge/40_Technical_Architecture.md` — Household Decision Engine, Allergy Guard
+- `Products/KitchenOS/20_Domain_Model.md` — PersonProfile invariants (allergies and goals), household_safety_rules derivation
+- `Products/KitchenOS/40_Technical_Architecture.md` — Household Decision Engine, Allergy Guard

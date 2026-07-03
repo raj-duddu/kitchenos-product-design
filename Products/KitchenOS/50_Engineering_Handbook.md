@@ -12,7 +12,7 @@ date: 2026
 
 # KitchenOS: Engineering Handbook
 
-> This document is the authoritative source for how the KitchenOS engineering team works: MVP tech stack, testing philosophy, coverage targets, CI/CD pipeline, and engineering principles. Architecture decisions live in `40_Technical_Architecture.md` and `60_ADRs/`.
+> This document is the authoritative source for how the KitchenOS engineering team works: MVP tech stack, testing philosophy, coverage targets, CI/CD pipeline, and engineering principles. Architecture decisions live in `40_Technical_Architecture.md` and `60_Decision_Records/ADRs/`.
 
 ---
 

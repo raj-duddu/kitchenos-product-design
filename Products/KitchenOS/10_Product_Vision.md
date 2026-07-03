@@ -12,7 +12,7 @@ date: 2026
 
 # KitchenOS: Product Vision
 
-> This document is the authoritative source for what KitchenOS is, why it exists, how it looks to users, and the phased plan to build it. Technical implementation decisions live in `40_Technical_Architecture.md`. Engineering practices live in `50_Engineering_Handbook.md`. Architectural decisions live in `60_ADRs/`.
+> This document is the authoritative source for what KitchenOS is, why it exists, how it looks to users, and the phased plan to build it. Technical implementation decisions live in `40_Technical_Architecture.md`. Engineering practices live in `50_Engineering_Handbook.md`. Architectural decisions live in `60_Decision_Records/ADRs/`.
 
 ---
 
@@ -495,7 +495,7 @@ Switching household is an application-level action. It changes which household a
 > "Home: Your spinach expires tomorrow."
 > "Parents: Milk is running low."
 
-**Important distinction:** "Active Household" is a session concept, not a business concept. It exists while the user is using the app. It does not persist when the app is closed. The domain model — Household, HouseholdMembership, Pantry, Events — exists regardless of whether anyone is logged in. The application layer resolves the active household at login and holds it in session context. See `Knowledge/40_Technical_Architecture.md`, Section 23A.
+**Important distinction:** "Active Household" is a session concept, not a business concept. It exists while the user is using the app. It does not persist when the app is closed. The domain model — Household, HouseholdMembership, Pantry, Events — exists regardless of whether anyone is logged in. The application layer resolves the active household at login and holds it in session context. See `Products/KitchenOS/40_Technical_Architecture.md`, Section 23A.
 
 ---
 
@@ -2320,7 +2320,7 @@ Household Decision Engine
   └── Recommendation Engine  ←  uses both to produce guidance
 ```
 
-Full architectural specification: `Knowledge/40_Technical_Architecture.md`, Section 24A.
+Full architectural specification: `Products/KitchenOS/40_Technical_Architecture.md`, Section 24A.
 
 ---
 
@@ -2556,7 +2556,7 @@ The distinction that matters is not item-level versus aggregate. It is **identif
 
 The Collective Intelligence Model is the primary long-term price strategy. Grocery API partnerships are supplementary, not foundational.
 
-Full architectural specification: `Knowledge/40_Technical_Architecture.md`, Section 36A.
+Full architectural specification: `Products/KitchenOS/40_Technical_Architecture.md`, Section 36A.
 
 ---
 

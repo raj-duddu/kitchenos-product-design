@@ -78,7 +78,7 @@ Users must be able to:
 - Export their data.
 - Delete their account and all associated data.
 
-This is a product requirement, not just a legal obligation. See Intelligence Layer transparency requirements in `Knowledge/20_Domain_Model.md`.
+This is a product requirement, not just a legal obligation. See Intelligence Layer transparency requirements in `Products/KitchenOS/20_Domain_Model.md`.
 
 ### 5. Minimise data in motion
 
@@ -149,5 +149,5 @@ The upfront cost is higher. The long-term cost — in user trust, regulatory ris
 - ADR-009 — Privacy-by-design and identity isolation (architectural implementation)
 - ADR-011 — Person as a global domain concept
 - PDR-006 — Collective Intelligence participation is explicit opt-in
-- `Knowledge/20_Domain_Model.md` — Privacy-by-Design Principle section and Intelligence Layer transparency requirements
-- `Knowledge/40_Technical_Architecture.md`, Section 23 — Four-layer model and physical separation
+- `Products/KitchenOS/20_Domain_Model.md` — Privacy-by-Design Principle section and Intelligence Layer transparency requirements
+- `Products/KitchenOS/40_Technical_Architecture.md`, Section 23 — Four-layer model and physical separation

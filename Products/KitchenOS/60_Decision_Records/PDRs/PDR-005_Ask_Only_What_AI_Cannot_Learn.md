@@ -135,6 +135,6 @@ Partially accepted — but only for the confirmation pattern described above, no
 ## Related
 
 - PDR-003: Home Screen Answers a Question (same philosophy — the product should reduce friction, not add it)
-- `Knowledge/10_Product_Vision.md`, Section 50: Onboarding Strategy
-- `Knowledge/10_Product_Vision.md`, Section 50A: Household Intelligence Model — Three Stages of Learning
+- `Products/KitchenOS/10_Product_Vision.md`, Section 50: Onboarding Strategy
+- `Products/KitchenOS/10_Product_Vision.md`, Section 50A: Household Intelligence Model — Three Stages of Learning
 - ADR-007: Household Intelligence Model Separation (the intelligence model stores what is learned)

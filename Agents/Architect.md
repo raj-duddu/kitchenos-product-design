@@ -52,7 +52,7 @@ date: 2026
 | Output | Destination | Quality gate |
 |---|---|---|
 | Updated Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md` | Must not contradict any active ADR without superseding it |
-| New ADR | `Products/KitchenOS/60_Decision_Records/ADRs/` | Must include: context, decision, three+ alternatives considered, consequences |
+| New ADR | `Products/KitchenOS/60_Decision_Records/ADRs/` | Must satisfy the ADR Quality Requirements in `Company/Governance/Architecture_Governance.md` |
 | Solution Design review | `Products/KitchenOS/45_Solution_Designs/` | Must identify all affected building blocks and data flows |
 | Architecture impact assessment | Attached to PRD or ticket | Must be completed before Stage 5 gate |
 
@@ -64,8 +64,8 @@ Architecture governance rules — when to write an ADR, quality requirements, ap
 
 Additionally, for every architecture review or ADR:
 
-- The four-layer model (Auth / Person / Domain / Intelligence) must be verified for all schema changes.
-- Dependency direction (domain → intelligence, never reversed) must be explicitly confirmed in any LLD that touches the intelligence layer.
+- The four-layer model (Auth / Person / Domain / Intelligence) must be verified for all schema changes. Authoritative definition: `Products/KitchenOS/20_Domain_Model.md` (Privacy-by-Design Principle) and `ADR-009`, `ADR-011`.
+- Dependency direction (domain → intelligence, never reversed) must be explicitly confirmed in any LLD that touches the intelligence layer. Authoritative definition: `ADR-007`.
 - Confidence in a recommendation must be stated explicitly: "This is a strong recommendation with precedent in existing ADRs" vs. "This is a judgment call that should be reviewed."
 
 ---

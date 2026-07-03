@@ -137,5 +137,5 @@ Rejected because:
 - PDR-001: Food Decisions Before Fitness (product boundary — household data is used for food decisions first)
 - PDR-002: Household as Primary Unit (the unit of contribution is the household, not the individual)
 - ADR-008: Collective Intelligence Model with Explicit Opt-In Consent (architectural implementation)
-- `Knowledge/10_Product_Vision.md`, Section 54A: Collective Intelligence and Strategic Moat
-- `Knowledge/40_Technical_Architecture.md`, Section 36A: Collective Intelligence Architecture
+- `Products/KitchenOS/10_Product_Vision.md`, Section 54A: Collective Intelligence and Strategic Moat
+- `Products/KitchenOS/40_Technical_Architecture.md`, Section 36A: Collective Intelligence Architecture

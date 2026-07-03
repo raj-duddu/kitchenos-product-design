@@ -12,13 +12,13 @@ date: 2026
 
 # KitchenOS: Technical Architecture
 
-> This document is the authoritative source for how KitchenOS is built: the AI architecture, backend design, event sourcing model, offline strategy, technology stack, architecture principles, and building blocks. Product decisions live in `10_Product_Vision.md`. Domain entity definitions live in `20_Domain_Model.md`. Specific technology choices are recorded in `60_ADRs/`.
+> This document is the authoritative source for how KitchenOS is built: the AI architecture, backend design, event sourcing model, offline strategy, technology stack, architecture principles, and building blocks. Product decisions live in `10_Product_Vision.md`. Domain entity definitions live in `20_Domain_Model.md`. Specific technology choices are recorded in `60_Decision_Records/ADRs/`.
 
 ---
 
 ## 23. Identity Service and Data Minimisation Architecture
 
-Full product-level rationale: `Knowledge/10_Product_Vision.md`, Sections 8.10 and 8.11. Architectural decision: `ADR-009`.
+Full product-level rationale: `Products/KitchenOS/10_Product_Vision.md`, Sections 8.10 and 8.11. Architectural decision: `ADR-009`.
 
 ### Governing Principle
 
@@ -108,7 +108,7 @@ A user logging in on a new device authenticates via the Identity Service. `ident
 
 It exists only while a user has an active session. It does not persist when the app is closed. It is not stored in the domain model or written to `domain_events`.
 
-Full domain model definitions: `Knowledge/20_Domain_Model.md`, Ubiquitous Language.
+Full domain model definitions: `Products/KitchenOS/20_Domain_Model.md`, Ubiquitous Language.
 
 ---
 
@@ -367,7 +367,7 @@ This allows KitchenOS to support decisions without asking the user repeatedly:
 
 This is a first-class architectural artifact — distinct from the Domain Model, distinct from the User Profile, and distinct from the Recommendation Engine. It is the reasoning substrate of the Household Decision Engine.
 
-Full product-level explanation: `Knowledge/10_Product_Vision.md`, Section 50A.
+Full product-level explanation: `Products/KitchenOS/10_Product_Vision.md`, Section 50A.
 
 ### Why a Separate Layer
 
@@ -388,7 +388,7 @@ One is a recorded event. One is a derived inference. They must never be mixed in
 
 ### Structure
 
-Full sub-model specification: `Knowledge/20_Domain_Model.md`, Intelligence Layer section.
+Full sub-model specification: `Products/KitchenOS/20_Domain_Model.md`, Intelligence Layer section.
 
 ```text
 Household Intelligence Model
@@ -560,7 +560,7 @@ Every learned preference in the Intelligence Model must be:
 - **Editable** — the user can correct any inference.
 - **Resettable** — the user can erase any learned preference.
 
-This is a product requirement, not just a UX nicety. See `Knowledge/10_Product_Vision.md`, Section 50A for the UX specification.
+This is a product requirement, not just a UX nicety. See `Products/KitchenOS/10_Product_Vision.md`, Section 50A for the UX specification.
 
 ### Scope by MVP Phase
 
@@ -1203,7 +1203,7 @@ Final state: derived from event sequence
 
 ## 25. Household Activity Lifecycle Pattern
 
-Full product context: `Knowledge/10_Product_Vision.md`. Governing ADR: `ADR-010`.
+Full product context: `Products/KitchenOS/10_Product_Vision.md`. Governing ADR: `ADR-010`.
 
 > **The pantry is never updated by a recommendation, a recipe, or a prediction. It is only updated by confirmed household activities.**
 
@@ -1340,7 +1340,7 @@ Events
 
 ## 36A. Collective Intelligence Architecture
 
-Full product-level explanation and consent model: `Knowledge/10_Product_Vision.md`, Section 54A.
+Full product-level explanation and consent model: `Products/KitchenOS/10_Product_Vision.md`, Section 54A.
 
 ### Purpose
 

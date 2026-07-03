@@ -36,7 +36,7 @@
 
 ## Domain Model
 
-- [ ] If new entities or events were introduced: `Knowledge/20_Domain_Model.md` updated.
+- [ ] If new entities or events were introduced: `Products/KitchenOS/20_Domain_Model.md` updated.
 - [ ] If new business invariants were introduced: added to Domain Model.
 
 ---

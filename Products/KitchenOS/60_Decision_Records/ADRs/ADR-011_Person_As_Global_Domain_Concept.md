@@ -190,6 +190,6 @@ Rejected because:
 - ADR-009: Privacy-by-Design — Identity Isolation and Data Minimisation
 - ADR-007: Household Intelligence Model as a Separate Architectural Layer
 - ADR-008: Collective Intelligence Model with Explicit Opt-In
-- `Knowledge/20_Domain_Model.md`: Person aggregate, four-layer connection diagram
-- `Knowledge/40_Technical_Architecture.md`, Section 23: Four-Layer Model
-- `Knowledge/10_Product_Vision.md`, Sections 8.11 and 9A: Four Layers and Amanaska Platform Architecture
+- `Products/KitchenOS/20_Domain_Model.md`: Person aggregate, four-layer connection diagram
+- `Products/KitchenOS/40_Technical_Architecture.md`, Section 23: Four-Layer Model
+- `Products/KitchenOS/10_Product_Vision.md`, Sections 8.11 and 9A: Four Layers and Amanaska Platform Architecture

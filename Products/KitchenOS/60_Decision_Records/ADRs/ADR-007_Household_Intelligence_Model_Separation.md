@@ -130,5 +130,5 @@ Rejected because:
 - ADR-004: Domain-Driven Event Sourcing (domain events are the input to the Intelligence Model)
 - ADR-005: Modular Monolith (intelligence model lives in its own module)
 - ADR-008: Collective Intelligence Model (the network-level counterpart to this per-household model)
-- `Knowledge/10_Product_Vision.md`, Section 50A: Household Intelligence Model (product explanation)
-- `Knowledge/40_Technical_Architecture.md`, Section 24A: Household Intelligence Model (architectural specification)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 50A: Household Intelligence Model (product explanation)
+- `Products/KitchenOS/40_Technical_Architecture.md`, Section 24A: Household Intelligence Model (architectural specification)

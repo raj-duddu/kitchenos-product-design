@@ -306,7 +306,7 @@ Key decisions reflected in the data model:
 - **Age range, not exact age.** The system stores `age_group` (Adult, Child, Teen) and an optional `age_range` (e.g. 25–35) where needed for nutrition estimation. Exact birth dates are not required.
 - **Sensitive data is scoped.** Height, weight, and medical conditions are stored only on the member who provides them, only when an active goal requires them, and are never visible to other household members by default.
 
-See `Knowledge/10_Product_Vision.md`, Sections 8.10 and 8.11. See `ADR-009` for the full architectural decision.
+See `Products/KitchenOS/10_Product_Vision.md`, Sections 8.10 and 8.11. See `ADR-009` for the full architectural decision.
 
 ---
 

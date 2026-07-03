@@ -181,6 +181,6 @@ Rejected because:
 - ADR-004: Domain-Driven Event Sourcing (domain events carry `member_id`, not `user_id` or name)
 - ADR-007: Household Intelligence Model Separation (intelligence model operates on member_id)
 - ADR-008: Collective Intelligence Model (anonymisation pipeline reads intelligence schema only)
-- `Knowledge/10_Product_Vision.md`, Sections 8.10 and 8.11: Data Minimisation and Identity Isolation principles
-- `Knowledge/20_Domain_Model.md`: Privacy-by-Design note and refactored data model
-- `Knowledge/40_Technical_Architecture.md`, Section 23: Identity Service and Data Minimisation Architecture
+- `Products/KitchenOS/10_Product_Vision.md`, Sections 8.10 and 8.11: Data Minimisation and Identity Isolation principles
+- `Products/KitchenOS/20_Domain_Model.md`: Privacy-by-Design note and refactored data model
+- `Products/KitchenOS/40_Technical_Architecture.md`, Section 23: Identity Service and Data Minimisation Architecture

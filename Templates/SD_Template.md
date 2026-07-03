@@ -9,7 +9,7 @@
 **Created:** YYYY-MM-DD
 **Last Updated:** YYYY-MM-DD
 
-> This document is the feature-level technical design (LLD) for [Feature Name]. It bridges the system-level architecture in `Knowledge/40_Technical_Architecture.md` and the actual code. It answers: **"How specifically is this feature designed at the module, class, and data level?"**
+> This document is the feature-level technical design (LLD) for [Feature Name]. It bridges the system-level architecture in `Products/KitchenOS/40_Technical_Architecture.md` and the actual code. It answers: **"How specifically is this feature designed at the module, class, and data level?"**
 
 ---
 
@@ -36,7 +36,7 @@ What is and isn't covered by this Solution Design.
 
 How does this feature fit into the existing system architecture?
 
-- **Bounded context:** Which bounded context does this feature live in? (Reference: `Knowledge/20_Domain_Model.md`)
+- **Bounded context:** Which bounded context does this feature live in? (Reference: `Products/KitchenOS/20_Domain_Model.md`)
 - **Backend module:** Which NestJS module handles this?
 - **Flutter layer:** Which feature folder / Riverpod provider manages this?
 - **New infrastructure:** Any new GCP services, queues, or storage needed?
@@ -49,9 +49,9 @@ List any changes to the Domain Model required before implementation.
 
 | Change | Type | Document |
 |---|---|---|
-| New entity: `ExampleEntity` | New | Update `Knowledge/20_Domain_Model.md` |
-| New event: `ExampleHappened` | New | Update `Knowledge/20_Domain_Model.md` |
-| Modified invariant: ... | Modified | Update `Knowledge/20_Domain_Model.md` |
+| New entity: `ExampleEntity` | New | Update `Products/KitchenOS/20_Domain_Model.md` |
+| New event: `ExampleHappened` | New | Update `Products/KitchenOS/20_Domain_Model.md` |
+| Modified invariant: ... | Modified | Update `Products/KitchenOS/20_Domain_Model.md` |
 
 ---
 

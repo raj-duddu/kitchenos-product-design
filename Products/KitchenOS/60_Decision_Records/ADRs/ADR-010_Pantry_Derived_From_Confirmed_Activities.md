@@ -226,5 +226,5 @@ Rejected because:
 
 - ADR-004: Domain-Driven Event Sourcing (events are the source of truth for pantry state)
 - ADR-007: Household Intelligence Model (intelligence model learns from confirmed MealSession events, not predictions)
-- `Knowledge/20_Domain_Model.md`: MealSession aggregate, Pantry invariants, Household Activity Lifecycle
-- `Knowledge/40_Technical_Architecture.md`, Section 25: Household Activity Lifecycle Pattern
+- `Products/KitchenOS/20_Domain_Model.md`: MealSession aggregate, Pantry invariants, Household Activity Lifecycle
+- `Products/KitchenOS/40_Technical_Architecture.md`, Section 25: Household Activity Lifecycle Pattern

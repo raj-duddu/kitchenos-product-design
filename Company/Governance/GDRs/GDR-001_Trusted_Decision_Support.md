@@ -159,8 +159,8 @@ This preserves the company identity while allowing the product to be genuinely h
 
 - `Company/Operating_Principles.md`, Principles 1 and 2
 - `Knowledge/85_Governance/AI_Governance.md` — implementation of the criticality framework
-- `Knowledge/10_Product_Vision.md`, Section 8.13 — AI predicts the routine, asks only about exceptions
-- `Knowledge/20_Domain_Model.md`, Actor Model — Support Agent, Expert, AI actor definitions
+- `Products/KitchenOS/10_Product_Vision.md`, Section 8.13 — AI predicts the routine, asks only about exceptions
+- `Products/KitchenOS/20_Domain_Model.md`, Actor Model — Support Agent, Expert, AI actor definitions
 - ADR-007 — Household Intelligence Model as separate architectural layer
 - PDR-007 — Three-object meal lifecycle (MealRecommendation → MealPlan → MealSession)
 - PDR-009 — Household Conflict Resolution Policy

@@ -103,9 +103,9 @@ This is the chosen approach. It inverts the default: the AI does the work; the u
 
 ## Related
 
-- `Knowledge/10_Product_Vision.md`, Section 8.14 — closed-loop weekly planning and WeeklyMealPlan UX flow
-- `Knowledge/20_Domain_Model.md` — WeeklyMealPlan aggregate root and planning horizon design note
-- `Knowledge/40_Technical_Architecture.md` — Household Schedule Model (sub-model of Household Intelligence Model)
+- `Products/KitchenOS/10_Product_Vision.md`, Section 8.14 — closed-loop weekly planning and WeeklyMealPlan UX flow
+- `Products/KitchenOS/20_Domain_Model.md` — WeeklyMealPlan aggregate root and planning horizon design note
+- `Products/KitchenOS/40_Technical_Architecture.md` — Household Schedule Model (sub-model of Household Intelligence Model)
 - `Knowledge/60_Decision_Records/ADR-010_Pantry_Derived_From_Confirmed_Activities.md` — pantry lifecycle rules and weekly planning layer
 - PDR-005 — Ask only what the AI cannot reasonably learn on its own
 - PDR-007 — Three-object meal lifecycle (MealRecommendation → MealPlan → MealSession)

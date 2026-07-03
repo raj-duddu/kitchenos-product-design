@@ -151,5 +151,5 @@ Bias monitoring is a post-MVP operational concern. The framework is documented h
 - GDR-002 — Privacy by Design
 - PDR-009 — Household Conflict Resolution Policy (six-level hierarchy)
 - ADR-007 — Household Intelligence Model as separate architectural layer
-- `Knowledge/40_Technical_Architecture.md` — Household Decision Engine, Allergy Guard
-- `Knowledge/20_Domain_Model.md` — Intelligence Layer section
+- `Products/KitchenOS/40_Technical_Architecture.md` — Household Decision Engine, Allergy Guard
+- `Products/KitchenOS/20_Domain_Model.md` — Intelligence Layer section

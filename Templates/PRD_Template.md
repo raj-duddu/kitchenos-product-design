@@ -24,7 +24,7 @@ What do we know about this problem? What have we learned from users, data, or re
 ## Product Vision Alignment
 
 Which Product Vision principles does this feature serve?
-Reference: `Knowledge/10_Product_Vision.md`, Sections 1–9.
+Reference: `Products/KitchenOS/10_Product_Vision.md`, Sections 1–9.
 
 - Principle: ...
 - Principle: ...
@@ -142,7 +142,7 @@ Does this feature introduce new entities, events, or rules?
 - [ ] New business invariant: ...
 - [ ] No domain model changes.
 
-If yes, update `Knowledge/20_Domain_Model.md` before Stage 7.
+If yes, update `Products/KitchenOS/20_Domain_Model.md` before Stage 7.
 
 ---
 
