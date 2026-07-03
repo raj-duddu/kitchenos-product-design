@@ -5,7 +5,7 @@ type: adr
 status: accepted
 owner: architecture
 depends_on: [ADR-001]
-referenced_by: [ADR-003, ADR-006]
+referenced_by: [ADR-003, ADR-006, ADR-012]
 tags: [cloud, gcp, firebase, cloud-run, cloud-sql, cloud-vision, infrastructure]
 date: 2026
 ---
@@ -15,6 +15,8 @@ date: 2026
 **Status:** Accepted
 **Date:** 2026
 **Deciders:** Founders, Product Architect
+
+> **Amended 2026-07-03:** the receipt-OCR element of this rationale (Cloud Vision API, including the Rekognition comparison under the AWS alternative) is overtaken by ADR-012 — Document Understanding via a multimodal LLM behind the AI Provider Abstraction. The GCP decision is unaffected; Gemini multimodal models keep Document Understanding within the same ecosystem, so the same-cloud argument survives with a different service filling the slot. See History.
 
 ---
 
@@ -75,6 +77,15 @@ Strong enterprise integrations. Rejected because it has no meaningful advantage 
 - Future AI expansion (Vertex AI, Gemini) can stay within the same billing account and IAM structure.
 - An explicit Cloud Load Balancer is not required in MVP-0. Cloud Run handles load balancing automatically. A CLB is introduced only when Cloud CDN or Cloud Armor is needed (MVP-1 to Phase 3 scale).
 - All secrets must be stored in Secret Manager. No hardcoded credentials anywhere.
+
+---
+
+## History
+
+| Date | Change | By | Evidence |
+|---|---|---|---|
+| 2026 | Accepted | Founders, Product Architect | pre-dates History enforcement |
+| 2026-07-03 | Amended — OCR rationale element overtaken by ADR-012; decision unaffected | @raj-duddu | PR # (add on merge) |
 
 ---
 

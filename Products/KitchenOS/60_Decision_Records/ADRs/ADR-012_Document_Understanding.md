@@ -120,6 +120,7 @@ As decided above.
 
 ## Related
 
+- ADR-001, ADR-002 — this record amends the Cloud Vision elements of their rationale (Flutter and GCP decisions unaffected)
 - ADR-010 — Pantry state derived exclusively from confirmed activities (the confirmation gate this capability feeds)
 - GDR-002 / `Company/Governance/GDRs/GDR-002_Privacy_By_Design.md` — external processing and data minimisation constraints
 - `Company/Governance/AI_Governance.md` — Model Evaluation (owns model selection), Confidence and Explanation Requirements, AI Quality Metrics

@@ -5,7 +5,7 @@ type: adr
 status: accepted
 owner: architecture
 depends_on: []
-referenced_by: [ADR-002]
+referenced_by: [ADR-002, ADR-012]
 tags: [mobile, flutter, dart, offline, firebase, riverpod, sqlite]
 date: 2026
 ---
@@ -15,6 +15,8 @@ date: 2026
 **Status:** Accepted
 **Date:** 2026
 **Deciders:** Founders, Product Architect
+
+> **Amended 2026-07-03:** the mention of Cloud Vision API among the Google-integration benefits is overtaken by ADR-012 — receipt extraction is now Document Understanding via a multimodal LLM behind the AI Provider Abstraction. The Flutter decision is unaffected. See History.
 
 ---
 
@@ -75,6 +77,15 @@ Best possible performance and platform integration. Rejected because it requires
 - Local database uses SQLite via Drift (type-safe, migration-aware).
 - The offline sync layer (pending event queue, local SQLite ↔ Cloud SQL) must be designed and maintained as part of the Flutter app architecture.
 - Flutter widget tests provide fast UI testing without a device — this is a significant advantage for CI/CD pipeline speed.
+
+---
+
+## History
+
+| Date | Change | By | Evidence |
+|---|---|---|---|
+| 2026 | Accepted | Founders, Product Architect | pre-dates History enforcement |
+| 2026-07-03 | Amended — Cloud Vision mention overtaken by ADR-012; decision unaffected | @raj-duddu | PR # (add on merge) |
 
 ---
 

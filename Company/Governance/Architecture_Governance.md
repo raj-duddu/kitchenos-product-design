@@ -113,6 +113,17 @@ If the History section and the PR trail ever disagree, the PR trail is the evide
 
 CI enforces the presence of the History section (`enforced_history_section`): an error for records changed in a pull request, a warning for pre-existing records until they are backfilled.
 
+### Amendments (Partial Supersession)
+
+A later record sometimes overtakes part of an earlier record's *rationale or context* without touching its *decision*. That is an **amendment**, not a supersession:
+
+- A dated amendment note is added directly below the earlier record's header, naming what is overtaken, what record overtakes it, and stating explicitly that the decision is unaffected.
+- A History row records the amendment.
+- The earlier record's `referenced_by` gains the later record, so impact analysis flows in both directions.
+- The original text is never edited — it remains what was true at decision time.
+
+If the *decision itself* is overtaken, that is supersession: the whole record moves to `superseded` with a link to its successor.
+
 ---
 
 ## ADR Quality Requirements
