@@ -94,6 +94,15 @@ For each module involved, describe its responsibility in this feature:
 
 ---
 
+## Architecture Fit
+
+- **Bounded context:** which context this feature lives in (`Products/KitchenOS/20_Domain_Model.md`)
+- **Backend module:** which NestJS module handles this
+- **Flutter layer:** which feature folder / Riverpod provider manages this
+- **New infrastructure:** any new GCP services, queues, or storage (if yes: ADR trigger — check `Company/Governance/Architecture_Governance.md`)
+
+---
+
 ## Sequence Diagram
 
 ```text
@@ -131,11 +140,63 @@ If this feature produces AI output:
 
 ---
 
+## Security Considerations
+
+- What authorization checks are required? (household membership, role, consent)
+- Does this feature access PII?
+- Are there new consent requirements?
+- Does this require a security review before Stage 7?
+
+---
+
 ## Privacy Impact
 
 - Does this feature collect any new data? If yes, justify against GDR-002 (data minimisation).
 - Does any new data flow through the AI layer? If yes, confirm no PII is included.
 - Does this feature require a new or modified ConsentGrant?
+
+---
+
+## API Contract
+
+Endpoints introduced or modified. Full request/response/error schemas per endpoint:
+
+| Method | Path | Purpose | Error cases |
+|---|---|---|---|
+| POST | /example | ... | 400, 403, 409 |
+
+---
+
+## Module Responsibilities
+
+| Module / Layer | Responsibility |
+|---|---|
+| `[feature].controller.ts` | HTTP interface, request validation |
+| `[feature].service.ts` | Business logic, orchestration |
+| `[feature].repository.ts` | Database access, query logic |
+| `[feature]_provider.dart` | Flutter state management (Riverpod) |
+| `[feature]_screen.dart` | Flutter UI layer |
+
+---
+
+## Offline Behaviour
+
+- Does this feature work offline? Yes / No / Partial
+- If partial: what works offline and what requires connectivity?
+- How are pending sync events handled for this feature?
+- Conflict resolution strategy when offline and online states diverge?
+
+---
+
+## Testing Strategy
+
+| Test Type | What to Test | Tool |
+|---|---|---|
+| Unit tests | Service logic, business rules | Jest |
+| Integration tests | API endpoints end-to-end | Supertest + Testcontainers |
+| BDD scenarios | Acceptance criteria from PRD | As defined in PRD |
+| Flutter widget tests | UI states (empty, loading, error, data) | flutter_test |
+| Flutter golden tests | Visual regression for new components | golden_toolkit |
 
 ---
 
