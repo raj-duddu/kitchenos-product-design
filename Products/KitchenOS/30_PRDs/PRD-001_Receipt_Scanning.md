@@ -233,6 +233,8 @@ The interaction pattern (scan-and-forget → pending card → notify → review-
 
 ### Screen Flow
 
+The Shop tab is segmented `List | Receipts` per UXDR-002 (proposed): the scan action is prominent in both segments; the Receipts segment holds pending, needs-review, and confirmed receipts.
+
 ```text
 [Shop tab / Home suggestion]
     │  "Scan receipt"
