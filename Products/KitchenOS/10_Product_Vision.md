@@ -16,44 +16,7 @@ date: 2026
 
 ---
 
-# KitchenOS 2.0: Product Vision, UX, Architecture, and MVP Blueprint
-
-**Document version:** 0.1.0 cleaned Markdown rewrite  
-**Source document:** `older version of kitchen OS product vision`  
-**Original source version:** 0.1 living document  
-**Status:** Cleaned and consolidated product strategy draft  
-**Primary audience:** Founder, product, design, engineering, AI, and launch teams  
-
----
-
-## 1. Purpose of This Rewrite
-
-This document rewrites the older KitchenOS product vision into a readable Markdown blueprint. It preserves the original strategic direction while removing conversational artifacts, duplicate transitions, and loosely formatted sections.
-
-The older document is valuable because it is more product-focused and execution-focused than the later LifeOS blueprint. It clearly defines:
-
-- The standalone KitchenOS vision.
-- The household lifecycle loop.
-- The five-tab action-based information architecture.
-- The Household Decision Engine concept.
-- The UX screen system.
-- The event-driven backend model.
-- The Flutter-first technology recommendation.
-- The 8–12 week MVP execution plan.
-- The differentiation and market positioning strategy.
-
----
-
-## 2. Relationship to LifeOS
-
-This document treats **KitchenOS** as the original standalone product vision.
-
-A later product direction may position **LifeOS** as the broader household operating system and **KitchenOS** as the first domain inside it. In that structure:
-
-- **LifeOS** = broader household intelligence platform.
-- **KitchenOS** = food, pantry, shopping, cooking, budget, and meal intelligence module.
-
-For this older product vision, KitchenOS is described as the complete product.
+> **Provenance and numbering:** consolidated from the pre-repository KitchenOS/LifeOS drafts (see `0000_Archive/`). Sections 24–37 and 41–42 of the original mono-document became `40_Technical_Architecture.md` and `50_Engineering_Handbook.md`; this document keeps its original section numbers (3–23, 38–62) because decision records cite them. Do not renumber.
 
 ---
 
@@ -4017,13 +3980,28 @@ The final product rule:
 
 ### Locked Product Decisions
 
-- Cook Mode is the primary MVP-0 habit loop.
-- Household Timeline is a first-class product surface under Household and can be surfaced from Home after important changes.
-- Events should be captured from day one through an append-only `domain_events` table.
-- MVP-0 should prove the core food loop before advanced nutrition, marketplace, or automation.
-- MVP-1 should add correction, reversal, trust, and safety layers.
-- Expert marketplace is post-MVP and should not become a primary navigation tab at launch.
-- Expert recommendations require KitchenOS safety checks and user approval before affecting plans, shopping, or Cook Mode.
+Decisions live in decision records, not in this living document. The decisions formerly listed here are recorded:
+
+| Decision | Record |
+|---|---|
+| Cook Mode is the primary MVP-0 habit loop | PDR-010 |
+| Household Timeline is a first-class product surface | PDR-011 |
+| Events captured from day one via append-only `domain_events` | ADR-004 |
+| Prove the core food loop before advanced nutrition, marketplace, or automation | PDR-001; MVP sequencing in Sections 38–39 |
+| MVP-1 adds correction, reversal, trust, and safety layers | Sections 38.2 and 39.2 (MVP sequencing) |
+| Expert marketplace is post-MVP, not a primary navigation tab at launch | Sections 38–39 (MVP sequencing); Section 18 (information architecture) |
+| Expert recommendations require safety checks and user approval | GDR-001; Domain Model business invariant 7 |
+
+### Answered Since This Register Was Written
+
+| Question | Answered by |
+|---|---|
+| Review all receipt items or only uncertain ones? | ADR-012 — per-field confidence; uncertain rows highlighted; user confirms before any pantry effect |
+| Should users see confidence scores? | `Company/Governance/AI_Governance.md` — required at Medium+ criticality |
+| Always ask who is eating? | PDR-005, PDR-008 — AI predicts the routine, asks only about exceptions |
+| How does AI avoid learning from corrected or wrong events? | Domain Model — `learning_impact` field on the event envelope |
+| NestJS or Express? | `50_Engineering_Handbook.md`, Section 42.2 — NestJS |
+| Receipt document understanding cloud-only at MVP? | ADR-012 — cloud multimodal LLM for MVP-0 |
 
 ### Product Open Questions
 
@@ -4034,10 +4012,8 @@ The final product rule:
 
 ### UX Open Questions
 
-- Should users review all receipt items or only uncertain items?
 - Should Cook Mode auto-deduct pantry quantities or require confirmation?
 - How prominently should the Household Confidence / State indicator appear?
-- Should meal planning always ask who is eating, or only when safety or goals require it?
 - Should goals appear in onboarding or after the first successful meal loop?
 - How should users approve expert recommendations before they affect meal plans or shopping lists?
 - Which actions should support one-tap undo?
@@ -4045,15 +4021,12 @@ The final product rule:
 ### AI Open Questions
 
 - How proactive should AI recommendations be?
-- Should users see confidence scores?
 - Should there be conservative vs aggressive AI modes?
 - How should AI explain conflicts between goals, allergies, pantry, and budget?
 - Should AI summarize household context for experts, and how much user approval is required?
-- How should AI avoid learning from corrected, duplicate, or wrong-household events?
 
 ### Engineering Open Questions
 
-- Should MVP use NestJS or Express for speed?
 - How strict should MVP event sourcing be beyond the append-only `domain_events` table?
 - What is the minimum sync engine required for MVP?
 - How should offline conflicts be handled in the first release?
@@ -4067,7 +4040,6 @@ The final product rule:
 
 - Which household members can see spending?
 - Which household members can edit pantry and meal plans?
-- Should receipt document understanding be cloud-only at MVP?
 - What data should be encrypted locally?
 - Which household members can view allergies, medical restrictions, and body goals?
 - What household data can experts access by default?
@@ -4087,13 +4059,7 @@ The final product rule:
 
 ## 61. Recommended Next Documents
 
-The older source suggested several next directions. Based on product readiness, the recommended sequence is:
-
-1. **Sprint-by-sprint engineering execution plan.**
-2. **Database schema and API contracts in full detail.**
-3. **Clickable UI wireframes screen-by-screen.**
-4. **First production-ready architecture repo structure.**
-5. **Investor pitch deck version.**
+*(Retired.)* This section predated the repository. The "next documents" now exist as the repository structure itself: per-feature PRDs belong in `Products/KitchenOS/30_PRDs/` (the actual next documents), schema in `20_Domain_Model.md`, architecture in `40_Technical_Architecture.md`, execution process in `Process/Product_Development_Lifecycle.md`.
 
 ---
 
