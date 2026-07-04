@@ -136,7 +136,7 @@ Product Design/
 | 10 | Product Vision | `Products/KitchenOS/10_Product_Vision.md` | Founders, PMs, Designers, Investors | What KitchenOS is and why it exists | Active |
 | 20 | Domain Model | `Products/KitchenOS/20_Domain_Model.md` | Product, Engineering, QA | What business concepts exist, how they relate, and the ubiquitous language | Active |
 | 30 | PRDs | `Products/KitchenOS/30_PRDs/` | Product, Engineering, QA | Per-feature requirements, acceptance criteria, BDD | Planned |
-| 70 | UX Design System | `Products/KitchenOS/70_UX_Design_System/` | Designers, Frontend Engineers | Component library, design tokens, interaction patterns | Planned (post-MVP) |
+| 70 | UX Design System | `Products/KitchenOS/70_UX_Design_System/` | Designers, Frontend Engineers | App-shell wireframes (active); component library, design tokens, interaction patterns (post-MVP) | Partial — shell wireframes active |
 
 ### Layer 3 — Architecture *(KitchenOS-scoped)*
 
