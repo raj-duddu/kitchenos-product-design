@@ -99,6 +99,8 @@ Photograph a receipt → review the proposal → confirm → pantry and budget u
 
 **Acceptance Criteria:**
 - [ ] Rows at or above the confidence threshold render as settled; rows below it are visually distinct and editable with the model's guess pre-filled.
+- [ ] Confidence appears only as settled / needs-review states; numeric scores are never displayed in the review UI.
+- [ ] The needs-review threshold is server-side remote configuration: changed without an app release, never exposed to users.
 - [ ] A totals banner shows whether line items reconcile with the printed total.
 - [ ] I can edit any row, remove rows, mark rows "not a food item," and add missed items.
 - [ ] Tapping an uncertain row shows the scanned receipt image (zoomed to the relevant region where extraction provides one) — verification never requires the paper receipt.
@@ -214,6 +216,16 @@ Then the confirmed pantry item is arugula 5 oz
 And the correction is recorded with correction-classed learning_impact
 ```
 
+### Scenario: Photo retention is legible, never a surprise
+
+```gherkin
+Given a confirmed receipt whose photo auto-deletes in 90 days
+When the member views it in the Receipts segment
+Then the photo expiry date is shown on the receipt
+And a "Keep" action exempts this photo from auto-delete
+And line items and events remain complete after any photo deletion
+```
+
 ### Scenario: Offline capture queues and recovers
 
 ```gherkin
@@ -319,7 +331,7 @@ Architecture Review required at Stage 5 (AI-touching: apply the AI Architecture 
 
 ## Security and Privacy
 
-- [x] Touches user PII: yes — receipt images may contain loyalty numbers, partial card digits. Per ADR-012/GDR-002: provider under no-training/no-retention terms; raw image retained only until confirmation completes; confirmed line items only thereafter.
+- [x] Touches user PII: yes — receipt images may contain loyalty numbers, partial card digits. Per ADR-012/GDR-002: provider under no-training/no-retention terms. Photo retention: a remote-configurable window after confirmation (default 90 days, aligned to typical return windows), expiry date visible on each receipt, per-receipt "Keep" pin exempts a photo from auto-delete — users treat scanned as saved, so deletion is legible, never silent (amends ADR-012's delete-on-confirmation mitigation). Line items and domain events persist regardless of photo deletion.
 - [x] Touches household financial data: yes — spend amounts; household-scoped visibility (privacy open question on member spend visibility tracked in Vision §60).
 - [ ] Requires new permissions or consent: camera permission only; no new data consent class.
 - [x] Requires security review: yes, at Stage 5 (external AI processing path).
@@ -330,12 +342,12 @@ Architecture Review required at Stage 5 (AI-touching: apply the AI Architecture 
 
 | # | Question | Owner | Status |
 |---|---|---|---|
-| 1 | Confidence threshold for "needs review" — fixed at launch or tuned from the evaluation set? | Product + Architect | Open |
-| 2 | Do settled rows show their confidence numerically, or only uncertain rows get any confidence UI? | Product (Stage 4) | Open |
-| 3 | Receipt image retention duration before deletion post-confirmation (GDR-002 minimisation) | Product + Founders | Open |
-| 4 | Should manual quick-entry support voice input in MVP-0 or defer? | Product | Open |
-| 5 | Long receipts requiring multi-shot capture — MVP-0 or detect-and-defer? | Product + Architect | Open |
-| 6 | Can Document Understanding return per-line image regions for tap-to-verify, or is a zoomable full-image viewer the MVP-0 floor? | Architect (Stage 5) | Open |
+| 1 | Confidence threshold for "needs review" | Product + Architect | **Resolved 2026-07-04** — server-side remote configuration: tunable by the team without an app release, never user-visible (Principle 1 — users are not asked to reason about confidence). Initial value calibrated from the evaluation set. SD-001 requirement. |
+| 2 | Numeric confidence display? | Product | **Resolved 2026-07-04** — confidence renders as binary states only (settled / needs review); numeric scores never appear in the review UI. Uncertainty stays visibly distinguishable (Principle 7); numbers would be false precision, not guidance (Principles 1, 2). See the display-form clarification in `Company/Governance/AI_Governance.md`. |
+| 3 | Receipt image retention | Product + Founders | **Resolved 2026-07-04** — photos kept for a remote-configurable window after confirmation (default 90 days, aligned to typical return windows); the expiry date is visible on each receipt; a per-receipt "Keep" pin exempts a photo from auto-delete. Retention must be legible — users treat "scanned" as "saved," so deletion is never a surprise. Line items and events persist regardless. Amends ADR-012's image-retention mitigation. |
+| 4 | Voice input for manual quick-entry | Product | Deferred to MVP-1 |
+| 5 | Multi-shot capture for long receipts | Product + Architect | Deferred to MVP-1 — MVP-0 detects likely truncation and warns at capture |
+| 6 | Per-line image regions for tap-to-verify, or zoomable full-image viewer as the floor? | Architect (Stage 5) | Open |
 
 ---
 

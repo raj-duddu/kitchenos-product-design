@@ -67,6 +67,8 @@ Low-confidence outputs (below threshold defined per feature) must either:
 
 The AI must never present a low-confidence output as if it were certain.
 
+The numeric `confidence_score` is a system requirement, not a display mandate: the score is always computed, carried, and available for audit, but how confidence is rendered to users — numeric, state-based (settled / needs review), or highlight-only — is a product decision made per feature, provided uncertainty is always visibly distinguishable from certainty.
+
 ---
 
 ## What Is Never Delegated to AI

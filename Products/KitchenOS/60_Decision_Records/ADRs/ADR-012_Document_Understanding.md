@@ -19,6 +19,8 @@ date: 2026
 **Stage Gate:** Stage 5 of Product Development Lifecycle
 **Operating Principles:** 1 (Transform Complexity into Clarity), 4 (AI Recommends. People Decide.), 5 (Earn Trust Through Transparency), 6 (Learn Continuously), 9 (Simplicity Is a Feature). No conflicts identified.
 
+> **Amended 2026-07-04 by PRD-001 (Security and Privacy)** — scope: the image-retention mitigation in Risks ("retained only until confirmation completes"); decision: unchanged. Retention refined to a remote-configurable window (default 90 days) with visible expiry and a per-receipt Keep pin — users treat scanned receipts as saved (returns use-case), so deletion must be legible, never silent. See History.
+
 ---
 
 ## Context
@@ -115,6 +117,7 @@ As decided above.
 |---|---|---|---|
 | 2026-07-03 | Proposed | Claude (Architect role), sponsored by @raj-duddu | PR # 6 |
 | 2026-07-03 | Accepted | @raj-duddu | PR # 6 review |
+| 2026-07-04 | Amended — image-retention mitigation refined by PRD-001 resolution; decision unchanged | @raj-duddu | PR # (add on merge) |
 
 ---
 
