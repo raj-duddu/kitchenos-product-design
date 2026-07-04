@@ -126,22 +126,27 @@ Trust and correction. Timeline first; complexity only for those who seek it. Rec
 
 ```text
 ┌──────────────────────────────┐
+│ Household                    │
+│ [Pantry][Analytics][Family]  │ ← compact chip row, one line;
+│ [Settings][Integrations]     │   collapses away on scroll
+│──────────────────────────────│
 │ Timeline                     │
+│ Today                        │
 │  Receipt confirmed · Costco  │
 │  Dinner cooked · 6 deducted  │
+│ Yesterday                    │
 │  Milk removed by Priya       │
-│  … (scroll: full history —   │
-│   the event stream is        │
-│   append-only; nothing is    │
-│   ever lost)                 │
-│                              │
-│ Pantry · search, expiry      │
-│ Analytics · Family           │
-│ Settings · Integrations      │
+│  Budget updated · $84.31     │
+│  ⋮ infinite scroll — full    │
+│    history; the event stream │
+│    is append-only, nothing   │
+│    is ever lost              │
 ├──────────────────────────────┤
 │ Home  Plan  Shop  Cook ●Hshld│
 └──────────────────────────────┘
 ```
+
+Layout rule: sections are a collapsing chip row *above* the feed — never fixed content *below* an infinite feed (unreachable, and it truncates the Timeline). On scroll the chips slide away and the Timeline is effectively full-screen; roughly 7–8 grouped entries are visible on first paint on a typical phone.
 
 ---
 
