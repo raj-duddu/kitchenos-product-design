@@ -18,6 +18,7 @@ from the frontmatter of the documents that own the rules:
       enforced_principles_field      frontmatter field citing Operating Principles
       enforced_no_delete_dirs        directories whose records are never deleted
       enforced_history_section       section logging state transitions
+      enforced_status_header         header line that must mirror frontmatter status
 
 To change a rule: change the governing document (prose AND its enforced_*
 frontmatter, same commit). This script never needs to change for a rule
@@ -64,7 +65,8 @@ def load_enforcement(root: Path) -> dict:
                          "enforced_decision_statuses",
                          "enforced_principles_field",
                          "enforced_no_delete_dirs",
-                         "enforced_history_section"],
+                         "enforced_history_section",
+                         "enforced_status_header"],
     }
     config: dict = {}
     missing: list = []
@@ -178,6 +180,24 @@ def check(root: Path, cfg: dict, strict_files: set) -> tuple:
                 errors.append(msg)
             else:
                 warnings.append(msg + "  [warning: pre-existing record]")
+
+        # Status header must mirror frontmatter — single authority, checked projection
+        marker = f"**{cfg['enforced_status_header']}:**"
+        idx = text.find(marker)
+        if idx == -1:
+            msg = (f"  {rel}: missing '{marker}' header line — human-readable "
+                   f"status display is required ({GOVERNANCE_DOC}, Recording State Changes)")
+            if str(rel) in strict_files or str(md_file) in strict_files:
+                errors.append(msg)
+            else:
+                warnings.append(msg + "  [warning: pre-existing record]")
+        else:
+            line_end = text.find("\n", idx)
+            shown = text[idx + len(marker):line_end if line_end != -1 else None].strip()
+            if status and not shown.lower().startswith(status.lower()):
+                errors.append(
+                    f"  {rel}: header shows '{shown}' but frontmatter status is "
+                    f"'{status}' — frontmatter is the authority; fix the header")
 
         # Operating Principles citation
         principles = fm.get(principles_field)

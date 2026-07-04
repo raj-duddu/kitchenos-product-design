@@ -14,6 +14,7 @@ enforced_decision_statuses: [proposed, accepted, superseded, deprecated]
 enforced_principles_field: operating_principles
 enforced_no_delete_dirs: [60_Decision_Records, GDRs]
 enforced_history_section: History
+enforced_status_header: Status
 ---
 
 # Architecture Governance
@@ -51,6 +52,7 @@ The `enforced_*` fields in this document's frontmatter are the parameters CI enf
 | `enforced_principles_field` | Every decision record cites Operating Principles |
 | `enforced_no_delete_dirs` | ADR Lifecycle — records under these directories are never deleted, only Superseded or Deprecated |
 | `enforced_history_section` | Recording State Changes — every decision record carries a History log of its state transitions |
+| `enforced_status_header` | Recording State Changes — the human-readable `**Status:**` header line must mirror the frontmatter status |
 
 ---
 
@@ -107,6 +109,7 @@ An ADR is never deleted. Superseded ADRs are kept for historical context. They a
 Every state change is recorded in two places, with a clear division of roles:
 
 - **The record itself is the authoritative account.** The `status:` frontmatter holds the current state. A **History** section (see the decision-record templates) logs every transition — date, change, who made it, and the evidence link. A decision record must be readable in isolation: knowing who accepted it and when must never require access to GitHub.
+- **The header `Status:` line is a display projection, not a second authority.** The `status:` frontmatter is the single authority for current state; the header line exists for human readability and must always agree with it. CI errors on any disagreement (`enforced_status_header`). Duplication of representation is acceptable exactly because authority is single and drift is machine-caught.
 - **The pull request is the ceremony and the evidence.** A state change ships as a PR that flips the frontmatter, updates the record header, and adds the History row. The required review on that PR (enforced by CODEOWNERS and branch protection) is what satisfies "no single person approves their own ADR" — the reviewer's approval on the PR *is* the acceptance act, and the History row records its outcome.
 
 If the History section and the PR trail ever disagree, the PR trail is the evidence and the History section is corrected to match it.
