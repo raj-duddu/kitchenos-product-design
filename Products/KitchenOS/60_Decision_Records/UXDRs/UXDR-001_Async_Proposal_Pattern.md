@@ -2,7 +2,7 @@
 id: UXDR-001
 title: Async AI Proposals Follow the Scan-and-Forget, Review-Later Pattern
 type: uxdr
-status: proposed
+status: accepted
 owner: product
 depends_on: [ADR-010, GDR-001]
 referenced_by: [PRD-001]
@@ -13,7 +13,7 @@ date: 2026
 
 # UXDR-001: Async AI Proposals Follow the Scan-and-Forget, Review-Later Pattern
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-03
 **Deciders:** Founders
 **Stage Gate:** Stage 3–4 of Product Development Lifecycle
@@ -81,7 +81,8 @@ Each feature designs its own async shape; users relearn per feature; primitives 
 
 | Date | Change | By | Evidence |
 |---|---|---|---|
-| 2026-07-03 | Proposed | Claude (PM role), sponsored by @raj-duddu | PR # (add on merge) |
+| 2026-07-03 | Proposed | Claude (PM role), sponsored by @raj-duddu | PR # 10 |
+| 2026-07-03 | Accepted | @raj-duddu | PR # 10 |
 
 ---
 
