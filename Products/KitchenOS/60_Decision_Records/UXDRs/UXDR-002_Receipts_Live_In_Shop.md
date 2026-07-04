@@ -2,7 +2,7 @@
 id: UXDR-002
 title: Receipts Live in the Shop Tab as a Segmented View
 type: uxdr
-status: proposed
+status: accepted
 owner: product
 depends_on: [DOC-010]
 referenced_by: [PRD-001]
@@ -13,7 +13,7 @@ date: 2026
 
 # UXDR-002: Receipts Live in the Shop Tab as a Segmented View
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-04
 **Deciders:** Founders
 **Stage Gate:** Stage 4 of Product Development Lifecycle
@@ -87,7 +87,9 @@ One home, wrong home: puts a weekly action inside the rarely-visited system laye
 
 | Date | Change | By | Evidence |
 |---|---|---|---|
-| 2026-07-04 | Proposed | Claude (PM role), sponsored by @raj-duddu | PR # (add on merge) |
+| 2026-07-04 | Proposed | Claude (PM role), sponsored by @raj-duddu | PR # 10 |
+| 2026-07-04 | Accepted | @raj-duddu | PR # 10 |
+
 
 ---
 
