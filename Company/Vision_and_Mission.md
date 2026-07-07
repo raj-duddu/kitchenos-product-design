@@ -37,7 +37,11 @@ date: 2026
 
 We are a **decision intelligence company**.
 
-Not a problem-solving company — a decision intelligence company. The distinction is the foundation of Principle 0 (Reveal Better Possibilities): we do not wait for users to articulate pain before we act. We surface better possibilities they couldn't reasonably have seen on their own, across every domain we enter.
+> This identity serves the Vision and Mission above — it is *how* we pursue them, not *why* we exist.
+
+We solve the problems people already recognise — what to cook tonight, overspending on groceries, food expiring unused. And, more importantly, we reveal better decisions and possibilities they could not reasonably have discovered on their own (Principle 0: Reveal Better Possibilities). The second capability extends the first; it never replaces it. We are not *merely* a problem-solving company: we do not wait for users to articulate pain before we act.
+
+"Decision intelligence" here means everyday human decisions — what a household cooks, buys, plans, and learns — not enterprise analytics. The quality of daily life is shaped by the quality of daily decisions; our products raise that quality while lowering the effort it takes.
 
 KitchenOS is the first expression of this identity. HealthOS, FinanceOS, LearningOS, and every future product are further expressions of the same mission applied to different life domains.
 
