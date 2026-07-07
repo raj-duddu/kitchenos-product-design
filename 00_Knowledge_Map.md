@@ -352,6 +352,7 @@ Every topic has exactly one authoritative home. Do not document the same concept
 | Offline UX behaviour | Product Vision | `Products/KitchenOS/10_Product_Vision.md`, Section 22 |
 | MVP-0 scope and user flows | Product Vision | `Products/KitchenOS/10_Product_Vision.md`, Sections 38–40 |
 | Post-MVP roadmap | Product Vision | `Products/KitchenOS/10_Product_Vision.md`, Section 47 |
+| Company flywheel (three wheels, spin metrics) | Product Vision | `Products/KitchenOS/10_Product_Vision.md`, Section 51A |
 | Allergy and dietary safety | Product Vision | `Products/KitchenOS/10_Product_Vision.md`, Section 56 |
 | Nutrition goals | Product Vision | `Products/KitchenOS/10_Product_Vision.md`, Section 57 |
 | Expert marketplace | Product Vision | `Products/KitchenOS/10_Product_Vision.md`, Section 58 |

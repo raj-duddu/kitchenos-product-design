@@ -2318,6 +2318,64 @@ Plan meals
 
 ---
 
+## 51A. The Flywheel
+
+The growth loops above describe how households arrive. The flywheel describes why the product gets better the longer they stay — and why that improvement compounds. It is assembled from decisions recorded elsewhere (ADR-008, ADR-010, ADR-011, PDR-005, PDR-006, Section 54A); this section makes the composite explicit.
+
+### The Core Wheel (household level)
+
+```text
+   effortless capture ──→ confirmed events ──→ intelligence learns
+   (scan, cook, confirm)   (ground truth,       (preferences, schedule,
+          ↑                 ADR-010)             consumption, corrections)
+          │                                              │
+   less effort, more  ←── better recommendations ←───────┘
+   trust, more usage       (asks less, right more —
+                            PDR-005, PDR-008)
+```
+
+**The crank is confirmation.** ADR-010's rule — nothing touches household state without user confirmation — looks like friction, but it is what makes the fuel clean. Systems that auto-infer state train on noise; every KitchenOS event is human-verified ground truth. The governance constraint is the data-quality moat. Corrections spin the wheel too: even the AI's mistakes are labelled learning signal (`learning_impact`).
+
+**What the wheel compounds is trust, not engagement.** The North Star (Weekly Trusted Household Decisions Completed) rises while effort per decision falls — the opposite shape from attention-fuelled flywheels, and structurally guaranteed by the Wellbeing-over-engagement principle. A flywheel where the user's cost decreases as value compounds is hard to copy with an engagement playbook.
+
+### The Second Wheel (network level — unlocked at scale)
+
+Opt-in Collective Intelligence (ADR-008, PDR-006, Section 54A): participating households contribute anonymised patterns → new households start warmer → faster time-to-first-value → more households → richer patterns. This wheel turns only because the first wheel's data is confirmed-quality, and only at sufficient scale. Until then it is option value, not a moat — treat claims accordingly.
+
+### The Third Wheel (company level)
+
+Person is global (ADR-011). Profiles, consent, and eventually intelligence travel across products: each new product (HealthOS, FinanceOS, LearningOS) launches with identity, trust, and context already in place, and each new domain multiplies the decisions per person the intelligence can improve. KitchenOS is not only product one — it pre-spins every later product.
+
+### What Starts the Wheel (the cold-start answer)
+
+The wheel needs confirmed events before it gives value — so the first weeks must deliver value that requires no learning:
+
+- Cook Mode is useful on day one: guided cooking and automatic pantry bookkeeping need zero history (PDR-010).
+- Receipt scanning is useful on day one: one photo replaces manual entry (PRD-001).
+- Onboarding asks only what the AI cannot learn (PDR-005) — the wheel starts on minimal input.
+
+Learning is the compounding bonus on top of standalone value, never the price of admission.
+
+### Failure Modes (named deliberately)
+
+1. **Confirmation fatigue** — the crank is also the brake. If confirming feels like a chore, events stop and the wheel stops. Mitigation: confirmations ride on actions users take anyway (cooking, shopping); UXDR-001 keeps review effort proportional to uncertainty.
+2. **The generic-AI substitute** — a general assistant answers "what can I cook with chicken and spinach?" with zero learning. The wheel matters only if the household-specific margin — allergies, schedule, portions, budget — is decisive. For food, safety alone makes generic answers insufficient; this must be proven in acceptance rates, not asserted.
+3. **Collective transfer may underperform** — cross-household patterns might not beat generic priors at achievable opt-in scale. The second wheel is a bet with a measurement plan, not a promise.
+
+### Spin Metrics (the wheel is instrumented, not asserted)
+
+| Metric | What it tells us |
+|---|---|
+| Receipt scan rate per household per week | Is capture effortless enough? |
+| Confirmation completion rate | Is the crank turning or braking? |
+| Recommendation acceptance rate trend | Is learning actually improving output? |
+| Corrections per household per week (trend down) | Is the intelligence converging? |
+| Time-to-first-accepted-recommendation | Is cold start short enough? |
+
+If acceptance rises while corrections and effort fall, the wheel is spinning. If confirmations decline, it is stalling — investigate fatigue before adding features.
+
+---
+
 ## 52. Retention Strategy
 
 Retention should come from daily household usefulness, not AI novelty.
