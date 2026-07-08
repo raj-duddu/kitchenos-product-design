@@ -1979,6 +1979,8 @@ After 30 days, KitchenOS understands:
 
 After 6 months, the product becomes difficult to replace because the household model is personalized.
 
+This is the first wheel of the flywheel (Section 51A): a per-household data moat that exists from the first confirmed event, guaranteed clean by ADR-010. At network scale it compounds into the collective moat (Section 54A). One story, staged — today's moat is data quality within each household; the long-term moat is what it becomes across households.
+
 ---
 
 ## 49. Product Narrative
@@ -2442,6 +2444,8 @@ That is KitchenOS.
 KitchenOS improves as more households use it.
 
 This is not a tagline. It is an architectural property — and it is the most defensible long-term moat available to the platform.
+
+The staging matters (Section 51A): until the network reaches scale, the operating moat is confirmed-data quality within each household (Section 48.2). Collective intelligence is what that moat compounds into — a design property we claim, and a bet we measure our way toward, not a present-tense fact.
 
 ### The Two Intelligence Models
 
