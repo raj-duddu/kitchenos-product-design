@@ -1,3 +1,15 @@
+---
+id: PRD-XXX
+title: [Feature Name]
+type: prd
+status: draft
+owner: product
+depends_on: []
+referenced_by: []
+tags: []
+date: YYYY
+---
+
 # PRD: [Feature Name]
 
 **PRD ID:** PRD-XXX
