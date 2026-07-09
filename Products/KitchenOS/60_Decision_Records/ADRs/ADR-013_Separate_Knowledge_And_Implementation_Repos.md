@@ -2,7 +2,7 @@
 id: ADR-013
 title: Knowledge and Implementation Live in Separate Repositories
 type: adr
-status: proposed
+status: accepted
 owner: architecture
 depends_on: [GOV-003, DOC-000]
 referenced_by: []
@@ -13,7 +13,7 @@ date: 2026
 
 # ADR-013: Knowledge and Implementation Live in Separate Repositories
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-07-04
 **Deciders:** Founders (proposed via Architect role)
 **Stage Gate:** Stage 5 of Product Development Lifecycle
@@ -98,7 +98,8 @@ Rejected: the code repository is weeks away at most, and an unrecorded topology 
 
 | Date | Change | By | Evidence |
 |---|---|---|---|
-| 2026-07-04 | Proposed | Claude (Architect role), sponsored by @raj-duddu | PR # (add on merge) |
+| 2026-07-04 | Proposed | Claude (Architect role), sponsored by @raj-duddu | PR # 18 |
+| 2026-07-04 | Accepted | @raj-duddu | PR # 18 |
 
 ---
 
