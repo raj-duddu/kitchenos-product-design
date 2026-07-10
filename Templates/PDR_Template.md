@@ -1,3 +1,16 @@
+---
+id: PDR-XXX
+title: [Decision Title]
+type: pdr  # pdr | uxdr
+status: proposed
+owner: product
+depends_on: []
+referenced_by: []
+operating_principles: []  # required — cite actual principles, e.g. ["4. AI Recommends. People Decide."]
+tags: []
+date: YYYY
+---
+
 # PDR-XXX / UXDR-XXX: [Decision Title]
 
 **Type:** PDR (Product Decision Record) | UXDR (UX Decision Record)
@@ -81,20 +94,3 @@ Every state change gets a row. The PR is the evidence; this table is the readabl
 - `Company/Operating_Principles.md` — which principles apply
 
 ---
-
-## YAML Frontmatter (copy to actual decision record file)
-
-```yaml
----
-id: PDR-XXX
-title: [Decision Title]
-type: pdr
-status: accepted
-owner: product
-depends_on: []
-referenced_by: []
-operating_principles: []  # e.g. ["3. Inspire Confident Action", "8. We Are Stewards, Not Owners"]
-tags: []
-date: YYYY
----
-```

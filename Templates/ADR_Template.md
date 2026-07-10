@@ -1,3 +1,16 @@
+---
+id: ADR-XXX
+title: [Decision Title]
+type: adr
+status: proposed
+owner: architecture
+depends_on: []
+referenced_by: []
+operating_principles: []  # required — cite actual principles, e.g. ["9. Simplicity Is a Feature"]
+tags: []
+date: YYYY
+---
+
 # ADR-XXX: [Decision Title]
 
 **Status:** Proposed | Accepted | Deprecated | Superseded by ADR-XXX
@@ -81,20 +94,3 @@ Every state change gets a row. The PR is the evidence; this table is the readabl
 - `Company/Operating_Principles.md` — which principles apply
 
 ---
-
-## YAML Frontmatter (copy to actual ADR file)
-
-```yaml
----
-id: ADR-XXX
-title: [Decision Title]
-type: adr
-status: accepted
-owner: architecture
-depends_on: []
-referenced_by: []
-operating_principles: []  # e.g. ["0. Start with Real Problems", "7. Truth Before Convenience"]
-tags: []
-date: YYYY
----
-```
