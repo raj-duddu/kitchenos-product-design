@@ -5,7 +5,7 @@ type: adr
 status: accepted
 owner: architecture
 depends_on: [ADR-003, ADR-004, ADR-007, ADR-008]
-referenced_by: []
+referenced_by: [ADR-014, ADR-015]
 tags: [privacy, identity, data-minimisation, security, gdpr, member-model, identity-isolation, pii]
 date: 2026
 ---

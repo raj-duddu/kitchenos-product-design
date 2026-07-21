@@ -1837,7 +1837,785 @@ These building blocks are not separate deployable services in MVP-0. They are we
 
 ---
 
+## 37.A Authentication Layer
 
+### Overview
+
+Authentication is a foundation service that gates access to the domain. It operates in a separate schema from household data per ADR-009 (Privacy by Design) and is not part of the domain event log — it is an application-layer concern that precedes domain operations.
+
+**Key design principle:** Identity is never mixed with household domain data. The `identities` schema (email, auth provider, password hash) and the `household_members` schema (person_id, household_id, member type, goals, allergies) are physically separated. The only bridge is `identity_id`, and it is never traversed by domain logic, AI, or the Collective Intelligence pipeline.
+
+### MVP-0 Authentication Design
+
+**Signup Method:**
+- Email/password registration
+- Social authentication via OAuth 2.0 (Google, Apple)
+- Single email per identity; no duplicate signups
+
+**Session Management:**
+- Full email/password (or social) re-login is NOT required on every app restart
+- Instead: the refresh token (stored in iOS Keychain / Android Keystore) resumes the session, gated by a mandatory biometric/PIN check before any household data is shown — see TA §37.B.3 for the full re-authentication model
+- Full re-login is required when: the refresh token has expired (30 days of inactivity), the user explicitly logged out, or the session was revoked (e.g., "Sign Out All Devices")
+- This mirrors standard practice for apps handling sensitive-but-not-financial data (see industry research summary in TA §37.B); pure in-memory-token/always-re-login models are reserved for banking-grade apps and were evaluated and rejected for MVP-0 as unnecessary friction
+- On logout, session and refresh token are destroyed both locally and server-side; no residual session (see TA §37.B.5)
+
+**Multi-Device Policy:**
+- Only one active session per user at a time, across all devices
+- New login on Device B immediately invalidates Device A's session (this is a deliberate product decision, not a limitation — see rationale below)
+- Device A is notified on next connectivity: "You've been logged out on another device"
+- Rationale: Household data is sensitive (allergies, goals, budget); single-session model reduces breach surface per GDR-002 §7 and keeps account control unambiguous per Principle 8 (Stewards, Not Owners). This was evaluated against a multi-device-concurrent alternative and intentionally rejected for MVP-0.
+
+**Password Reset:**
+- Email-based reset links only
+- Reset link includes one-time token; expires after 30 minutes
+- Link is single-use; used reset link is invalid
+- No security questions, no SMS, no backup codes in MVP-0
+- Rationale: Simplicity per Principle 9; email-based is sufficient for MVP-0
+
+**Account Recovery:**
+- Email-based account recovery
+- User confirms identity via email link before sensitive operations
+- 2FA, backup codes, phone-based recovery deferred to MVP-1
+- Rationale: Collect only what we need per GDR-002 §1
+
+### Offline Behavior: Logged In vs. Logged Out
+
+**These are two distinct states with different access levels — they must not be conflated.**
+
+**While logged in, offline (normal operation):** Full read access to cached household data (pantry, meal plans, shopping lists, budget, timeline). Edits are queued locally by the Sync Engine and applied on reconnect. Access to the cache is gated by the biometric/PIN re-authentication timeout (TA §37.B.3), not by network connectivity.
+
+**After explicit logout:** No access to household data, cached or otherwise. Logout is a deliberate security action — it invalidates the session server-side and clears the local encrypted cache (TA §37.B.4, §37.B.5). The user sees only the Sign In screen until they re-authenticate. There is no read-only mode after logout.
+
+**Rationale:** An earlier version of this spec permitted read-only cached access after logout. That was superseded — allowing any access after an explicit "Sign Out" weakens the meaning of sign-out and creates a data-leak risk if the device changes hands. See DOC-072 (Authentication Wireframes), "Offline vs. Logged Out" section, for the UX rationale, and GDR-002 §7 (Breach Containment) for the security basis.
+
+**Implementation:**
+```text
+User Login
+  ↓
+Session + refresh token issued → stored in secure device storage
+  ↓
+Offline, still logged in: cached reads always available; biometric/PIN gate applies per §37.B.3
+  ↓
+User Logout (explicit)
+  ↓
+Session revoked server-side; refresh token destroyed
+  ↓
+Local encrypted cache wiped
+  ↓
+Sign In screen shown; no data accessible until re-authentication
+```
+
+### Data Model (Identity Schema)
+
+```sql
+CREATE TABLE identities (
+  id UUID PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  auth_provider VARCHAR(50) NOT NULL,  -- 'email' | 'google' | 'apple'
+  password_hash VARCHAR(255),  -- null for social auth
+  email_verified BOOLEAN DEFAULT false,
+  email_verified_at TIMESTAMPTZ,
+  password_reset_token VARCHAR(255),
+  password_reset_expires_at TIMESTAMPTZ,
+  last_login_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  
+  CONSTRAINT valid_email CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$')
+);
+
+CREATE TABLE identity_sessions (
+  id UUID PRIMARY KEY,
+  identity_id UUID NOT NULL REFERENCES identities(id) ON DELETE CASCADE,
+  device_id VARCHAR(255),  -- device fingerprint
+  auth_token_hash VARCHAR(255) NOT NULL,  -- hash of the actual token
+  last_activity_at TIMESTAMPTZ NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL,
+  
+  INDEX idx_identity_active (identity_id, expires_at) WHERE expires_at > NOW()
+);
+```
+
+**Important:** No household information, no PII beyond email. The `identity_sessions` table is the durable, queryable audit record of sessions in PostgreSQL (used for history, support, and security review). Live session state used for request-time validation lives in Redis, keyed as described in TA §37.B.2 — Redis is the source of truth for "is this session currently valid," while this table is the historical log. It never exposes auth details to domain logic.
+
+### API Contracts (Summary)
+
+| Endpoint | Method | Purpose | Auth Required |
+|---|---|---|---|
+| `/api/v1/auth/signup` | POST | Email/password or social signup | No |
+| `/api/v1/auth/login` | POST | Email/password login | No |
+| `/api/v1/auth/refresh` | POST | Exchange refresh token for new access token (rotates refresh token; see §37.B.1) | No (refresh token in body) |
+| `/api/v1/auth/revoke` | POST | End session on current device (logout) | Yes |
+| `/api/v1/auth/revoke-all` | POST | End all sessions for this identity ("Sign Out All Devices") | Yes |
+| `/api/v1/auth/password-reset/request` | POST | Email reset link | No |
+| `/api/v1/auth/password-reset/confirm` | POST | Confirm reset with token | No |
+| `/api/v1/auth/session/validate` | GET | Check session validity | Yes |
+
+**Full API specification is in `Products/KitchenOS/80_API_Reference/`** (deferred to Stage 5–6).
+
+### Security Considerations for Implementation
+
+1. **Password hashing:** Use bcrypt with cost ≥ 12 (or equivalent like Argon2)
+2. **Token generation:** Use cryptographically secure random token generator (≥ 32 bytes)
+3. **Email verification:** Verify email on signup before allowing household access
+4. **Rate limiting:** Protect password reset and login endpoints against brute force (e.g., max 5 attempts/15 minutes)
+5. **HTTPS only:** All auth endpoints require HTTPS; no exceptions
+6. **Secure cookie flags:** If using cookies, set Secure + HttpOnly + SameSite=Strict
+7. **CORS:** Restrict to trusted domains only; no wildcard origins
+8. **Audit logging:** Log all authentication events (login, logout, reset) for security monitoring
+
+### Integration with Domain Layer
+
+**Authentication is a gateway, not a domain concern:**
+
+```text
+HTTP Request
+  ↓
+Auth Middleware
+  → Validate session token
+  → Extract identity_id
+  → Check session expiry
+  → (If invalid, return 401)
+  ↓
+Request Handler (identity_id now available)
+  ↓
+Domain Service (never receives email or password; only receives identity_id and household_id)
+```
+
+**The domain layer never sees:**
+- Email addresses
+- Password hashes
+- Auth provider details
+- Session tokens
+
+**The domain layer only receives:**
+- `identity_id` (to trace actions to an identity)
+- `household_id` (to scope all operations)
+- `person_id` (household member record)
+
+This separation is non-negotiable per ADR-009 (Privacy by Design) and ensures a breach of authentication does not expose domain data, and vice versa.
+
+### Deferred to MVP-1+
+
+- Two-factor authentication (2FA)
+- Backup codes / account recovery codes
+- Phone-based password reset
+- Passwordless authentication (WebAuthn/FIDO2)
+- Session analytics and security dashboards
+- IP-based login anomaly detection
+- Device trust management
+
+These are security enhancements that add friction to signup/login; MVP-0 prioritizes simplicity per Principle 9 while maintaining baseline security.
+
+### Related Documents
+
+- ADR-009: Privacy by Design — Identity Isolation
+- ADR-014: Session Continuity Model — Single Active Session, Biometric-Gated Resume
+- ADR-015: Offline Cache Encryption Strategy — Hardware-Backed Keys via Secure Enclave / Android Keystore
+- GDR-002: Privacy by Design — Principles 1, 2, 5, 7
+- `Products/KitchenOS/70_UX_Design_System/02_Authentication_Wireframes.md` — UX flows and screens
+- `Products/KitchenOS/100_Security/` — Detailed security requirements (post-MVP-0)
+
+---
+
+## 37.B Session Management and Offline Cache Protection
+
+**Scope:** JWT token lifecycle, biometric re-authentication, offline cache encryption, session revocation, and multi-device session handling.
+
+**Dependencies:** TA §37.A (Authentication Layer), ADR-009 (Identity Isolation), ADR-014 (Session Continuity Model), ADR-015 (Offline Cache Encryption Strategy), GDR-002 §7 (Breach Containment).
+
+---
+
+### Overview: Session Lifecycle
+
+A KitchenOS user session spans three states:
+
+```text
+┌──────────────────────────────────────────────────────────────┐
+│                   SESSION LIFECYCLE                          │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  LOGIN                                                       │
+│  (TA §37.A)                                                  │
+│  Email + Password verified                                  │
+│       ↓                                                       │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │ SESSION CREATED                                      │    │
+│  │ • JWT access token (15 min expiry)                  │    │
+│  │ • JWT refresh token (30 days expiry)                │    │
+│  │ • Session stored in redis (ttl: 30 days)            │    │
+│  │ • device_id registered in session metadata          │    │
+│  │ • Sync Engine cache: SQLite on device               │    │
+│  └─────────────────────────────────────────────────────┘    │
+│       ↓                                                       │
+│  ACTIVE SESSION                                              │
+│  • Access token used for API calls                          │
+│  • Background task refreshes access token every 13 min      │
+│    (rotates refresh token too; never touches biometric      │
+│     trust — §37.B.7)                                        │
+│  • Offline: Sync Engine queues mutations locally             │
+│       ↓                                                       │
+│  BIOMETRIC RE-AUTH REQUIRED (§37.B.3) when:                  │
+│  • App backgrounded > 15 min, OR                             │
+│  • App process was killed and relaunched (cold start —       │
+│    always treated as expired, regardless of elapsed time)   │
+│  • On success: biometric_auth_at reset, resume with          │
+│    existing/refreshed tokens — no full re-login needed       │
+│  • On failure, or refresh token expired/revoked: Sign In     │
+│    screen (full re-login required)                          │
+│       ↓                                                       │
+│  LOGOUT (TA §37.A, Screen 4) — explicit user action           │
+│  • Refresh token revoked (POST /api/v1/auth/revoke)          │
+│  • Access token invalidated on server                        │
+│  • Session deleted from redis                                │
+│  • Local SQLite cache wiped                                  │
+│  • User returned to Sign In screen                            │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Note:** The session does not have a fixed "app restart kills it" rule. What kills a session is: explicit logout, "Sign Out All Devices," a new login elsewhere (§37.B.6), refresh token expiry (30-day ceiling, §37.B.10), or refresh-token-reuse detection (§37.B.1). App restart alone only triggers a biometric/PIN re-check, not a session end.
+
+---
+
+### 37.B.1 JWT Token Specification
+
+**Access Token (Short-Lived)**
+
+```json
+{
+  "iss": "kitchenos-api",
+  "sub": "identity_id",
+  "person_id": "person-uuid",
+  "household_id": "household-uuid",
+  "aud": "kitchenos-mobile",
+  "exp": 1234567890,
+  "iat": 1234567890,
+  "nbf": 1234567890,
+  "jti": "unique-token-id",
+  "device_id": "device-uuid",
+  "session_id": "session-redis-key"
+}
+```
+
+**Spec:**
+- **Expiry:** 15 minutes (tight window reduces compromise risk)
+- **Encoding:** RS256 (RSA public key verification on client; private key on server)
+- **Rotation:** Background task refreshes every 13 minutes (before expiry)
+- **Audience:** `kitchenos-mobile` (API validates aud claim)
+- **Claims:**
+  - `sub`: The standard JWT subject claim — `identity_id` only, per RFC 7519 convention
+  - `person_id`, `household_id`: Separate top-level claims (not concatenated into `sub`); each scopes a distinct part of the request
+  - `device_id`: Device that issued token; used for session binding
+  - `session_id`: Links to redis session record; enables server-side revocation
+
+---
+
+**Refresh Token (Long-Lived)**
+
+```json
+{
+  "iss": "kitchenos-api",
+  "sub": "session_id",
+  "type": "refresh",
+  "exp": 1234567890,
+  "iat": 1234567890,
+  "jti": "unique-refresh-token-id"
+}
+```
+
+**Spec:**
+- **Expiry:** 30 days
+- **Use:** POST /api/v1/auth/refresh to obtain new access token
+- **Storage:** Secure storage (iOS Keychain, Android Keystore; never localStorage) — this is what allows the app to resume a session across app restart with only a biometric/PIN gate, per §37.A Session Management
+- **Rotation:** Mandatory, not optional. Every refresh issues a new refresh token and immediately invalidates the previous one (`jti` retired). This is required, not a nice-to-have — per OWASP MASVS-AUTH guidance.
+- **Reuse detection:** If a retired refresh token (`jti`) is ever presented again, treat it as a stolen-token signal: revoke the entire token family (all tokens descended from that session) and force full re-login. A legitimate client never replays a used refresh token; a replay only happens if a copy was exfiltrated and is being used by an attacker in parallel with the legitimate device.
+- **Revocation:** Single endpoint invalidates all refresh tokens for user (see 37.B.2)
+
+---
+
+### 37.B.2 Session Management
+
+**Session Storage (Server-Side)**
+
+```
+Service: Redis
+Key Format: session:{session_id}
+TTL: 30 days (matches refresh token expiry)
+
+Value:
+{
+  "session_id": "uuid",
+  "identity_id": "uuid",
+  "person_id": "uuid",
+  "household_id": "uuid",
+  "device_id": "device-uuid",
+  "device_name": "Alice's iPhone",
+  "created_at": "2026-07-20T10:00:00Z",
+  "last_activity": "2026-07-20T10:15:00Z",
+  "biometric_auth_at": "2026-07-20T10:15:00Z",
+  "auth_provider": "email|google|apple",
+  "refresh_tokens": ["jti-1", "jti-2"],
+  "revoked": false
+}
+
+Secondary Index (required for lookup by user):
+Key Format: sessions_by_identity:{identity_id}
+Type: Redis Set
+Value: {session_id, session_id, ...}
+TTL: none (cleaned up explicitly when sessions are deleted)
+```
+
+**Key Design Decisions:**
+
+1. **Device Registration:** Each session is bound to a single device (device_id).
+
+2. **Single Active Session Per User:** New login invalidates all other sessions for that user (across all devices — see §37.A Multi-Device Policy).
+   - Lookup uses the secondary index, never a `KEYS` scan: `SMEMBERS sessions_by_identity:{identity_id}` returns the small set of session_ids for that user, then each is fetched and deleted directly (`GET`/`DEL` on `session:{session_id}`).
+   - `KEYS session:*` is explicitly disallowed in this codebase — it is an O(n) blocking scan across the entire keyspace and does not scale past a trivial dataset. All session lookups must go through the `sessions_by_identity` index.
+   - On session creation: `SADD sessions_by_identity:{identity_id} {session_id}`. On session deletion: `SREM sessions_by_identity:{identity_id} {session_id}`.
+   - For atomicity (avoiding races between the index and the session record), session creation and deletion should be wrapped in a Lua script or a `MULTI`/`EXEC` transaction.
+   - Consequence: User logs in on phone → any existing session (tablet, previous phone session) ends immediately.
+   - This prevents orphaned sessions on lost devices.
+
+3. **Biometric Auth Timestamp:** Track when the user last passed an actual biometric/PIN challenge. This field is updated ONLY on a successful biometric/PIN prompt (§37.B.3) — never by a background token refresh. See §37.B.7 for why this distinction is a hard security boundary, not a convenience.
+
+4. **Last Activity:** Updated on every API call; used for idle timeout (separate from biometric timeout).
+
+---
+
+### 37.B.3 Biometric Re-Authentication
+
+**Hard rule: `biometric_auth_at` is updated ONLY by a successful biometric/PIN prompt.** A background access-token refresh proves the refresh token is valid — it does not prove the person holding the device is the account owner. Conflating the two would mean a stolen, unlocked phone could stay "trusted" indefinitely as long as the app keeps silently refreshing in the background. This is treated as a hard security boundary, not a UX nicety.
+
+**When to Re-Prompt**
+
+```
+Scenario 1: App in foreground, token not expired, within 15-min biometric window
+  → No re-prompt needed; user is active
+
+Scenario 2: App backgrounded, returns to foreground
+  → Check: (now - biometric_auth_at) > 15 minutes?
+  → If YES: prompt FaceID/Fingerprint/PIN before showing data
+  → If NO: resume transparently
+
+Scenario 3: Background access-token refresh fires (§37.B.7)
+  → Refresh happens silently; does NOT touch biometric_auth_at
+  → If the 15-min biometric window later expires while token is still valid,
+    the next foreground event still triggers a biometric prompt (Scenario 2)
+
+Scenario 4: App fully restarted (process was killed, not just backgrounded)
+  → Refresh token read from Keychain/Keystore
+  → If refresh token valid: prompt FaceID/Fingerprint/PIN before showing any data
+    (biometric_auth_at is treated as expired on cold start, regardless of elapsed time)
+  → On success: obtain new access token, set biometric_auth_at = now()
+  → If refresh token invalid/expired/revoked: show Sign In screen (full re-login required)
+
+Scenario 5: User switches apps (backgrounding), returns after 20 min
+  → Prompt FaceID/Fingerprint
+  → On success: update biometric_auth_at = now()
+  → Resume with existing tokens (refreshing if needed)
+```
+
+**Implementation Flow**
+
+```kotlin
+// Pseudo-code (iOS/Kotlin)
+
+AppDelegate.onColdStart() {
+  // App process was killed and relaunched — always treat as biometric-expired,
+  // regardless of stored biometric_auth_at timestamp
+  let refreshToken = SecureStorage.getRefreshToken()
+
+  if refreshToken == null || refreshToken.isExpired {
+    showSignInScreen()  // full re-login required
+    return
+  }
+
+  BiometricPrompt.show(
+    title: "Verify identity to access household",
+    onSuccess: {
+      let accessToken = api.refresh(refreshToken)  // may also rotate refreshToken
+      session.biometric_auth_at = now()            // ONLY set here, on actual success
+      showHomeScreen()
+    },
+    onFailure: {
+      showSignInScreen()
+    }
+  )
+}
+
+AppDelegate.onWillEnterForeground() {
+  // App was merely backgrounded, process stayed alive
+  let timeSinceBiometric = now() - session.biometric_auth_at
+
+  if timeSinceBiometric > 15.minutes {
+    BiometricPrompt.show(
+      title: "Verify identity to access household",
+      onSuccess: {
+        session.biometric_auth_at = now()  // ONLY set here, on actual success
+        showHomeScreen()
+      },
+      onFailure: {
+        showSignInScreen()
+      }
+    )
+  } else {
+    // Recent biometric; skip re-prompt
+    showHomeScreen()
+  }
+}
+
+// Background token refresh (§37.B.7) — runs independently, NEVER touches biometric_auth_at
+BackgroundTask.onTokenRefresh() {
+  api.refresh(refreshToken)
+  // no session.biometric_auth_at update here — this is the fix for the
+  // "stolen unlocked phone stays trusted forever" issue
+}
+```
+
+**Rationale (per GDR-002 §7 Breach Containment):**
+- If device is stolen/lost while unlocked, the 15-min window limits offline access to cache before a biometric challenge is required
+- Cold start (app was killed) always requires a fresh biometric/PIN check before showing data, independent of the 15-min window — this closes the gap where an attacker force-quits and relaunches the app hoping to skip the prompt
+- Background token refresh keeps the session alive server-side but never substitutes for proving device possession
+- Biometric check is on-device (not server) — works offline
+- Balance: usability (not interrupting every few minutes during active use) + security (bounded offline window, no silent trust extension)
+
+---
+
+### 37.B.4 Offline Cache Encryption
+
+**Storage Layer**
+
+```
+Database: SQLite on mobile device
+Encryption: SQLCipher (AES-256)
+Encryption Key: Derived from device passcode + app-level secret
+
+Library: 
+  iOS: SQLCipher/ios (via CocoaPods)
+  Android: sqlcipher/android (via Gradle)
+  Flutter: sqflite + sqlcipher plugin
+```
+
+**Key Derivation**
+
+**A key baked into client code or app config is not a secret** — anything shipped in the app binary can be extracted via decompilation or runtime inspection, regardless of encoding or obfuscation. `APP_SECRET`-style constants must not be used as part of the cipher key. The SQLCipher key must instead be generated and held inside the platform's hardware-backed keystore, never fully materialized in application memory or code:
+
+```
+// Pseudo-code
+
+// iOS: generate/store key in Secure Enclave, gated by biometric/device passcode
+let cipherKey = SecureEnclave.generateOrRetrieveKey(
+  tag: "kitchenos.sqlcipher.key",
+  accessControl: .biometryCurrentSetOrDevicePasscode,  // requires a device lock to exist
+  keySize: 256
+)
+
+// Android: generate/store key in Android Keystore, gated by biometric/device credential
+let cipherKey = AndroidKeystore.generateOrRetrieveKey(
+  alias: "kitchenos_sqlcipher_key",
+  requireUserAuthentication: true,
+  keySize: 256
+)
+
+// Pass to SQLite pragma (key retrieved from keystore at runtime, held only transiently in memory):
+// PRAGMA key = "x'{cipherKey}'";
+```
+
+**If the device has no passcode/biometric configured:** the hardware keystore cannot gate the key on user authentication. In that case, the app must warn the user explicitly (e.g., "Set a device passcode to protect your household data offline") rather than silently falling back to an ungated key. This is a deliberate degrade-with-warning, not a silent security downgrade.
+
+**Rationale:**
+- Encryption at rest (data + DB file encrypted on disk)
+- Key generation and storage happen entirely inside the Secure Enclave / Android Keystore hardware boundary; the raw key material never exists in app code, app config, or plaintext on disk
+- Key access requires the same biometric/PIN gate as session re-authentication (§37.B.3), tying offline data access to proof of device possession
+- SQLCipher is battle-tested (Signal, WhatsApp, and Wire all use variants of this pattern with keystore-backed keys, not embedded secrets)
+
+**Offline-Accessible Data (Cached)**
+
+```
+✓ Encrypted & cached:
+  • Pantry items (name, quantity, expiry)
+  • Meal plan entries
+  • Shopping lists
+  • Household member names (person_id only, not emails)
+  • Budget periods & transactions
+  • Household timeline events
+  
+✗ NOT cached:
+  • Identity info (email, auth provider)
+  • PII (phone, addresses, payment methods — not in MVP-0 anyway)
+  • Settings that require server validation
+```
+
+---
+
+### 37.B.5 Session Revocation
+
+**Single Device Logout**
+
+```
+POST /api/v1/auth/revoke
+Headers: Authorization: Bearer {access_token}
+Body: { "device_id": "current-device-id" }
+
+Response:
+{
+  "revoked": true,
+  "message": "Session ended. This device's cache cleared."
+}
+
+Server-Side:
+1. Delete session record from redis
+2. Mark all refresh tokens in session as revoked
+3. Return 200 OK
+4. Client: wipe SQLite cache, redirect to Sign In
+```
+
+**"Sign Out All Devices"**
+
+```
+POST /api/v1/auth/revoke-all
+Headers: Authorization: Bearer {access_token}
+Body: {}
+
+Response:
+{
+  "sessions_revoked": 3,
+  "message": "Signed out on all devices. All sessions ended."
+}
+
+Server-Side:
+1. Query redis: all sessions for this identity_id
+2. Mark each session as revoked: session.revoked = true
+3. Mark all refresh tokens across all sessions as revoked
+4. TTL those sessions to expire immediately
+5. Return count of sessions revoked
+6. Each device (on next API call or foreground): detects revocation, clears cache, shows Sign In
+```
+
+**Note on Cross-Device Revocation:**
+- If User A is offline on phone, then signs out all devices on web
+- Phone won't know immediately (no connectivity)
+- On phone reconnect: API returns 401 (refresh token revoked)
+- Client detects revocation, clears cache, shows Sign In
+- Maximum delay: time until next API call or user opens app
+
+---
+
+### 37.B.6 Multi-Device Session Handling
+
+**Policy: Single Active Session Per User, Across All Devices**
+
+This section previously described two contradictory models (single-session in one place, concurrent multi-device sessions in another). The authoritative policy — confirmed and unchanged — is the one stated in TA §37.A: **only one active session per user, period.** A household member can only be signed in on one device at a time.
+
+```
+User A logs in on Device 1 (iPhone):
+  → Session created, session_id_1
+  → sessions_by_identity:{identity_id} = {session_id_1}
+
+User A logs in on Device 2 (iPad):
+  → Server looks up sessions_by_identity:{identity_id} → finds session_id_1
+  → session_id_1 is revoked (redis DEL + refresh tokens marked revoked)
+  → Device 1 is marked for "logged out elsewhere" notification on next connectivity
+  → Session created, session_id_2
+  → sessions_by_identity:{identity_id} = {session_id_2}
+
+Result: Only session_id_2 (iPad) is active. Device 1 (iPhone), on next
+foreground or API call, receives 401, clears its local cache, and shows
+"You've been logged out on another device."
+```
+
+**Why single-session, not concurrent multi-device (rationale, for completeness):**
+
+The alternative — allowing simultaneous sessions on phone and tablet — is a common and reasonable pattern for many household apps, and was explicitly considered. It was rejected for MVP-0 because:
+- It doubles the number of live sessions that must be tracked, revoked, and reasoned about for breach containment (GDR-002 §7)
+- It requires an explicit "sign out other devices" UX affordance and cross-device notification model that adds scope to MVP-0
+- Single-session keeps "who currently has access to this household's data" a one-line answer, which supports Principle 8 (Stewards, Not Owners) — the account holder always knows exactly where they're logged in
+
+**Household members are not the same as multi-device.** Multiple people in a household each have their own identity, their own login, and their own single session. This policy governs one person using two devices, not two people sharing an account. "Sign Out All Devices" (§37.B.5) remains available as an explicit, user-initiated way to end all sessions for one identity.
+
+**If this policy needs to change** (e.g., user research in MVP-1 shows single-session is a significant friction point for household use), that is a product decision requiring explicit sign-off — not something to silently drift into during implementation, which is what happened in an earlier draft of this document.
+
+---
+
+### 37.B.7 Token Refresh Background Task
+
+**Responsibility:** Keep access token fresh while app is in use.
+
+```
+Every 13 minutes (while app is running):
+  1. Check: access_token.exp < now() + 2 minutes?
+  2. If YES:
+     a. POST /api/v1/auth/refresh with refresh_token
+     b. Server validates refresh_token (not revoked, not expired)
+     c. Server checks for reuse of a retired refresh token jti — if detected,
+        revoke the entire token family and force full re-login (§37.B.1)
+     d. Server issues new access_token AND new refresh_token (mandatory rotation)
+     e. Client stores new access_token and new refresh_token
+     f. Do NOT update biometric_auth_at — this refresh proves the refresh
+        token is valid, not that the current holder of the device is the
+        account owner. Biometric trust is only ever set by §37.B.3.
+  3. If NO:
+     a. Do nothing; token still has life
+     
+On Failure (refresh_token invalid/expired/revoked):
+  → Redirect to Sign In screen
+  → Clear session, clear cache
+```
+
+**Why 13 Minutes (vs 15)?**
+- Access token expires in 15 minutes
+- Refresh at 13 min provides 2-minute safety margin
+- If network slow, refresh still completes before expiry
+- Avoids "token expired mid-API-call" scenarios
+
+---
+
+### 37.B.8 API Security Headers
+
+Every authenticated request must include:
+
+```
+Authorization: Bearer {access_token}
+X-Device-ID: {device_id}
+Content-Type: application/json
+```
+
+**Note:** `session_id` is already carried inside the JWT claims (§37.B.1) — it does not need to be duplicated as a separate `X-Session-ID` header. A prior draft of this spec included both, which is redundant and creates two sources of truth for the same value. `X-Device-ID` is kept as a header (not a claim) because it is validated against the token's `device_id` claim as an integrity check; if a header-only field is ever needed for debugging/tracing, use a clearly-marked `X-Debug-Session-ID` that is stripped in production builds.
+
+**Server Validation:**
+
+```
+On every auth-required endpoint:
+  1. Extract Authorization header → parse JWT
+  2. Verify JWT signature (RS256, public key)
+  3. Verify expiry: exp > now()
+  4. Verify X-Device-ID header matches device_id claim in JWT
+  5. Look up session via session_id claim in JWT; verify session.revoked == false
+  6. Verify session.identity_id matches token subject (sub claim)
+  
+If any check fails:
+  → Return 401 Unauthorized
+  → Client clears session, redirects to Sign In
+```
+
+---
+
+### 37.B.9 Edge Cases & Recovery
+
+**Case 1: Access Token Expires During API Call**
+
+```
+Client makes request with valid access_token
+Server receives request, token is valid ✓
+Server processes request (takes 5 seconds)
+Server tries to issue response → checks token again
+Token expired (unlucky timing)
+
+Solution:
+  • Client: detect 401 in response
+  • Trigger refresh: POST /auth/refresh
+  • Retry original request with new token
+  • (Transparent to user)
+```
+
+**Case 2: Refresh Token Expired**
+
+```
+User phone offline for 31+ days
+Comes back online, tries to use app
+Refresh endpoint returns 401: "Refresh token expired"
+
+Solution:
+  • Clear session, cache
+  • Redirect to Sign In
+  • User re-authenticates (standard login flow)
+```
+
+**Case 3: Device Lost, User Signs Out All Devices**
+
+```
+User realizes iPhone is missing
+Logs into web dashboard (or calls support)
+Signs out on all devices
+
+On lost iPhone (when/if it reconnects):
+  • Background sync attempts: 401 (refresh token revoked)
+  • Next API call: detects revocation
+  • Clears SQLite cache
+  • Shows Sign In screen (no sensitive data exposed)
+```
+
+**Case 4: User Logs In on New Device While Old Device Still Has a Session**
+
+```
+User logs in on Device 2 (new phone)
+Device 1 (old phone) still holds a session
+
+Behavior (per §37.A single-session policy, §37.B.6):
+  • Device 1's session is revoked immediately as part of Device 2's login
+  • Device 1, on next foreground or API call, receives 401
+  • Device 1 clears its local cache and shows "You've been logged out on another device"
+  • Device 2 is now the sole active session
+
+Rationale:
+  • Matches the single-session-per-user policy (§37.A) — there is no
+    "gradual migration" window where both devices are trusted
+  • If a user is intentionally migrating devices, the old device simply
+    needs to be signed back in if they want to keep using it, which will
+    in turn end the new device's session — the policy is symmetric
+```
+
+**Case 5: App Restarted (Process Killed) with a Valid Refresh Token**
+
+```
+User force-quits the app or the OS kills it in the background
+User reopens the app
+
+Behavior (per §37.A Session Management, §37.B.3 Scenario 4):
+  • Refresh token read from Keychain/Keystore
+  • biometric_auth_at is treated as expired on cold start, regardless of
+    how much time actually elapsed
+  • Biometric/PIN prompt is shown before any household data renders
+  • On success: new access token obtained, biometric_auth_at set to now()
+  • On failure or no biometric available: Sign In screen shown
+
+This is NOT the same as "sessions don't persist across restart" in the
+literal sense — the refresh token does persist and is used. What does NOT
+persist is standing access to data without re-proving device possession.
+```
+
+---
+
+### 37.B.10 Related Decisions & Deferred Features
+
+**Absolute Session Ceiling:** Regardless of activity, a refresh token is hard-capped at 30 days (§37.B.1). This is the system's backstop against indefinite session life, per OWASP MASVS guidance to force full re-authentication after a fixed window even for continuously-active sessions. No design in this spec allows a session to outlive 30 days without a full email/password (or social) re-login.
+
+**Deferred to MVP-1+:**
+
+- Session analytics (time-to-refresh, revocation patterns)
+- Concurrent session limit (e.g., max 3 devices per user) — only relevant if the multi-device policy in §37.B.6 is revisited
+- Device trust / "Remember this device" option
+- Device fingerprinting (to detect suspicious logins)
+- Passwordless auth (WebAuthn / FIDO2 registration after login)
+- Two-factor authentication
+- SSL/TLS certificate pinning (recommended before handling any financial account linking or payment features; not required for MVP-0's record-and-display-only budget scope per Vision §60)
+
+---
+
+### Related Documents
+
+- TA §37.A: Authentication Layer (signup, signin, password reset)
+- ADR-009: Identity Isolation — session must not leak identity into domain layer
+- ADR-014: Session Continuity Model — authoritative record of the single-session and biometric-gated-resume policies specified in this section
+- ADR-015: Offline Cache Encryption Strategy — authoritative record of the SQLCipher + hardware-backed key approach specified in §37.B.4
+- GDR-002 §7: Breach Containment — revocation prevents spread if device compromised
+- DOC-072: Authentication Wireframes (Session lifecycle visual)
+- `100_Security/`: Detailed threat modeling and incident response
+
+---
 
 ---
 

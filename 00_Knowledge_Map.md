@@ -50,8 +50,8 @@ Product Design/
 │       ├── 45_Solution_Designs/
 │       ├── 50_Engineering_Handbook.md
 │       ├── 60_Decision_Records/
-│       │   ├── ADRs/                ← ADR-001 – ADR-011
-│       │   ├── PDRs/                ← PDR-001 – PDR-009
+│       │   ├── ADRs/                ← ADR-001 – ADR-015
+│       │   ├── PDRs/                ← PDR-001 – PDR-012
 │       │   └── UXDRs/               ← (none yet)
 │       ├── 70_UX_Design_System/
 │       ├── 80_API_Reference/
