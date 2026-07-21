@@ -102,6 +102,10 @@ Every architecture decision must be traceable to at least one Operating Principl
 - [ ] Does this feature introduce a new external dependency (AI provider, third-party API)?
   - If yes, confirm it is called through an abstraction interface — no direct provider reference in domain code.
 
+- [ ] What operational signals does this feature need monitored (e.g. latency, error rate, queue/backlog depth, sync failure rate)? List them: ___
+  - Numeric alert thresholds may be TBD until `Products/KitchenOS/90_Platform_Operations/` exists — that's fine. The point is that every feature names its own signals at design time, not that thresholds are set before there's traffic to threshold against.
+  - Action: carry this list forward into `90_Platform_Operations/` once that document exists, so operational monitoring is assembled from what features actually flagged, not invented retroactively.
+
 ---
 
 ## Security Impact

@@ -139,6 +139,9 @@ This section defines *what* is verified. The Architect role (or any reviewer) en
 | Explanation usefulness score | > 4.0 / 5.0 | User-rated; surfaced in feedback flow |
 | Confidence calibration error | < 0.05 | Mean calibration error across all output types |
 | High/Critical output with missing explanation | 0% | Every High+ output must carry an explanation |
+| Correction-to-confirmation ratio | < 15% | Corrected / (Corrected + Confirmed unedited), per extraction or recommendation feature. A rising ratio signals degrading model or prompt quality before users complain — an early warning metric, not just an outcome metric. |
+| Food-vs-non-food classification accuracy | ≥ 95% | Measured against the ≥50-item evaluation set required by Model Evaluation (this document) for any extraction feature; re-run whenever the prompt or model version changes (Prompt Versioning, Model Change Policy). |
+| Extraction/recommendation confidence drift | < 0.05 week-over-week shift in mean confidence score | Detects silent provider-side model changes or data-distribution shift without waiting for a user-visible failure. Applies per feature that emits a `confidence_score` (Confidence and Explanation Requirements). |
 
 ---
 

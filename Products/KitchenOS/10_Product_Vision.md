@@ -576,6 +576,13 @@ A recommendation should count only when it is:
 | Food waste reduction | 30% reduction |
 | Budget forecast accuracy | 90% |
 | Daily active usage | Becomes part of daily routine |
+| Undo usage rate | Less than 5% of confirmed actions |
+| Household Timeline engagement | Reviewed weekly by 50%+ of active households |
+| Explanation expansion rate | Tracked, no fixed target |
+| Crash-free session rate | 99.5%+ |
+| Time-to-first-recommendation | Less than 3 seconds from data availability |
+
+A high undo rate is a trust signal, not a feature-health signal — it means AI output is being second-guessed, not that undo is working well. Explanation expansion rate has no fixed target deliberately: a low rate can mean explanations are already clear enough to trust at a glance, or that users have stopped bothering to check them; the trend and its correlation with correction rate matters more than the number itself.
 
 Each metric should define:
 
