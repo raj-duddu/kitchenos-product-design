@@ -1852,6 +1852,11 @@ Authentication is a foundation service that gates access to the domain. It opera
 - Social authentication via OAuth 2.0 (Google, Apple)
 - Single email per identity; no duplicate signups
 
+**Password Policy:**
+- Minimum 8 characters; no maximum below 64; no forced complexity rules (no mandatory mixed-case/digit/symbol) — passphrases are explicitly welcome, per NIST SP 800-63B guidance on subscriber-chosen secrets
+- Breached-password check, enforced server-side at signup and at password-reset confirm: server computes SHA-1(candidate password), sends only the first 5 hex characters of the hash to the Pwned Passwords k-anonymity range API (`api.pwnedpasswords.com`, or a self-hosted equivalent), and checks the returned suffix list for a match — the full password and full hash never leave the server. A match blocks submission with "This password appears in public data breaches" (already the error state in DOC-072 Screen 3.3; this is the mechanism behind it)
+- **Known gap, accepted for MVP-0:** NIST SP 800-63-4 (final, published July 2025) requires a 15-character minimum for single-factor passwords; 8 characters is permitted only when the password is paired with another factor (MFA). Per "Deferred to MVP-1+" below, MFA is not present in MVP-0, so passwords here are genuinely single-factor. The 8-character minimum plus the breached-password check is judged sufficient for MVP-0's threat model (household data, no payment methods) but does not meet the current final NIST recommendation for single-factor secrets. Revisit this minimum when MFA ships (MVP-1) or when financial/payment features are added, whichever comes first — do not let this drift unreviewed.
+
 **Session Management:**
 - Full email/password (or social) re-login is NOT required on every app restart
 - Instead: the refresh token (stored in iOS Keychain / Android Keystore) resumes the session, gated by a mandatory biometric/PIN check before any household data is shown — see TA §37.B.3 for the full re-authentication model
@@ -1871,6 +1876,7 @@ Authentication is a foundation service that gates access to the domain. It opera
 - Link is single-use; used reset link is invalid
 - No security questions, no SMS, no backup codes in MVP-0
 - Rationale: Simplicity per Principle 9; email-based is sufficient for MVP-0
+- **Session handling after reset:** Completing a reset does not auto-authenticate the device (DOC-072 Screen 3.4 redirects to Sign In, it does not silently resume a session). Resuming access therefore requires a fresh login, which — per §37.B.6's single-active-session policy — immediately invalidates any other session for this identity. A stolen refresh token in an attacker's possession is killed the moment the legitimate user logs back in with the new password; no separate revoke-on-reset call is needed because the existing single-session mechanism already covers it.
 
 **Account Recovery:**
 - Email-based account recovery
@@ -1915,7 +1921,7 @@ CREATE TABLE identities (
   password_hash VARCHAR(255),  -- null for social auth
   email_verified BOOLEAN DEFAULT false,
   email_verified_at TIMESTAMPTZ,
-  password_reset_token VARCHAR(255),
+  password_reset_token_hash VARCHAR(255),  -- SHA-256 of the raw reset token; raw token is emailed once, never stored
   password_reset_expires_at TIMESTAMPTZ,
   last_login_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL,
@@ -1928,7 +1934,13 @@ CREATE TABLE identity_sessions (
   id UUID PRIMARY KEY,
   identity_id UUID NOT NULL REFERENCES identities(id) ON DELETE CASCADE,
   device_id VARCHAR(255),  -- device fingerprint
-  auth_token_hash VARCHAR(255) NOT NULL,  -- hash of the actual token
+  refresh_token_hash VARCHAR(255) NOT NULL,  -- hash of the current refresh token jti for this
+                                              -- session (rotates with each refresh, §37.B.1).
+                                              -- Access tokens are never logged individually here —
+                                              -- their 15-min lifetime makes them unsuitable as a
+                                              -- stable audit key. This lets support/security trace
+                                              -- which session a presented refresh token belongs to
+                                              -- without ever storing the token itself.
   last_activity_at TIMESTAMPTZ NOT NULL,
   expires_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ NOT NULL,
@@ -1938,6 +1950,8 @@ CREATE TABLE identity_sessions (
 ```
 
 **Important:** No household information, no PII beyond email. The `identity_sessions` table is the durable, queryable audit record of sessions in PostgreSQL (used for history, support, and security review). Live session state used for request-time validation lives in Redis, keyed as described in TA §37.B.2 — Redis is the source of truth for "is this session currently valid," while this table is the historical log. It never exposes auth details to domain logic.
+
+**Password reset token handling:** The raw reset token is generated server-side (≥32 bytes, cryptographically random — see Security Considerations below), emailed to the user once, and never persisted. Only `SHA-256(raw_token)` is stored in `password_reset_token_hash`. On confirm, the server hashes the submitted token and compares against the stored hash (constant-time comparison). A leaked database dump therefore yields no usable reset tokens — the same principle already applied to `password_hash`.
 
 ### API Contracts (Summary)
 
@@ -1959,11 +1973,17 @@ CREATE TABLE identity_sessions (
 1. **Password hashing:** Use bcrypt with cost ≥ 12 (or equivalent like Argon2)
 2. **Token generation:** Use cryptographically secure random token generator (≥ 32 bytes)
 3. **Email verification:** Verify email on signup before allowing household access
-4. **Rate limiting:** Protect password reset and login endpoints against brute force (e.g., max 5 attempts/15 minutes)
+4. **Rate limiting and abuse prevention:** Concrete per-endpoint policy (all limiter state lives in Redis — short-TTL keys, e.g. `ratelimit:login:{identity_id}` — consistent with session state per §37.B.2, not Postgres):
+   - `POST /api/v1/auth/login`: max 5 failed attempts per **identity** per 15-minute window. On the 5th failure, require a CAPTCHA challenge for that identity for the next 15 minutes — **not** a hard account lockout. This is deliberate: a hard per-account lockout lets an attacker who only knows a victim's email address deny them access simply by submitting wrong passwords repeatedly. CAPTCHA raises the cost of automated guessing without handing an attacker a free denial-of-service lever. In parallel, an **IP**-based limit of 20 failed attempts per IP per 15 minutes (across all identities) slows credential-stuffing sweeps that rotate target accounts.
+   - `POST /api/v1/auth/password-reset/request`: max 3 requests per email per hour, and max 10 requests per IP per hour. Bounds both email-bombing a specific victim and enumeration-by-volume; consistent with the account-enumeration-safe "check your email" response either way (§37.A above, DOC-072).
+   - `POST /api/v1/auth/password-reset/confirm`: max 5 attempts per reset token per 15 minutes. Defense in depth only — the token's entropy (≥32 bytes, item 2 above) already makes brute force impractical, but a submitting-endpoint limit costs nothing and catches token-guessing scripts early.
+   - `POST /api/v1/auth/signup`: max 5 signups per IP per hour — bounds registration spam / fake-account creation.
+   - **Escalation:** an IP that triggers any of the above limits repeatedly (e.g., 3 separate limit triggers within 24h) is temporarily blocked at the edge/WAF for 1 hour, independent of which endpoint or identity was targeted. All triggers are written to the audit log (item 8 below) so repeated patterns are visible to security review, not just silently rate-limited.
 5. **HTTPS only:** All auth endpoints require HTTPS; no exceptions
 6. **Secure cookie flags:** If using cookies, set Secure + HttpOnly + SameSite=Strict
 7. **CORS:** Restrict to trusted domains only; no wildcard origins
-8. **Audit logging:** Log all authentication events (login, logout, reset) for security monitoring
+8. **Audit logging:** Log all authentication events (login, logout, reset, rate-limit triggers) for security monitoring
+9. **Breached-password check:** See Password Policy above — enforced at signup and password-reset confirm via the Pwned Passwords k-anonymity API.
 
 ### Integration with Domain Layer
 
@@ -2181,7 +2201,7 @@ TTL: none (cleaned up explicitly when sessions are deleted)
 
 3. **Biometric Auth Timestamp:** Track when the user last passed an actual biometric/PIN challenge. This field is updated ONLY on a successful biometric/PIN prompt (§37.B.3) — never by a background token refresh. See §37.B.7 for why this distinction is a hard security boundary, not a convenience.
 
-4. **Last Activity:** Updated on every API call; used for idle timeout (separate from biometric timeout).
+4. **Last Activity:** Updated on every API call; used for idle timeout (separate from biometric timeout). **Performance note (MVP-0 acceptable, revisit at scale):** this is a synchronous Redis write on every authenticated request's hot path. Fine at MVP-0 request volume; if it becomes measurable overhead later, change to a throttled write (e.g., update at most once per 5 minutes per session) or an async/best-effort write that doesn't block the request — idle-timeout accuracy doesn't need per-request precision.
 
 ---
 
@@ -2291,7 +2311,7 @@ BackgroundTask.onTokenRefresh() {
 ```
 Database: SQLite on mobile device
 Encryption: SQLCipher (AES-256)
-Encryption Key: Derived from device passcode + app-level secret
+Encryption Key: Generated and held in hardware-backed keystore (Secure Enclave / Android Keystore)
 
 Library: 
   iOS: SQLCipher/ios (via CocoaPods)
@@ -2325,6 +2345,8 @@ let cipherKey = AndroidKeystore.generateOrRetrieveKey(
 ```
 
 **If the device has no passcode/biometric configured:** the hardware keystore cannot gate the key on user authentication. In that case, the app must warn the user explicitly (e.g., "Set a device passcode to protect your household data offline") rather than silently falling back to an ungated key. This is a deliberate degrade-with-warning, not a silent security downgrade.
+
+**Accepted degradation — biometric enrollment changes:** `.biometryCurrentSetOrDevicePasscode` means the Secure Enclave key becomes permanently unrecoverable the moment the user adds, removes, or re-enrolls a fingerprint/face — not just when biometrics are disabled entirely. The offline cache key is lost, and the user must sign in online again to re-derive it (the server-side account is unaffected; this only invalidates the local SQLCipher key). This is intentional, not a bug: `.biometryCurrentSet`-class access control exists specifically so that changing who can unlock a device also revokes what that device could previously decrypt — the alternative (`.biometryAny`, which survives enrollment changes) would let someone who re-enrolls their own fingerprint on a found/stolen unlocked phone retain access to the offline cache. For MVP-0, this trade-off is accepted as-is: a brief "we noticed your biometrics changed — sign in to restore offline access" prompt, no server-escrowed recovery key. A server-escrowed recovery path is a reasonable MVP-1+ enhancement if this proves disruptive in practice, but it adds a new key-escrow trust boundary that is out of scope for MVP-0.
 
 **Rationale:**
 - Encryption at rest (data + DB file encrypted on disk)
@@ -2382,7 +2404,7 @@ Body: {}
 
 Response:
 {
-  "sessions_revoked": 3,
+  "revoked": true,
   "message": "Signed out on all devices. All sessions ended."
 }
 
@@ -2391,7 +2413,7 @@ Server-Side:
 2. Mark each session as revoked: session.revoked = true
 3. Mark all refresh tokens across all sessions as revoked
 4. TTL those sessions to expire immediately
-5. Return count of sessions revoked
+5. Return `{"revoked": true}` only — do not echo the session count in the response body. The number of devices a user has active is minor but unnecessary information disclosure; log it server-side (audit log, item 8 in Security Considerations) instead of returning it to the client.
 6. Each device (on next API call or foreground): detects revocation, clears cache, shows Sign In
 ```
 
