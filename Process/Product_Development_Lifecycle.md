@@ -219,6 +219,7 @@ Stage 5 has two parts that may overlap for simple features or run sequentially f
 - [ ] Tech Lead has approved the Technical Design.
 
 **Outputs:**
+- `Products/KitchenOS/45_Solution_Designs/ARC-XXX_PRD-XXX_Architecture_Review.md` — the completed Architecture Review Checklist (Part A), including gate outcome and conditions. See `00_Knowledge_Map.md` Documentation Manifest for its governance class.
 - Updated `Products/KitchenOS/20_Domain_Model.md` (if changed).
 - Updated `Products/KitchenOS/40_Technical_Architecture.md` (if changed).
 - `Products/KitchenOS/60_Decision_Records/ADRs/ADR-XXX_Decision.md` (if applicable).
@@ -453,7 +454,7 @@ Every stage produces or updates exactly one class of documents. Nothing gets los
 | 2 — Discovery | Discovery notes (in PRD background) |
 | 3 — Product Definition | `Products/KitchenOS/30_PRDs/PRD-XXX.md`, `Products/KitchenOS/60_Decision_Records/PDRs/PDR-XXX.md` |
 | 4 — UX Design | Wireframes in PRD, `Products/KitchenOS/60_Decision_Records/UXDRs/UXDR-XXX.md` |
-| 5 — Architecture Review | `Products/KitchenOS/20_Domain_Model.md`, `Products/KitchenOS/40_Technical_Architecture.md`, `Products/KitchenOS/60_Decision_Records/ADRs/ADR-XXX.md` |
+| 5 — Architecture Review | `Products/KitchenOS/45_Solution_Designs/ARC-XXX_Architecture_Review.md`, `Products/KitchenOS/20_Domain_Model.md`, `Products/KitchenOS/40_Technical_Architecture.md`, `Products/KitchenOS/60_Decision_Records/ADRs/ADR-XXX.md` |
 | 6 — Planning | Engineering tickets |
 | 7 — Development | Code + tests |
 | 8 — Testing | QA sign-off |

@@ -1477,6 +1477,24 @@ The UX degradation scale:
 
 See Section 37.8 for the full architectural explanation.
 
+### 22A. Offline Sync Conflicts (MVP-0)
+
+When a household member is offline and makes changes (e.g., adds milk to pantry via receipt scan), and another member is online and makes conflicting changes simultaneously (e.g., reports milk consumed), the Sync Engine will:
+
+1. **Detect the conflict** at reconciliation time when devices reconnect.
+2. **Surface both versions** to the user with timestamps and source device.
+3. **Present a resolution UI:** "Device A: added 2L milk at 3:15pm" vs "Device B: consumed 1L milk at 3:16pm. What's correct?"
+4. **User chooses** one version or manually edits to merge.
+5. **Record the resolution** as a `ConflictResolutionEvent` for learning.
+
+This approach treats conflict resolution as a **user decision, not a silent algorithm.** It aligns with the principle "AI suggests, people decide" (Section 8.1) applied to multi-device scenarios.
+
+**MVP-0 rationale:** Conflicts are rare in early usage and multi-device households. Showing both versions teaches users how the system works and gathers data on real conflict patterns.
+
+**Future (MVP-1+):** As usage patterns emerge and conflict data accumulates, common scenarios can be auto-resolved with user approval (e.g., "consumption after receipt in same session is usually correct — shall we auto-resolve this pattern?").
+
+See Section 54A (Collective Intelligence) and PDR-012 (Sync Conflicts — User Decides) for the full design rationale.
+
 ---
 
 ## 23. Motion and Interaction Philosophy
@@ -1733,45 +1751,107 @@ This is the staged MVP closed loop.
 
 ## 43. Three-Month MVP-0 Build Plan
 
-### Month 1: Core App Foundation
+### Month 1: Core App Foundation + Local Persistence + Timeline
+
+Goal: App is usable manually; fully offline-capable; Timeline visible from day 1.
 
 Deliverables:
 
-- Authentication.
-- Pantry system.
-- Shopping list.
-- Basic navigation.
-- Local database setup.
+**Foundation & Infrastructure:**
+- **Authentication & Session Management** (email/password + social auth; sessions don't persist across app restart; single active session per user; email-based password reset) — per Technical Architecture §37.A and UX Design System 02_Authentication_Wireframes.md
+- Household auto-creation (auto-create default household when account is verified).
+- Local SQLite database (offline-first; all screens work offline).
+- Push notifications setup (Firebase Cloud Messaging).
 
-Goal:
+**User-Facing Features:**
+- Pantry system (add/remove items, track quantity, expiry).
+- Shopping list (add/remove, basic grouping).
+- **Budget Periods** *(NEW)* — record and display spend only; no forecasting or analytics in MVP-0.
+- **Household Timeline** *(NEW)* — persisted read model; pending/ready/completed cards; undo affordance.
+- **Sync Engine Foundation** *(NEW)* — offline event queue; device fingerprinting.
+- Basic navigation (Home, Plan, Shop, Cook, Household tabs).
 
-> App is usable manually.
+**Outcomes:** App fully functional offline. All core screens work without network. Budget spending tracked. Household Timeline shows all events. Ready for Month 2 features.
 
-### Month 2: Cook and Receipt Loop
+---
 
-Deliverables:
+### Month 2: Cook + Receipt Scanning + Sync Completion
 
-- Full Cook Mode UX.
-- Recipe system.
-- Receipt scanning MVP.
-- Pantry deduction logic.
-
-Goal:
-
-> First full closed loop exists.
-
-### Month 3: Intelligence Layer
+Goal: First closed loop works; users can cook end-to-end and scan receipts; sync is production-ready.
 
 Deliverables:
 
-- Rule-based Home suggestions.
-- Basic AI recipes.
-- Weekly planning UI.
-- UX refinement and polish.
+**Sync Engine Completion** *(NEW)*
+- Network detection and reconnection protocol.
+- Conflict detection: identify when same entity modified on multiple devices.
+- Conflict resolution UI: show Device A vs Device B versions; user chooses.
+- Testing: offline scenarios, multi-device edits, reconnection.
 
-Goal:
+**Cook Mode & Timeline Integration**
+- Step-by-step recipe display (full-screen, hands-free).
+- Participants and portions confirmation (pre-filled from AI prediction).
+- Pantry deduction on completion.
+- Timeline entry generated (`MealCooked` event).
+- Undo within window (30 seconds).
 
-> App feels smart enough to be useful.
+**Recipe System**
+- Recipe database (curated MVP set or API-backed).
+- Ingredient matching: recipes that can be made with available pantry.
+- Recipe search and filtering.
+
+**Receipt Scanning** *(dependent on Sync, Timeline, Budget, Push Notifications from Month 1)*
+- Camera capture with quality check (blur, glare, cutoff).
+- Async extraction (Document Understanding via AI Provider Abstraction).
+- Review screen (uncertain rows highlighted, settled rows present).
+- Food/non-food classification (auto-excluded by default; user can override).
+- Confirmation → Pantry update + Budget spend + Timeline entry.
+- Undo within ~30 seconds.
+- Offline capture queuing (via Sync Engine).
+- Duplicate detection at confirmation time.
+- Push notification when extraction completes.
+
+**Household Timeline Updates**
+- Event handlers for Cook Mode, Receipt Scanning, Sync events.
+- Timeline entry types: `MealCooked`, `ReceiptScanned`, `ReceiptReady`, `ReceiptConfirmed`, `ConflictDetected`, `ConflictResolved`.
+- Pending, ready, completed, undone cards.
+
+**Outcomes:** Users can cook end-to-end (plan → execute → track). Users can scan receipts with near-zero manual effort. Multi-device sync works with conflict resolution. Timeline shows complete history. Spend tracked per receipt. Ready for Month 3.
+
+---
+
+### Month 3: Intelligence Layer + Polish
+
+Goal: App feels smart and contextual; ready for external testing.
+
+Deliverables:
+
+**Home Screen — Decision Layer**
+- Attention Needed: low-stock items.
+- Suggested Today: next meal (rule-based).
+- Shopping: is shopping needed?
+- Budget: spend summary for current period.
+- Recent Changes: last 3–5 Timeline entries.
+- Quick actions: [Start Cooking] [View Shopping] [Review Timeline].
+
+**Recipe Intelligence**
+- Basic recipe library.
+- Ingredient matching: rank by availability.
+- Recipe filters: cuisine, prep time, difficulty.
+- Recipe search.
+
+**Weekly Planning UI**
+- Browse suggested meals for Mon–Sun.
+- Generate shopping list from selections.
+- No adaptive swaps yet; lightweight version.
+
+**Polish & Refinement**
+- Error states, loading states, offline states.
+- Performance optimization.
+- Accessibility audit.
+- Feature flags for staged rollout.
+- Documentation and runbooks.
+
+**Outcomes:** App feels intelligent without being magical. Retention signals present. All core loops work. Stable and polished. Ready for MVP-0 beta and user research.
 
 ---
 
@@ -4044,31 +4124,39 @@ The final product rule:
 
 Decisions live in decision records, not in this living document. The decisions formerly listed here are recorded:
 
-| Decision | Record |
-|---|---|
-| Cook Mode is the primary MVP-0 habit loop | PDR-010 |
-| Household Timeline is a first-class product surface | PDR-011 |
-| Events captured from day one via append-only `domain_events` | ADR-004 |
-| Prove the core food loop before advanced nutrition, marketplace, or automation | PDR-001; MVP sequencing in Sections 38–39 |
-| MVP-1 adds correction, reversal, trust, and safety layers | Sections 38.2 and 39.2 (MVP sequencing) |
-| Expert marketplace is post-MVP, not a primary navigation tab at launch | Sections 38–39 (MVP sequencing); Section 18 (information architecture) |
-| Expert recommendations require safety checks and user approval | GDR-001; Domain Model business invariant 7 |
+| Decision | Record | Evidence |
+|---|---|---|
+| Cook Mode is the primary MVP-0 habit loop | PDR-010 | Vision §39.4 |
+| Household Timeline is a first-class product surface | PDR-011 | Vision §8.9, §19.5, §43 Month 1 |
+| Events captured from day one via append-only `domain_events` | ADR-004 | Vision §60 Answered Since (2026-07-11) |
+| Prove the core food loop before advanced nutrition, marketplace, or automation | PDR-001; MVP sequencing in Sections 38–39 | Vision §43 three-month plan |
+| MVP-1 adds correction, reversal, trust, and safety layers | Sections 38.2 and 39.2 (MVP sequencing) | Vision §43 Month 1–3 phasing |
+| Expert marketplace is post-MVP, not a primary navigation tab at launch | Sections 38–39 (MVP sequencing); Section 18 (information architecture) | Vision §43; no expert features in Months 1–3 |
+| Expert recommendations require safety checks and user approval | GDR-001; Domain Model business invariant 7 | GDR-001 (Trusted Decision Support) |
+| **Budget scope: MVP-0 records and displays spend; analytics deferred to MVP-1+** | *MVP sequencing in Vision §43 (new 2026-07-20)* | **Vision §43 Month 1 Deliverables: "Budget Periods (record and display spend only; no forecasting or analytics in MVP-0)" — sequenced to Month 2+** |
+| **Household Timeline persisted as read model** | *Architecture decision in Technical Architecture §32.8 (new 2026-07-20)* | **Vision §43 Month 1 Deliverables: "Household Timeline (persisted read model; event handlers populate table)" — supports fast retrieval and undo** |
+| **Sync Engine: offline-first with user-decided conflict resolution** | *Technical decision in Vision §22A (new 2026-07-20); detailed in Technical Architecture* | **Vision §22A: "Conflicts surface both versions to user; user chooses." Vision §43 Month 1–2: Sync Engine scheduled.** |
+| **Sync conflict approach: user decides (not silent algorithm)** | *Design principle — see PDR-XXX_Sync_Conflicts_User_Decides (to be created)* | **Vision §22A; aligns with Vision §8.1 "AI suggests, people decide"** |
 
 ### Answered Since This Register Was Written
 
-| Question | Answered by |
-|---|---|
-| Review all receipt items or only uncertain ones? | ADR-012 — per-field confidence; uncertain rows highlighted; user confirms before any pantry effect |
-| Should users see confidence scores? | `Company/Governance/AI_Governance.md` — required at Medium+ criticality |
-| Always ask who is eating? | PDR-005, PDR-008 — AI predicts the routine, asks only about exceptions |
-| How does AI avoid learning from corrected or wrong events? | Domain Model — `learning_impact` field on the event envelope |
-| NestJS or Express? | `50_Engineering_Handbook.md`, Section 42.2 — NestJS |
-| Receipt document understanding cloud-only at MVP? | ADR-012 — cloud multimodal LLM for MVP-0 |
+| Question | Answered by | Date |
+|---|---|---|
+| Review all receipt items or only uncertain ones? | ADR-012 — per-field confidence; uncertain rows highlighted; user confirms before any pantry effect | 2026-07-03 |
+| Should users see confidence scores? | `Company/Governance/AI_Governance.md` — required at Medium+ criticality | 2026-07-03 |
+| Always ask who is eating? | PDR-005, PDR-008 — AI predicts the routine, asks only about exceptions | 2026-07-03 |
+| How does AI avoid learning from corrected or wrong events? | Domain Model — `learning_impact` field on the event envelope | 2026-07-03 |
+| NestJS or Express? | `50_Engineering_Handbook.md`, Section 42.2 — NestJS | 2026-07-03 |
+| Receipt document understanding cloud-only at MVP? | ADR-012 — cloud multimodal LLM for MVP-0 | 2026-07-03 |
+| **What should the receipt review interaction pattern look like?** | **UXDR-001 — scan-and-forget → pending card → notification → review-highlighted → one-tap confirm** | **2026-07-20** |
+| **Which actions should support one-tap undo?** | **PRD-001 Story 2 — receipt confirmation undo (30-second window); other undos deferred to MVP-1+** | **2026-07-20** |
+| **How strict should MVP event sourcing be?** | **SD-001 — Standard Event Envelope required; confirmation-only mutations (ADR-010)** | **2026-07-20** |
+| **What is the minimum sync engine required for MVP?** | **Vision §43 Month 1–2 — full offline-first sync; user-decided conflict resolution (Vision §22A)** | **2026-07-20** |
+| **Five unscheduled capabilities for PRD-001?** | **Vision §43 (revised) — all five scheduled: Budget (M1), Timeline (M1–2), Sync (M1–2), Push (M1), AI Provider Abstraction (M2)** | **2026-07-20** |
 
 ### Product Open Questions
 
 - Should Pantry remain visible or stay inside Household?
-- How much budget functionality belongs in MVP-0 versus MVP-1?
 - Which nutrition goals should MVP-1 support first, if any?
 - Should expert access be part of KitchenOS Premium or a separate marketplace purchase?
 
@@ -4078,7 +4166,6 @@ Decisions live in decision records, not in this living document. The decisions f
 - How prominently should the Household Confidence / State indicator appear?
 - Should goals appear in onboarding or after the first successful meal loop?
 - How should users approve expert recommendations before they affect meal plans or shopping lists?
-- Which actions should support one-tap undo?
 
 ### AI Open Questions
 
@@ -4089,14 +4176,12 @@ Decisions live in decision records, not in this living document. The decisions f
 
 ### Engineering Open Questions
 
-- How strict should MVP event sourcing be beyond the append-only `domain_events` table?
-- What is the minimum sync engine required for MVP?
-- How should offline conflicts be handled in the first release?
+- How should pending-state expiry be managed across features (per-feature rules or global policy)?
 - How deep should ingredient normalization be in MVP-1?
 - Should marketplace chat be built in-house or integrated through a third-party messaging provider?
 - How should expert recommendations be represented in the event ledger?
 - How should receipt effect reversal be modeled across pantry, shopping, budget, and learning systems?
-- Which Household Timeline entries should be persisted as a read model versus generated from grouped events on demand?
+- **How should multi-device sync conflicts be auto-resolved in future versions (MVP-1+)?** *(New 2026-07-20; see Vision §22A — MVP-0 approach is user decides; MVP-1+ will learn from user resolutions to automate common patterns.)*
 
 ### Privacy Open Questions
 

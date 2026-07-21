@@ -143,7 +143,7 @@ Product Design/
 | # | Document | File | Audience | Purpose | Status |
 |---|---|---|---|---|---|
 | 40 | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md` | Architects, Senior Engineers | System-level architecture — HLD, services, patterns, principles | Active |
-| 45 | Solution Designs | `Products/KitchenOS/45_Solution_Designs/` | Engineers, Architects | Feature-level technical design — module responsibilities, sequence diagrams, data flows (LLD) | Planned |
+| 45 | Solution Designs | `Products/KitchenOS/45_Solution_Designs/` | Engineers, Architects | Feature-level technical design — module responsibilities, sequence diagrams, data flows (LLD, `SD-XXX`). Also holds completed Stage 5 Part A Architecture Review checklists (`ARC-XXX`) for the same feature. | Active |
 | 60 | Decision Records | `Products/KitchenOS/60_Decision_Records/` | Everyone | ADRs, PDRs, UXDRs (GDRs live in `Company/Governance/GDRs/`) | Active |
 | 80 | API Reference | `Products/KitchenOS/80_API_Reference/` | Engineers, QA | How systems communicate | Planned |
 | 100 | Security | `Products/KitchenOS/100_Security/` | Engineering, Legal, Compliance | Auth, encryption, privacy, threat model, incident response | Planned |
@@ -429,6 +429,7 @@ When creating new documentation, use this table to find the right home. **Never 
 | A cross-cutting architectural principle | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.9 |
 | A reusable architectural building block | Technical Architecture | `Products/KitchenOS/40_Technical_Architecture.md`, Section 37.10 |
 | How a specific feature is designed at module/class level | Solution Design | `Products/KitchenOS/45_Solution_Designs/SD-XXX_Feature.md` |
+| A completed Stage 5 Part A Architecture Review (impact assessment, gate outcome, conditions) for a PRD | Architecture Review | `Products/KitchenOS/45_Solution_Designs/ARC-XXX_PRD-XXX_Architecture_Review.md` — type: `architecture-review`; an ordinary governed document (`enforced_document_statuses` lifecycle), not a decision record. Records a point-in-time gate outcome — treat by convention as append-only (amend forward, don't silently rewrite an "Approved with conditions" outcome), the same discipline as decision records, even though it isn't CI-enforced as one. |
 | A process, stage gate, or lifecycle rule | Process | `Process/Product_Development_Lifecycle.md` |
 | A reusable checklist or document format | Templates | `Templates/` |
 

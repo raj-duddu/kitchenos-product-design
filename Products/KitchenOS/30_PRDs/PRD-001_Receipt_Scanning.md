@@ -2,10 +2,10 @@
 id: PRD-001
 title: Receipt Scanning to Pantry Update
 type: prd
-status: draft
+status: active
 owner: product
 depends_on: [DOC-010, DOC-020, ADR-010, ADR-012, GDR-002]
-referenced_by: []
+referenced_by: [DOC-071, SD-001]
 tags: [prd, receipt, document-understanding, pantry, shopping-trip, budget, mvp-0]
 date: 2026
 ---
@@ -13,11 +13,11 @@ date: 2026
 # PRD-001: Receipt Scanning to Pantry Update
 
 **PRD ID:** PRD-001
-**Status:** Draft
+**Status:** Active
 **Owner:** Product (drafted via PM role, sponsored by @raj-duddu)
-**Stage Gate:** Stage 3 of Product Development Lifecycle
+**Stage Gate:** Stage 5 of Product Development Lifecycle (Stages 3–4 gates passed 2026-07-11)
 **Created:** 2026-07-03
-**Last Updated:** 2026-07-03
+**Last Updated:** 2026-07-11
 
 ---
 
@@ -55,8 +55,8 @@ Founder experience with OCR-based receipt systems showed the failure mode to avo
 - Receipt capture (camera) with client-side quality check and retake prompt.
 - Async extraction via Document Understanding (ADR-012): store, date, total, line items (name, quantity, unit, price), per-field confidence.
 - Totals reconciliation check (line items vs printed total, ± tax logic) as the primary fabrication guard.
-- Review-and-confirm screen: uncertain rows highlighted, editable guesses, add/remove items, "not a food item" handling for tax/deposit/bag lines.
-- Confirmation completes a ShoppingTrip → `PantryItemsAddedFromReceipt`, `BudgetSpendRecorded` (Domain Model events; no new events required).
+- Review-and-confirm screen: uncertain rows highlighted, editable extracted values, add/remove items; the AI auto-classifies non-food lines (tax, deposit, bag fees) and excludes them from pantry additions by default, with a per-row user override.
+- Confirmation produces `ReceiptItemsConfirmed` → `PantryItemsAddedFromReceipt`, `BudgetSpendRecorded` (Domain Model events; no new events required). A receipt can be confirmed independently or as part of a ShoppingTrip.
 - Pending state in Household Timeline; push notification when ready to review.
 - Offline capture: image queued locally (Sync Engine), processed on reconnect.
 - Duplicate receipt detection at confirmation time (`ReceiptMarkedDuplicate` blocks pantry additions).
@@ -74,6 +74,26 @@ Founder experience with OCR-based receipt systems showed the failure mode to avo
 ### MVP Boundary
 
 Photograph a receipt → review the proposal → confirm → pantry and budget updated. Everything else is enhancement.
+
+---
+
+## Assumptions & Dependencies
+
+This PRD is a top-of-stack feature, not a foundation: it validates systems it assumes are already in place. Sequencing authority is the Vision's MVP-0 build plan (`Products/KitchenOS/10_Product_Vision.md`, Section 43 — receipt scanning is a Month 2 deliverable); the full technical dependency map is SD-001's Affected Building Blocks table. Neither is duplicated here.
+
+**Assumed in place before Stage 7 of this PRD:**
+
+- ✅ Authentication and household scoping (every event carries `household_id`) — Month 1 deliverable.
+- ✅ Pantry system (`PantryItemsAddedFromReceipt` needs a pantry) — Month 1 deliverable.
+- ✅ **Budget periods** (`BudgetSpendRecorded` needs somewhere to record) — **Month 1 deliverable (effective 2026-07-20).** Scope: record and display spend only; no analytics in MVP-0.
+- ✅ **Household Timeline** (pending/success cards, undo affordance) — **Month 1–2 deliverable (effective 2026-07-20).** Persisted read model; event handlers populate table.
+- ✅ **Sync Engine** (offline capture, Story 3) — **Month 1–2 deliverable (effective 2026-07-20).** Offline queue; reconnect protocol; user-decided conflict resolution.
+- ✅ **Push notifications** (ready-to-review, Story 1) — **Month 1 deliverable (effective 2026-07-20).** Firebase Cloud Messaging setup.
+- ✅ **AI Provider Abstraction + Cloud Storage/Cloud Tasks pipeline** (ADR-012) — **Month 2 deliverable (effective 2026-07-20).** Document Understanding via cloud multimodal LLM.
+
+**Status (2026-07-20):** All five prerequisite capabilities are now scheduled in Vision §43 (revised). No blockers remain for Stage 6 planning.
+
+**Previous blocker language (removed):** The five-capability gap that was logged in Vision §60 Engineering Open Questions has been resolved by scheduling them in Vision §43 Months 1–2.
 
 ---
 
@@ -98,14 +118,17 @@ Photograph a receipt → review the proposal → confirm → pantry and budget u
 **So that** I correct two rows instead of auditing forty
 
 **Acceptance Criteria:**
-- [ ] Rows at or above the confidence threshold render as settled; rows below it are visually distinct and editable with the model's guess pre-filled.
+- [ ] Rows at or above the confidence threshold render as settled; rows below it are visually distinct and editable with the model's extracted value pre-filled.
 - [ ] Confidence appears only as settled / needs-review states; numeric scores are never displayed in the review UI.
 - [ ] The needs-review threshold is server-side remote configuration: changed without an app release, never exposed to users.
 - [ ] A totals banner shows whether line items reconcile with the printed total.
-- [ ] I can edit any row, remove rows, mark rows "not a food item," and add missed items.
+- [ ] The AI auto-classifies non-food lines (tax, deposit, bag fees) and excludes them from the pantry-add set without requiring me to act.
+- [ ] I can edit any row, remove rows, override an AI food/non-food classification, and add missed items.
 - [ ] Tapping an uncertain row shows the scanned receipt image (zoomed to the relevant region where extraction provides one) — verification never requires the paper receipt.
-- [ ] I can confirm with uncertain rows unresolved: the model's guess stands, and the item remains correctable later via pantry correction. Uncertainty is visible, never blocking.
+- [ ] I can confirm with uncertain rows unresolved: the model's extracted value stands, and the item remains correctable later via pantry correction. Uncertainty is visible, never blocking.
 - [ ] One primary action confirms the whole receipt.
+- [ ] After confirmation, an Undo action is visible for a short time window (default 30 seconds) on the success card. Undo reverts the pantry additions and budget spend in one action and returns the receipt to review state.
+- [ ] From the review screen, the user can delete the entire receipt via an overflow menu action; it is not placed adjacent to the primary Confirm button.
 
 ### Story 3: Offline shopper
 
@@ -126,7 +149,7 @@ Photograph a receipt → review the proposal → confirm → pantry and budget u
 **Acceptance Criteria:**
 - [ ] Poor image quality is caught at capture time with a retake prompt where possible.
 - [ ] Failed extraction produces a clear notification with retake and manual quick-entry options.
-- [ ] Manual quick-entry creates the same ShoppingTrip confirmation flow (same events).
+- [ ] Manual quick-entry creates the same receipt confirmation flow (same events).
 
 ---
 
@@ -140,7 +163,7 @@ And a legible receipt for 14 grocery items totalling $87.43
 When the member scans the receipt
 And the Document Understanding proposal reconciles with the printed total
 And the member confirms the proposal without edits
-Then a ShoppingTrip is confirmed
+Then the receipt is confirmed
 And 14 PantryItems are added via PantryItemsAddedFromReceipt
 And BudgetSpendRecorded carries $87.43
 And the Household Timeline shows one grouped entry for the trip
@@ -152,7 +175,7 @@ And the Household Timeline shows one grouped entry for the trip
 Given a review screen with an uncertain row "Organic spinach? 10 oz"
 When the member taps the row
 Then the scanned receipt image is shown, positioned at that line where available
-And the member can correct or accept the guess without the physical receipt
+And the member can correct or accept the extracted value without the physical receipt
 ```
 
 ### Scenario: Confirming with unresolved uncertainty is allowed
@@ -160,8 +183,8 @@ And the member can correct or accept the guess without the physical receipt
 ```gherkin
 Given a review screen with 2 uncertain rows the member does not resolve
 When the member confirms the receipt
-Then all 14 items enter the pantry, including the 2 model guesses
-And the 2 guesses remain correctable via PantryCorrection
+Then all 14 items enter the pantry, including the 2 uncertain rows
+And the 2 uncertain rows remain correctable via PantryCorrection
 And their learning_impact reflects unverified extraction
 ```
 
@@ -171,7 +194,7 @@ And their learning_impact reflects unverified extraction
 Given a scanned receipt where 2 of 14 items extract below the confidence threshold
 When the member opens the review screen
 Then exactly those 2 rows are highlighted as needing review
-And each shows the model's guess pre-filled and editable
+And each shows the extracted value pre-filled and editable
 And the confirm action is available without forcing edits to settled rows
 ```
 
@@ -243,6 +266,8 @@ Then extraction proceeds without user action
 
 The interaction pattern (scan-and-forget → pending card → notify → review-highlighted-uncertainty → confirm) is proposed as **UXDR-001** — it is expected to become the standard shape for all async AI proposals.
 
+The Stage 4 wireframes for this feature live in **DOC-071 — Receipt Scanning Wireframes** (`Products/KitchenOS/70_UX_Design_System/01_Receipt_Scanning_Wireframes.md`). The screen flow below is a summary; the wireframe document is the authoritative UX rendering.
+
 ### Screen Flow
 
 The Shop tab is segmented `List | Receipts` per UXDR-002 (proposed): the scan action is prominent in both segments; the Receipts segment holds pending, needs-review, and confirmed receipts.
@@ -257,10 +282,19 @@ The Shop tab is segmented `List | Receipts` per UXDR-002 (proposed): the scan ac
 [Timeline pending card]              ← user leaves; extraction runs async
     │  push notification
     ▼
-[Review & confirm screen]            ← uncertain rows highlighted; totals banner
+[Review & confirm screen]            ← uncertain rows highlighted; totals banner; overflow: Delete
     │  "Add N items to pantry"
     ▼
 [Confirmation]                       ← Timeline grouped entry; pantry + budget updated
+    │  "Undo" available ~30s
+    ▼
+[Undo tapped]                        ← returns to review; "Confirmation undone" banner
+    │
+    ├── [Re-confirm]
+    │
+    └── [Delete via overflow]        ← receipt deleted, return to Receipts
+
+[Undo expires]                       ← success card remains; individual corrections via PantryCorrection
 ```
 
 ### Empty State
@@ -292,9 +326,11 @@ Never a blocking spinner. The pending state lives in the Timeline card ("Reading
 ```text
 [Mobile capture] → [Cloud Storage image] → [Cloud Tasks job]
   → [Document Understanding via AI Provider Abstraction]
-  → [proposal + per-field confidence + totals check]
+  → [proposal + per-field confidence + totals check + is_food_item classification]
   → [FCM notify] → [Review & confirm UI]
-  → [ShoppingTripConfirmed → PantryItemsAddedFromReceipt, BudgetSpendRecorded]
+  → [POST /receipts/{id}/confirm → ReceiptItemsConfirmed → PantryItemsAddedFromReceipt, BudgetSpendRecorded]
+  → [Undo within window → POST /receipts/{id}/undo → ReceiptConfirmationUndone + PantryReceiptAdditionsReversed + BudgetSpendReversed] → back to review
+  → [Delete from review → DELETE /receipts/{id} → ReceiptDeleted]
 ```
 
 ### New API Endpoints (summary)
@@ -303,7 +339,9 @@ Never a blocking spinner. The pending state lives in the Timeline card ("Reading
 |---|---|---|
 | POST | /receipts | Upload capture, create processing job |
 | GET | /receipts/{id}/proposal | Fetch extraction proposal for review |
-| POST | /shopping-trips/{id}/confirm | Confirm reviewed items; produce domain events |
+| POST | /receipts/{id}/confirm | Confirm reviewed items; produce `ReceiptItemsConfirmed`, `PantryItemsAddedFromReceipt`, `BudgetSpendRecorded` |
+| POST | /receipts/{id}/undo | Undo a recent confirmation within the time window; produce `ReceiptConfirmationUndone`, `PantryReceiptAdditionsReversed`, `BudgetSpendReversed` |
+| DELETE | /receipts/{id} | Delete a receipt from the review screen; produce `ReceiptDeleted`, remove image and proposal |
 
 Full contract: Stage 5 Solution Design / `80_API_Reference/`.
 
@@ -312,9 +350,9 @@ Full contract: Stage 5 Solution Design / `80_API_Reference/`.
 ## Domain Model Impact
 
 - [ ] New entity: none — Receipt, ShoppingTrip, PantryItem all exist.
-- [ ] New domain event: none — `ReceiptScanned`, `ReceiptOcrCompleted`, `ReceiptItemsConfirmed`, `PantryItemsAddedFromReceipt`, `BudgetSpendRecorded`, `ReceiptMarkedDuplicate` all exist.
+- [x] New domain events: `ReceiptConfirmationUndone` and `ReceiptDeleted` added to the Receipt event catalogue in the Domain Model. Reversal of pantry and budget effects uses existing `PantryReceiptAdditionsReversed` and `BudgetSpendReversed`. The existing `PantryCorrection` path covers post-window individual corrections.
 - [ ] New business invariant: none — ADR-010 invariant already governs.
-- [x] Clarification only: proposal schema (per-field confidence, totals status) is Document Understanding output, not domain state — it lives outside the domain until confirmation.
+- [x] Clarification only: standalone receipt processing does not require an existing ShoppingTrip. Pantry additions are produced only when receipt items are confirmed. ShoppingTrip lifecycle integration is a separate concern outside PRD-001.
 
 ---
 
@@ -348,6 +386,7 @@ Architecture Review required at Stage 5 (AI-touching: apply the AI Architecture 
 | 4 | Voice input for manual quick-entry | Product | Deferred to MVP-1 |
 | 5 | Multi-shot capture for long receipts | Product + Architect | Deferred to MVP-1 — MVP-0 detects likely truncation and warns at capture |
 | 6 | Per-line image regions for tap-to-verify, or zoomable full-image viewer as the floor? | Architect (Stage 5) | Open |
+| 7 | Food vs. non-food classification: extraction confidence is not the same as "belongs in pantry." Tax, deposit, and bag-fee lines can extract with high confidence (settled rows) but must not become pantry items. | Product + Architect | **Resolved 2026-07-10** — The Document Understanding output must include an `is_food_item` / `item_type` classification (e.g., food, tax, deposit, fee, other). Non-food rows are auto-excluded from the pantry-add set by default; the user can override an incorrect classification via the per-row `[⊘ not food]` / `[↺ mark as food]` action. Requiring manual classification per row would violate Principles 1, 7, and 9. Affects Stage 5 extraction contract and Domain Model events for excluded items. |
 
 ---
 

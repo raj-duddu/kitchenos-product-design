@@ -204,9 +204,9 @@ A real-world purchasing event. The Execution Layer for shopping — the exact pa
 
 **Invariants:**
 - A ShoppingTrip is initiated from a ShoppingList (or manually). It does not create a ShoppingList retroactively.
-- A ShoppingTrip is completed by receipt scan or manual confirmation. Both paths produce the same `PantryItemsAddedFromReceipt` events.
-- **Receipt is evidence, not the reality.** The ShoppingTrip is the real-world event. The Receipt is how KitchenOS learns what was purchased. A ShoppingTrip can be completed without a receipt (manual confirmation).
-- Pantry additions are produced only when a ShoppingTrip is `status: confirmed`. Never on ShoppingList creation or receipt scan alone.
+- **Receipt is evidence, not the reality.** A receipt can be processed on its own or as part of a ShoppingTrip. Either way, `ReceiptItemsConfirmed` triggers `PantryItemsAddedFromReceipt` and `BudgetSpendRecorded`. A ShoppingTrip can also be completed without a receipt (manual confirmation).
+- A ShoppingTrip may be supported by zero or more receipts that provide evidence of purchases made during the trip.
+- Only confirmed purchases change household state.
 - Duplicate receipt detection runs before confirmation. A duplicate receipt produces `ReceiptMarkedDuplicate` and blocks pantry additions.
 
 > The shopping lifecycle mirrors cooking:
@@ -724,6 +724,8 @@ Events are organised by bounded context. All events share the standard envelope 
 - `PantryReceiptAdditionsReversed`
 - `BudgetSpendReversed`
 - `ShoppingMatchesUnlinked`
+- `ReceiptConfirmationUndone`     ← user undid a confirmed receipt within the time window; reverts to review state
+- `ReceiptDeleted`                ← user discarded an unconfirmed or undone receipt from the review screen
 
 ### Pantry
 - `ItemAddedToPantry`
