@@ -103,8 +103,8 @@ Every architecture decision must be traceable to at least one Operating Principl
   - If yes, confirm it is called through an abstraction interface — no direct provider reference in domain code.
 
 - [ ] What operational signals does this feature need monitored (e.g. latency, error rate, queue/backlog depth, sync failure rate)? List them: ___
-  - Numeric alert thresholds may be TBD until `Products/KitchenOS/90_Platform_Operations/` exists — that's fine. The point is that every feature names its own signals at design time, not that thresholds are set before there's traffic to threshold against.
-  - Action: carry this list forward into `90_Platform_Operations/` once that document exists, so operational monitoring is assembled from what features actually flagged, not invented retroactively.
+  - Numeric alert thresholds may be TBD until `Products/KitchenOS/90_Platform_Operations/` exists as a full living document — that's fine. The point is that every feature names its own signals at design time, not that thresholds are set before there's traffic to threshold against.
+  - Action: add one row per signal to `Products/KitchenOS/90_Platform_Operations/OPS-001_Monitoring_Signals_Backlog.md` before this review is marked Approved. That register is the running collection point until Platform Operations is built as a full document — don't let signals sit only inside this checklist instance where they'll be hard to find later.
 
 ---
 

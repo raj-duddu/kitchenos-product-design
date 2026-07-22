@@ -160,7 +160,7 @@ Product Design/
 
 | # | Document | File | Audience | Purpose | Status |
 |---|---|---|---|---|---|
-| 90 | Platform Operations | `Products/KitchenOS/90_Platform_Operations/` | Engineering, DevOps | How the platform runs — infrastructure, monitoring, incident response, releases, disaster recovery | Planned |
+| 90 | Platform Operations | `Products/KitchenOS/90_Platform_Operations/` | Engineering, DevOps | How the platform runs — infrastructure, monitoring, incident response, releases, disaster recovery. The full living document is still Planned, but `OPS-001_Monitoring_Signals_Backlog.md` already exists in this folder as a running register — see Documentation Manifest below. | Planned (backlog register active) |
 | 95 | Customer & Expert Operations | `Products/KitchenOS/95_Customer_Expert_Operations/` | Ops, Support, Marketplace | Customer support, Expert onboarding and verification, consent audits, marketplace quality, SLAs | Planned |
 
 > **Future split — Operations:** As the company grows, Operations will split into **Customer Operations** (customer support, expert operations, trust & safety, disputes — scales with customers) and **Internal Operations** (finance, HR, procurement, compliance evidence — scales with company size). These are distinct concerns with different audiences and growth drivers. Do not create this split until the distinction becomes operational.
@@ -418,6 +418,7 @@ When creating new documentation, use this table to find the right home. **Never 
 | Architecture governance: when to write an ADR, approval rules, ADR lifecycle | Governance | `Company/Governance/Architecture_Governance.md` |
 | Product risk register, likelihood/impact/mitigation | Governance | `Company/Governance/Risk_Register.md` |
 | A production runbook or infrastructure config | Platform Operations | `Products/KitchenOS/90_Platform_Operations/` |
+| An operational signal (latency, error rate, queue depth, etc.) named during a Stage 5 Architecture Review, before Platform Operations exists as a full document | Monitoring Signals Backlog | `Products/KitchenOS/90_Platform_Operations/OPS-001_Monitoring_Signals_Backlog.md` — an ordinary governed document (`enforced_document_statuses` lifecycle), not a decision record; a running register, entries never deleted, only marked Implemented. Populated by `Templates/Architecture_Review_Checklist.md`'s Infrastructure Impact item. |
 | Customer support workflows, SLAs, Expert onboarding and verification | Customer & Expert Operations | `Products/KitchenOS/95_Customer_Expert_Operations/` |
 | Why a company-wide governance policy was decided | GDR | `Company/Governance/GDRs/GDR-XXX_Decision.md` |
 | Why a technology was chosen | ADR | `Products/KitchenOS/60_Decision_Records/ADRs/ADR-XXX_Decision.md` |

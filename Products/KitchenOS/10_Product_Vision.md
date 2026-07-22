@@ -578,11 +578,11 @@ A recommendation should count only when it is:
 | Daily active usage | Becomes part of daily routine |
 | Undo usage rate | Less than 5% of confirmed actions |
 | Household Timeline engagement | Reviewed weekly by 50%+ of active households |
-| Explanation expansion rate | Tracked, no fixed target |
+| Tell-us-more engagement rate | Tracked, no fixed target |
 | Crash-free session rate | 99.5%+ |
-| Time-to-first-recommendation | Less than 3 seconds from data availability |
+| Recommendation generation latency | Less than 3 seconds from data availability to displayed recommendation |
 
-A high undo rate is a trust signal, not a feature-health signal — it means AI output is being second-guessed, not that undo is working well. Explanation expansion rate has no fixed target deliberately: a low rate can mean explanations are already clear enough to trust at a glance, or that users have stopped bothering to check them; the trend and its correlation with correction rate matters more than the number itself.
+A high undo rate is a trust signal, not a feature-health signal — it means AI output is being second-guessed, not that undo is working well. Tell-us-more engagement rate measures how often users tap the "tell us more" prompt required on low-confidence outputs (`Company/Governance/AI_Governance.md`, Confidence and Explanation Requirements) — it has no fixed target deliberately: a low rate can mean users trust the system enough not to dig deeper, or that they've stopped bothering to check; the trend and its correlation with correction rate matters more than the number itself. Recommendation generation latency is a system-performance metric — how fast the AI produces output once data is available — distinct from "Time-to-first-accepted-recommendation" in the Spin Metrics table (Section 51A), which measures product cold-start: how long a new household takes to reach its first accepted recommendation, a multi-day journey metric, not a latency metric. Don't conflate the two despite the similar names.
 
 Each metric should define:
 
